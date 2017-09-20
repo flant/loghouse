@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Loghouse</title>
+
+    <!-- Bootstrap -->
+    <link href="<%= url('vendor/bootstrap/css/bootstrap.min.css') %>" rel="stylesheet" type="text/css" />
+
+    <link href="<%= url('assets/stylesheets/main.css') %>" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">Loghouse</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/">Home</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container">
+      <% unless @error.nil? %>
+        <div class="alert alert-danger">
+          <%= @error %>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </div><!-- /.container -->
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="<%= url('vendor/jquery-3.2.1.js') %>" charset="utf-8"></script>
+    <script src="<%= url('vendor/bootstrap/js/bootstrap.min.js') %>" charset="utf-8"></script>
+
+    <script src="<%= url('assets/javascripts/main.js') %>" charset="utf-8"></script>
+  </body>
+</html>

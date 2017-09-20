@@ -1,0 +1,2 @@
+date,timestamp,nsec,string_fields.names,string_fields.values,number_fields.names,number_fields.values,boolean_fields.names,boolean_fields.values,null_fields.names
+1505920508,1505920508,4454,'["a", "b", "c"]','["1", "2", "3"]','["d", "e", "f"]','[4, 5, 6]',["g"],[true],[]фю

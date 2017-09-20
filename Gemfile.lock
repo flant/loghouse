@@ -1,0 +1,69 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activesupport (5.1.4)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (~> 0.7)
+      minitest (~> 5.1)
+      tzinfo (~> 1.1)
+    addressable (2.5.2)
+      public_suffix (>= 2.0.2, < 4.0)
+    clickhouse (0.1.10)
+      activesupport (>= 4.1.8)
+      bundler (>= 1.13.4)
+      erubis
+      faraday
+      launchy
+      pond
+      sinatra
+      thor
+    coderay (1.1.1)
+    concurrent-ruby (1.0.5)
+    erubis (2.7.0)
+    faraday (0.13.1)
+      multipart-post (>= 1.2, < 3)
+    i18n (0.8.6)
+    launchy (2.4.3)
+      addressable (~> 2.3)
+    method_source (0.8.2)
+    minitest (5.10.3)
+    multipart-post (2.0.0)
+    mustermann (1.0.1)
+    parslet (1.8.0)
+    pond (0.2.0)
+    pry (0.10.4)
+      coderay (~> 1.1.0)
+      method_source (~> 0.8.1)
+      slop (~> 3.4)
+    public_suffix (3.0.0)
+    puma (3.10.0)
+    rack (2.0.3)
+    rack-protection (2.0.0)
+      rack
+    sinatra (2.0.0)
+      mustermann (~> 1.0)
+      rack (~> 2.0)
+      rack-protection (= 2.0.0)
+      tilt (~> 2.0)
+    slop (3.6.0)
+    thor (0.20.0)
+    thread_safe (0.3.6)
+    tilt (2.0.8)
+    tzinfo (1.2.3)
+      thread_safe (~> 0.1)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  clickhouse
+  parslet
+  pry
+  puma
+  sinatra
+
+RUBY VERSION
+   ruby 2.3.4p301
+
+BUNDLED WITH
+   1.15.4
