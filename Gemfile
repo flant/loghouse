@@ -8,4 +8,6 @@ gem 'clickhouse', github: 'archan937/clickhouse'
 gem 'parslet'
 gem 'activesupport'
 
+gem 'will_paginate'
+
 gem 'pry', group: :development

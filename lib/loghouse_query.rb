@@ -1,9 +1,11 @@
 require 'loghouse_query/parsers'
 require 'loghouse_query/storable'
+require 'loghouse_query/pagination'
 
 class LoghouseQuery
   include Parsers
   include Storable
+  include Pagination
 
   LOGS_TABLE          = ENV.fetch('CLICKHOUSE_LOGS_TABLE') { 'logs6' }
   TIMESTAMP_ATTRIBUTE = ENV.fetch('CLICKHOUSE_TIMESTAMP_ATTRIBUTE') { 'timestamp' }
@@ -27,13 +29,19 @@ class LoghouseQuery
     params = {
       select: '*',
       from: LOGS_TABLE,
-      order: "#{TIMESTAMP_ATTRIBUTE} ASC"
+      order: "#{TIMESTAMP_ATTRIBUTE} ASC",
+      limit: limit,
+      offset: offset
     }
     if (where = to_clickhouse_where)
       params[:where] = where
     end
 
     params
+  end
+
+  def result
+    @result ||= Clickhouse.connection.select_rows(to_clickhouse)
   end
 
   protected

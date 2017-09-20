@@ -5,16 +5,18 @@
   </pre>
 </p>
 
+<%= will_paginate(@query, renderer: WillPaginate::Sinatra::BootstrapLinkRenderer) %>
+
 <table class="table table-striped table-bordered">
   <thead>
     <tr>
-      <% @rows.names.each do |n| %>
+      <% @query.result.names.each do |n| %>
         <th><%=h n %></th>
       <% end %>
     </tr>
   </thead>
   <tbody>
-    <% @rows.each do |r| %>
+    <% @query.result.each do |r| %>
     <tr>
       <% r.each do |c| %>
         <td>

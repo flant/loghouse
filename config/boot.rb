@@ -12,3 +12,5 @@ require 'loghouse_query'
 
 require 'clickhouse_time_zone_patch'
 require_relative 'clickhouse'
+
+require 'will_paginate_bootstrap'
