@@ -20,6 +20,31 @@ function toggleFollow() {
   }
 }
 
+function getCurrentQuickItem() {
+  return $('.super-date-picker__quick-item[data-from="' + $('#time-from').val() + '"][data-to="' + $('#time-to').val() + '"]');
+}
+
+function refreshPeriodTitle() {
+  var quick_item = getCurrentQuickItem();
+
+  if ($('#time-from').val() == '' && $('#time-to').val() == '') {
+    var new_period_title = $('.super-date-picker__period-title').data('default-title');
+  } else if (quick_item.length) {
+    var new_period_title = quick_item.text();
+  } else {
+    var new_period_title = $('#time-from').val() + ' – ' + $('#time-to').val();
+  }
+  $('.super-date-picker__period-title').text(new_period_title);
+}
+
+function refreshCurrentQuickItem() {
+  var quick_item = getCurrentQuickItem();
+  if (quick_item.length) {
+    $('.super-date-picker__quick-item').removeClass('btn-primary').removeClass('active').addClass('btn-default');
+    $(quick_item).removeClass('btn-default').addClass('btn-primary').addClass('active');
+  }
+}
+
 $(document).ready(function() {
   $('#filter-follow').on('change', toggleFollow);
   toggleFollow();
@@ -49,10 +74,9 @@ $(document).ready(function() {
     $('#time-from').val(current_item_value_from);
     $('#time-to').val(current_item_value_to);
     // set title
-    refreshQuickItemTitle();
+    refreshPeriodTitle();
     // update styles
-    $('.super-date-picker__quick-item').removeClass('btn-primary').removeClass('active').addClass('btn-default');
-    $(this).removeClass('btn-default').addClass('btn-primary').addClass('active');
+    refreshCurrentQuickItem();
   });
 
   $('.input-group.date .input-group-addon').on('click', function() {
@@ -60,15 +84,11 @@ $(document).ready(function() {
   });
 
   $('.input-group.date').datetimepicker({locale: 'ru', keepInvalid: true});
-  $('.input-group.date input').on('input', function(e) {refreshQuickItemTitle()})
-  $('.input-group.date').on('dp.change', function(e) {refreshQuickItemTitle()})
+  $('.input-group.date input').on('input', function(e) {refreshPeriodTitle()})
+  $('.input-group.date').on('dp.change', function(e) {refreshPeriodTitle()})
 
-  function refreshQuickItemTitle() {
-    var quick_item_selector = '.super-date-picker__quick-item[data-from="' + $('#time-from').val() + '"][data-to="' + $('#time-to').val() + '"]';
-    var quick_item = $(quick_item_selector);
-    var new_quick_title = quick_item.length ? quick_item.text() : $('#time-from').val() + ' – ' + $('#time-to').val();
-    $('.super-date-picker__period-title').text(new_quick_title);
-  }
+  refreshPeriodTitle();
+  refreshCurrentQuickItem();
 
   // $('#time-from').datetimepicker({
   //     locale: 'ru'
