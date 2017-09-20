@@ -45,7 +45,7 @@
           <div class="col-md-2">
             <div class="form-group">
               <div class="btn-group-vertical btn-group-xs super-date-picker__quick-item-group" role="group">
-                <% @super_date_picker_presets[:last_days].each do |p| %>
+                <% Loghouse::SUPER_DATEPICKER_PRESETS[:last_days].each do |p| %>
                   <a role="button" class="btn btn-default super-date-picker__quick-item" data-from="<%= p[:from] %>" data-to="<%= p[:to] %>"><%= p[:name] %></a>
                 <% end %>
               </div>
@@ -54,7 +54,7 @@
           <div class="col-md-2">
             <div class="form-group">
               <div class="btn-group-vertical btn-group-xs super-date-picker__quick-item-group" role="group">
-                <% @super_date_picker_presets[:last_day].each do |p| %>
+                <% Loghouse::SUPER_DATEPICKER_PRESETS[:last_day].each do |p| %>
                   <a role="button" class="btn btn-default super-date-picker__quick-item" data-from="<%= p[:from] %>" data-to="<%= p[:to] %>"><%= p[:name] %></a>
                 <% end %>
               </div>

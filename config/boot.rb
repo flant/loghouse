@@ -13,4 +13,5 @@ require 'loghouse_query'
 require 'clickhouse_time_zone_patch'
 require_relative 'clickhouse'
 
+require 'datepicker_presets'
 require 'will_paginate_bootstrap'
