@@ -6,11 +6,4 @@ config = {
 }
 
 Clickhouse.establish_connection config
-
-if !Clickhouse.connection.exists_table('queries')
-  Clickhouse.connection.create_table("queries") do |t|
-    t.fixed_string :id, 16
-    t.string       :query
-    t.engine       "TinyLog"
-  end
-end
+LoghouseQuery.create_table!

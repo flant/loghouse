@@ -1,9 +1,9 @@
-<form class="form-inline" action="/query" method="get">
+<form class="form-inline" id="filter-form" action="/query" method="get">
   <div class="form-group">
-    <input type="text" class="form-control" id="query" placeholder="Query..." name='q' size="60" value="<%= h params[:q] %>">
+    <input type="text" class="form-control" id="query" placeholder="Query..." name='query' size="60" value="<%= h @query.attributes[:query] if @query %>">
 
-    <input type="text" class="form-control" id="time-from" name='time_from' placeholder="from" size="10" value="<%= h params[:time_from] %>">
-    <input type="text" class="form-control" id="time-to" name='time_to' placeholder="to" size="10" value="<%= h params[:time_to] %>">
+    <input type="text" class="form-control" id="time-from" name='time_from' placeholder="from" size="10" value="<%= h @query.attributes[:time_from] if @query %>">
+    <input type="text" class="form-control" id="time-to" name='time_to' placeholder="to" size="10" value="<%= h @query.attributes[:time_to] if @query %>">
 
     <!-- <div class='input-group date' id=''>
         <input type='text' class="form-control" />
@@ -18,5 +18,14 @@
         </span>
     </div> -->
   </div>
+  <div class="checkbox">
+    <label>
+      <input id="filter-follow" type="checkbox" name="follow" <%= 'checked="checked"' if @query && @query.follow? %>> Follow
+    </label>
+  </div>
+  <% if @query %>
+    <button type="button" class="btn btn-info" id="save-query">Save</button>
+  <% end %>
+
   <button type="submit" class="btn btn-default">Send</button>
 </form>

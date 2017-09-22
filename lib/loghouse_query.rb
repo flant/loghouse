@@ -1,49 +1,33 @@
-require 'loghouse_query_p'
-require 'loghouse_query_time_p'
+require 'loghouse_query/parsers'
+require 'loghouse_query/storable'
 
 class LoghouseQuery
-  class BadFormat < StandardError; end
-  class BadTimeFormat < StandardError; end
+  include Parsers
+  include Storable
 
-  TABLE               = ENV.fetch('CLICKHOUSE_TABLE') { 'logs6' }
+  LOGS_TABLE          = ENV.fetch('CLICKHOUSE_LOGS_TABLE') { 'logs6' }
   TIMESTAMP_ATTRIBUTE = ENV.fetch('CLICKHOUSE_TIMESTAMP_ATTRIBUTE') { 'timestamp' }
 
-  def self.parser
-    @@parslet ||= LoghouseQueryP.new
+  attr_accessor :attributes
+
+  def initialize(attrs = {})
+    @attributes = attrs.symbolize_keys
+    @attributes[:id] ||= SecureRandom.uuid
   end
 
-  def self.time_parser
-    @@time_parslet ||= LoghouseQueryTimeP.new
+  def id
+    attributes[:id]
   end
 
-  attr_accessor :raw_query, :parsed_query
-
-  def initialize(raw_query, time_from, time_to, page=nil)
-    @raw_query = raw_query
-    @time_from = time_parser.parse_time(time_from) if time_from.present?
-    @time_to   = time_parser.parse_time(time_to) if time_to.present?
-
-    return if @raw_query.to_s.blank?
-
-    begin
-      @parsed_query = parser.parse raw_query
-    rescue Parslet::ParseFailed => e
-      raise BadFormat.new("#{raw_query}: #{e}")
-    end
-  end
-
-  def parser
-    self.class.parser
-  end
-
-  def time_parser
-    self.class.time_parser
+  def follow?
+    attributes[:follow] == 1
   end
 
   def to_clickhouse
     params = {
       select: '*',
-      from: TABLE
+      from: LOGS_TABLE,
+      order: "#{TIMESTAMP_ATTRIBUTE} ASC"
     }
     if (where = to_clickhouse_where)
       params[:where] = where
@@ -60,10 +44,10 @@ class LoghouseQuery
 
   def to_clickhouse_where
     where_parts = []
-    where_parts << query_to_clickhouse(parsed_query[:query]) if @parsed_query
+    where_parts << query_to_clickhouse(parsed_query[:query]) if parsed_query
 
-    where_parts << "#{TIMESTAMP_ATTRIBUTE} >= #{to_clickhouse_time @time_from}" if @time_from
-    where_parts << "#{TIMESTAMP_ATTRIBUTE} <= #{to_clickhouse_time @time_to}" if @time_to
+    where_parts << "#{TIMESTAMP_ATTRIBUTE} >= #{to_clickhouse_time parsed_time_from}" if parsed_time_from
+    where_parts << "#{TIMESTAMP_ATTRIBUTE} <= #{to_clickhouse_time parsed_time_to}" if parsed_time_to
 
     return if where_parts.blank?
 

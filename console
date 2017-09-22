@@ -21,7 +21,7 @@ def insert
       %w[a b c].to_s.gsub(/"/, "'"), %w[1 2 3].shuffle.to_s.gsub(/"/, "'"),
       %w[d e f].to_s.gsub(/"/, "'"), %w[4 5 6].shuffle.map(&:to_i),
       %w[g].to_s.gsub(/"/, "'"), [1],
-      [],
+      ['x'].to_s.gsub(/"/, "'"),
     ]
   end
   puts s

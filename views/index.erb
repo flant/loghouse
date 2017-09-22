@@ -1,29 +1,4 @@
 <%= erb :_filter_form %>
-
-<% if @loghouse_query %>
-<p>
-  <pre>
-<%= h @loghouse_query.to_clickhouse %>
-  </pre>
-</p>
-
-<table class="table table-striped table-bordered">
-  <thead>
-    <tr>
-      <% @rows.names.each do |n| %>
-        <th><%=h n %></th>
-      <% end %>
-    </tr>
-  </thead>
-  <tbody>
-    <% @rows.each do |r| %>
-    <tr>
-      <% r.each do |c| %>
-        <td>
-          <%=h c %>
-        </td>
-      <% end %>
-    </tr>
-    <% end %>
-  </tbody>
-<% end %>
+<div id="result">
+  <%= erb :_result %>
+</div>
