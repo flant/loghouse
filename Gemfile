@@ -4,7 +4,8 @@ ruby '2.3.4'
 
 gem 'sinatra'
 gem 'puma'
-gem 'clickhouse'
+gem 'clickhouse', github: 'archan937/clickhouse'
 gem 'parslet'
+gem 'activesupport'
 
 gem 'pry', group: :development

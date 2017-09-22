@@ -1,12 +1,29 @@
-<form class="form-inline" action="/query" method="get">
-  <div class="form-group">
-    <input type="text" class="form-control" id="query" placeholder="Query..." name='q' size="100" value="<%= h params[:q] %>">
-  </div>
-  <button type="submit" class="btn btn-default">Send</button>
-</form>
+<%= erb :_filter_form %>
 
+<% if @loghouse_query %>
 <p>
   <pre>
-<%= h @loghouse_query&.to_clickhouse %>
+<%= h @loghouse_query.to_clickhouse %>
   </pre>
 </p>
+
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <% @rows.names.each do |n| %>
+        <th><%=h n %></th>
+      <% end %>
+    </tr>
+  </thead>
+  <tbody>
+    <% @rows.each do |r| %>
+    <tr>
+      <% r.each do |c| %>
+        <td>
+          <%=h c %>
+        </td>
+      <% end %>
+    </tr>
+    <% end %>
+  </tbody>
+<% end %>

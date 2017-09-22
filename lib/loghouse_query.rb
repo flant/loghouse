@@ -1,20 +1,34 @@
 require 'loghouse_query_p'
+require 'loghouse_query_time_p'
+
 class LoghouseQuery
   class BadFormat < StandardError; end
+  class BadTimeFormat < StandardError; end
+
+  TABLE               = ENV.fetch('CLICKHOUSE_TABLE') { 'logs6' }
+  TIMESTAMP_ATTRIBUTE = ENV.fetch('CLICKHOUSE_TIMESTAMP_ATTRIBUTE') { 'timestamp' }
 
   def self.parser
     @@parslet ||= LoghouseQueryP.new
   end
 
+  def self.time_parser
+    @@time_parslet ||= LoghouseQueryTimeP.new
+  end
+
   attr_accessor :raw_query, :parsed_query
 
-  def initialize(raw_query)
+  def initialize(raw_query, time_from, time_to, page=nil)
     @raw_query = raw_query
+    @time_from = time_parser.parse_time(time_from) if time_from.present?
+    @time_to   = time_parser.parse_time(time_to) if time_to.present?
+
+    return if @raw_query.to_s.blank?
 
     begin
       @parsed_query = parser.parse raw_query
     rescue Parslet::ParseFailed => e
-      raise BadFormat.new("#{raw_query}: #{e.to_s}")
+      raise BadFormat.new("#{raw_query}: #{e}")
     end
   end
 
@@ -22,15 +36,40 @@ class LoghouseQuery
     self.class.parser
   end
 
+  def time_parser
+    self.class.time_parser
+  end
+
   def to_clickhouse
-    <<~EOS
-      SELECT * FROM logs.logs6 WHERE (
-        #{query_to_clickhouse(parsed_query[:query])}
-      );
-    EOS
+    params = {
+      select: '*',
+      from: TABLE
+    }
+    if (where = to_clickhouse_where)
+      params[:where] = where
+    end
+
+    params
   end
 
   protected
+
+  def to_clickhouse_time(time)
+    "toDateTime('#{time.utc.strftime('%Y-%m-%d %H:%M:%S')}')"
+  end
+
+  def to_clickhouse_where
+    where_parts = []
+    where_parts << query_to_clickhouse(parsed_query[:query]) if @parsed_query
+
+    where_parts << "#{TIMESTAMP_ATTRIBUTE} >= #{to_clickhouse_time @time_from}" if @time_from
+    where_parts << "#{TIMESTAMP_ATTRIBUTE} <= #{to_clickhouse_time @time_to}" if @time_to
+
+    return if where_parts.blank?
+
+    "(#{where_parts.join(') AND (')})"
+  end
+
 
   def query_to_clickhouse(query)
     result = "(#{expression_to_clickhouse(query[:expression])})"
@@ -54,7 +93,8 @@ class LoghouseQuery
             'is_true'
           elsif expression[:is_false]
             'is_false'
-          else expression[:e_op]
+          else
+            expression[:e_op]
           end
 
     key = expression[:key]
@@ -76,7 +116,12 @@ class LoghouseQuery
       "has(string_fields.names, '#{key}') AND match(string_fields.values[indexOf(string_fields.names, '#{key}')], '#{val}')"
     when '=', '!='
       if (val = str_val)
-        "has(string_fields.names, '#{key}') AND string_fields.values[indexOf(string_fields.names, '#{key}')] #{op} '#{val}'"
+        val = val.to_s
+        if val.include?('%') || val.include?('_')
+          "has(string_fields.names, '#{key}') AND #{op == '=' ? 'like' : 'notLike'}(string_fields.values[indexOf(string_fields.names, '#{key}')],'#{val}')"
+        else
+          "has(string_fields.names, '#{key}') AND string_fields.values[indexOf(string_fields.names, '#{key}')] #{op} '#{val}'"
+        end
       else
         val = num_val
         <<~EOS

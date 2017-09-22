@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 def reload!
   load './application.rb'
-  Clickhouse.establish_connection
+  Time.zone = Loghouse::TIME_ZONE
 end
 
 def insert

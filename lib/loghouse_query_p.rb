@@ -1,20 +1,8 @@
 class LoghouseQueryP < Parslet::Parser
+  include ParsletExtensions
+
   QUERY_OPERATORS      = %w[and or]
   EXPRESSION_OPERATORS = %w[>= <= =~ != = > < ]
-
-  def stri(str)
-    key_chars = str.split(//)
-    key_chars.
-      collect! { |char| match["#{char.upcase}#{char.downcase}"] }.
-      reduce(:>>)
-  end
-
-  def spaced(atom)
-    space? >> atom >> space?
-  end
-
-  rule(:space) { match('\s').repeat(1) }
-  rule(:space?) { space.maybe }
 
   rule(:query_operator) do
     q_op = nil
