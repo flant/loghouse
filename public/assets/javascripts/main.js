@@ -83,7 +83,7 @@ $(document).ready(function() {
     $('.super-date-picker__quick-item').removeClass('btn-primary').removeClass('active').addClass('btn-default');
   });
 
-  $('.input-group.date').datetimepicker({locale: 'ru', keepInvalid: true});
+  $('.input-group.date').datetimepicker({locale: 'ru', keepInvalid: true, useStrict: true});
   $('.input-group.date input').on('input', function(e) {refreshPeriodTitle()})
   $('.input-group.date').on('dp.change', function(e) {refreshPeriodTitle()})
 
