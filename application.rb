@@ -6,6 +6,8 @@ module Loghouse
   # rubocop:disable Metrics/ClassLength
   class Application < Sinatra::Base
     configure do
+      register WillPaginate::Sinatra
+
       enable :logging
     end
 
@@ -24,11 +26,9 @@ module Loghouse
                   query_from_params
                 end
 
-
-
       begin
+        @query.paginate(page: params[:page], per_page: params[:per_page])
         @to_clickhouse = @query.to_clickhouse
-        @rows = Clickhouse.connection.select_rows(@to_clickhouse)
       rescue LoghouseQuery::BadFormat => e
         @error = "Bad query format: #{e}"
       rescue LoghouseQuery::BadTimeFormat => e
