@@ -47,7 +47,7 @@ class LoghouseQueryP < Parslet::Parser
     str("'") >> match['^\''].repeat.as(:str_value) >> str("'")
   }
 
-  rule(:key) { match['a-zA-Z0-9'].repeat(1).as(:key) }
+  rule(:key) { match['a-zA-Z0-9_'].repeat(1).as(:key) }
 
   rule(:expression) do
     (
