@@ -12,17 +12,19 @@ spec:
   template:
     metadata:
       labels:
-        componen: loghouse
+        component: loghouse
     spec:
       containers:
       - name: loghouse
         image: wimbo/loghouse
+        imagePullPolicy: Always
+        command: ["bundle", "exec", "puma"]
         ports:
         - name: http
           containerPort: 9292
         env:
         - name: CLICKHOUSE_URL
-          value: "localhost:8123"
+          value: "http://ch.domain/"
         - name: CLICKHOUSE_USERNAME
           value: "default"
         - name: CLICKHOUSE_PASSWORD
@@ -48,14 +50,14 @@ metadata:
   namespace: kube-logging
 spec:
   selector:
-    component: looghouse
+    component: loghouse
   ports:
     - name: http
-      port: 80
+      port: 9292
       targetPort: 9292
       protocol: TCP
 ---
-apiVersin: extensions/v1beta1
+apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: loghouse
@@ -65,14 +67,14 @@ metadata:
     kubernetes.io/tls-acme: "true"
 spec:
   rules:
-  - host: loghouse.kube.allabout.me
+  - host: ch.domain
     http:
       paths:
       - path: /
         backend:
           serviceName: loghouse
-          servicePort: http
+          servicePort: 9292
   tls:
   - hosts:
-    - loghouse.kube.allabout.me
+    - ch.domain
     secretName: loghouse
