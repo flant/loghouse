@@ -8,7 +8,7 @@ class LoghouseQuery
     alias :current_page :page
 
     def per_page
-      @per_page || 7
+      @per_page || 10
     end
     alias :limit :per_page
 
@@ -23,6 +23,7 @@ class LoghouseQuery
     def paginate(page: nil, per_page: nil)
       @page     = page.to_i if page.present?
       @per_page = per_page.to_i if per_page.present?
+      self
     end
 
     def offset

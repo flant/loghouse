@@ -14,3 +14,20 @@ body {
 .super-date-picker__quick-item-group .super-date-picker__quick-item {
   text-align: left;
 }
+
+.logs-result {
+  background-color: #e8e8e8;
+  font-family: monospace;
+}
+
+.entry-timestamp {
+  text-decoration: underline;
+}
+
+.entry-key {
+  font-weight: bold;
+}
+
+.entry-value {
+  font-style: italic;
+}

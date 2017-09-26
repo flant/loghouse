@@ -1,6 +1,7 @@
 require 'loghouse_query/parsers'
 require 'loghouse_query/storable'
 require 'loghouse_query/pagination'
+require 'log_entry'
 
 class LoghouseQuery
   include Parsers
@@ -41,7 +42,7 @@ class LoghouseQuery
   end
 
   def result
-    @result ||= Clickhouse.connection.select_rows(to_clickhouse)
+    @result ||= LogEntry.from_result_set Clickhouse.connection.select_rows(to_clickhouse)
   end
 
   protected

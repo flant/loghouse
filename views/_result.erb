@@ -7,24 +7,11 @@
 
 <%= will_paginate(@query, renderer: WillPaginate::Sinatra::BootstrapLinkRenderer) %>
 
-<table class="table table-striped table-bordered">
-  <thead>
-    <tr>
-      <% @query.result.names.each do |n| %>
-        <th><%=h n %></th>
-      <% end %>
-    </tr>
-  </thead>
-  <tbody>
-    <% @query.result.each do |r| %>
-    <tr>
-      <% r.each do |c| %>
-        <td>
-          <%=h c %>
-        </td>
-      <% end %>
-    </tr>
-    <% end %>
-  </tbody>
-</table>
+<div class="logs-result">
+  <% @query.result.each do |entry| %>
+    <p>
+      <%= erb :_result_entry, locals: { entry: entry } %>
+    </p>
+  <% end %>
+</div>
 <% end %>
