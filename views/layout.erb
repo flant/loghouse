@@ -15,7 +15,7 @@
   </head>
   <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
-      <div class="container">
+      <div class="container-fluid">
         <div class="navbar-header">
           <a class="navbar-brand" href="#">Loghouse</a>
         </div>
@@ -28,15 +28,15 @@
       </div>
     </nav>
 
-    <div class="container">
+    <div class="container-fluid">
       <% unless @error.nil? %>
         <div class="alert alert-danger">
           <%= @error %>
         </div>
       <% end %>
-
-      <%= yield %>
     </div><!-- /.container -->
+
+    <%= yield %>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="<%= url('vendor/jquery-3.2.1.min.js') %>" charset="utf-8"></script>

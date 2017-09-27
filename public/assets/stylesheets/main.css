@@ -1,6 +1,6 @@
 body {
+  min-width: 1100px;
   padding-top: 70px;
-  padding-bottom: 30px;
 }
 
 .super-date-picker {
@@ -15,19 +15,65 @@ body {
   text-align: left;
 }
 
+.search-params-popover {
+  display: none;
+  position: fixed;
+  bottom: 30px;
+  margin: 0px;
+  padding: 10px 25px 10px 15px;
+  width: 40%;
+  min-width: 800px;
+}
+
+.search-params-popover.search-params-popover_active {
+  display: block;
+}
+
 .logs-result {
-  background-color: #e8e8e8;
-  font-family: monospace;
+  position: fixed;
+  top: 0px;
+  height: 100%;
+  min-height: 100%;
+  width: 100%;
+  min-width: 100%;
 }
 
-.entry-timestamp {
-  text-decoration: underline;
+.logs-result__container {
+  position: fixed;
+  top: 50px;
+  bottom: 50px;
+  padding: 15px 10px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column-reverse;
 }
 
-.entry-key {
-  font-weight: bold;
+.logs-result_default-theme {
+  font-family: monaco,monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  background: #000;
+  color: #fff;
 }
 
-.entry-value {
-  font-style: italic;
+.logs-result__entry {
+  margin-right: 2px;
+}
+
+.logs-result__entry_timestamp {
+  background: #262626;
+  color: #CD8D25;
+}
+
+.logs-result__entry_key {
+  background: #262626;
+  color: #258CCD;
+}
+
+.logs-result__entry_value {
+
+}
+
+.will-paginate-navbar .pagination {
+  margin: 8px 0 0;
 }

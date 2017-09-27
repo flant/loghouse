@@ -1,17 +1,11 @@
-<% if @to_clickhouse %>
-<p>
-  <pre>
-<%= h @to_clickhouse %>
-  </pre>
-</p>
-
-<%= will_paginate(@query, renderer: WillPaginate::Sinatra::BootstrapLinkRenderer) %>
-
-<div class="logs-result">
-  <% @query.result.each do |entry| %>
-    <p>
-      <%= erb :_result_entry, locals: { entry: entry } %>
-    </p>
-  <% end %>
+<div class="logs-result logs-result_default-theme">
+  <div class="logs-result__container">
+    <% if @to_clickhouse %>
+      <% @query.result.each do |entry| %>
+        <div>
+          <%= erb :_result_entry, locals: { entry: entry } %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
 </div>
-<% end %>

@@ -1,32 +1,34 @@
-<table class="table table-striped table-bordered">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Query</th>
-      <th>Time from</th>
-      <th>Time to</th>
-      <th>Follow</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @queries.each do |q| %>
-    <tr>
-      <% q.attributes.values_at(:name, :query, :time_from, :time_to, :follow).each do |a| %>
+<div class="container">
+  <table class="table table-striped table-bordered">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Query</th>
+        <th>Time from</th>
+        <th>Time to</th>
+        <th>Follow</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @queries.each do |q| %>
+      <tr>
+        <% q.attributes.values_at(:name, :query, :time_from, :time_to, :follow).each do |a| %>
+          <td>
+            <%=h a %>
+          </td>
+        <% end %>
         <td>
-          <%=h a %>
+          <a href="/query?query_id=<%= q.id %>" type="button" class="btn btn-default btn-sm">
+            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+          </a>
         </td>
+      </tr>
       <% end %>
-      <td>
-        <a href="/query?query_id=<%= q.id %>" type="button" class="btn btn-default btn-sm">
-          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-        </a>
-      </td>
-    </tr>
-    <% end %>
-  </tbody>
-</table>
+    </tbody>
+  </table>
 
-<button class="btn btn-danger" id="delete-queries">
-  <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Clear table
-</button>
+  <button class="btn btn-danger" id="delete-queries">
+    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Clear table
+  </button>
+</div>

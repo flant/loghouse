@@ -16,10 +16,12 @@ module Loghouse
     end
 
     get '/' do
+      @queries = LoghouseQuery.all
       erb :index
     end
 
     get '/query' do
+      @queries = LoghouseQuery.all
       @query =  if params[:query_id]
                   LoghouseQuery.find!(params[:query_id])
                 else

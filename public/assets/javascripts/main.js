@@ -28,13 +28,13 @@ function refreshPeriodTitle() {
   var quick_item = getCurrentQuickItem();
 
   if ($('#time-from').val() == '' && $('#time-to').val() == '') {
-    var new_period_title = $('.super-date-picker__period-title').data('default-title');
+    var new_period_title = $('#superDatePickerBtn').data('default-title');
   } else if (quick_item.length) {
     var new_period_title = quick_item.text();
   } else {
     var new_period_title = $('#time-from').val() + ' – ' + $('#time-to').val();
   }
-  $('.super-date-picker__period-title').text(new_period_title);
+  $('#superDatePickerBtn').attr('data-original-title', new_period_title);
 }
 
 function refreshCurrentQuickItem() {
@@ -45,7 +45,17 @@ function refreshCurrentQuickItem() {
   }
 }
 
+function closeSearchPopover(item) {
+  var popover = item.closest('.search-params-popover');
+  var popover_btn = $('[data-target="#' + popover.attr('id') + '"]');
+  popover.removeClass('search-params-popover_active');
+  popover_btn.removeClass('active');
+}
+
 $(document).ready(function() {
+
+  $('[data-toggle="tooltip"]').tooltip()
+
   $('#filter-follow').on('change', toggleFollow);
   toggleFollow();
 
@@ -66,6 +76,11 @@ $(document).ready(function() {
     }
   });
 
+  $('.search-params-btn').on('click', function() {
+    $($(this).data('target')).toggleClass('search-params-popover_active');
+    $(this).toggleClass('active');
+  });
+
   $('.super-date-picker__quick-item').on('click', function() {
     // get data
     var current_item_value_from = $(this).data('from');
@@ -77,6 +92,16 @@ $(document).ready(function() {
     refreshPeriodTitle();
     // update styles
     refreshCurrentQuickItem();
+    // close popover
+    closeSearchPopover($(this));
+  });
+
+  $('.super-date-picker__reset').on('click', function() {
+    $('#time-from').val('');
+    $('#time-to').val('');
+    refreshPeriodTitle();
+    refreshCurrentQuickItem();
+    closeSearchPopover($(this));
   });
 
   $('.input-group.date .input-group-addon').on('click', function() {
@@ -89,12 +114,4 @@ $(document).ready(function() {
 
   refreshPeriodTitle();
   refreshCurrentQuickItem();
-
-  // $('#time-from').datetimepicker({
-  //     locale: 'ru'
-  // });
-  //
-  // $('#time-to').datetimepicker({
-  //     locale: 'ru'
-  // });
 });
