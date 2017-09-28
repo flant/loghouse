@@ -45,17 +45,12 @@ function refreshCurrentQuickItem() {
   }
 }
 
-function closeSearchPopover(item) {
-  var popover = item.closest('.search-params-popover');
-  var popover_btn = $('[data-target="#' + popover.attr('id') + '"]');
-  popover.removeClass('search-params-popover_active');
-  popover_btn.removeClass('active');
-}
-
 $(document).ready(function() {
 
+  // Lib inits
   $('[data-toggle="tooltip"]').tooltip()
 
+  // Ajax magic
   $('#filter-follow').on('change', toggleFollow);
   toggleFollow();
 
@@ -76,10 +71,8 @@ $(document).ready(function() {
     }
   });
 
-  $('.search-params-btn').on('click', function() {
-    $($(this).data('target')).toggleClass('search-params-popover_active');
-    $(this).toggleClass('active');
-  });
+  // Search params
+  var search_params = new SearchParams('.search-params-btn');
 
   $('.super-date-picker__quick-item').on('click', function() {
     // get data
@@ -93,7 +86,7 @@ $(document).ready(function() {
     // update styles
     refreshCurrentQuickItem();
     // close popover
-    closeSearchPopover($(this));
+    search_params.closeAll();
   });
 
   $('.super-date-picker__reset').on('click', function() {
@@ -101,7 +94,7 @@ $(document).ready(function() {
     $('#time-to').val('');
     refreshPeriodTitle();
     refreshCurrentQuickItem();
-    closeSearchPopover($(this));
+    search_params.closeAll();
   });
 
   $('.input-group.date .input-group-addon').on('click', function() {

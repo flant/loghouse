@@ -28,13 +28,16 @@
       </div>
     </nav>
 
-    <div class="container-fluid">
-      <% unless @error.nil? %>
-        <div class="alert alert-danger">
-          <%= @error %>
-        </div>
-      <% end %>
-    </div><!-- /.container -->
+    <div class="error-container">
+      <div class="container-fluid">
+        <% unless @error.nil? %>
+          <div class="alert alert-danger alert-dismissible" role="alert">
+            <%= @error %>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          </div>
+        <% end %>
+      </div><!-- /.container -->
+    </div>
 
     <%= yield %>
 
@@ -44,6 +47,7 @@
     <script src="<%= url('vendor/bootstrap/js/bootstrap.min.js') %>" charset="utf-8"></script>
     <script src="<%= url('vendor/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js') %>" charset="utf-8"></script>
 
+    <script src="<%= url('assets/javascripts/search-params.js') %>" charset="utf-8"></script>
     <script src="<%= url('assets/javascripts/main.js') %>" charset="utf-8"></script>
   </body>
 </html>

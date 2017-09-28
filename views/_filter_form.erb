@@ -1,12 +1,6 @@
 <% if @to_clickhouse %>
   <div id="toClickhouse" class="search-params-popover">
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <p>
-          <pre><%= h @to_clickhouse %></pre>
-        </p>
-      </div>
-    </div>
+    <pre><%= h @to_clickhouse %></pre>
   </div>
 <% end %>
 
@@ -33,7 +27,7 @@
             </span>
           </div>
           <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default" data-toggle="tooltip" title="Follow">
+            <label class="btn btn-default <%= 'active' if @query && @query.follow? %>" data-toggle="tooltip" title="Follow">
               <input id="filter-follow" type="checkbox" name="follow" <%= 'checked="checked"' if @query && @query.follow? %>>
               <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
             </label>
