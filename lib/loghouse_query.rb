@@ -30,7 +30,7 @@ class LoghouseQuery
     params = {
       select: '*',
       from: LOGS_TABLE,
-      order: "#{TIMESTAMP_ATTRIBUTE} ASC",
+      order: "#{TIMESTAMP_ATTRIBUTE} DESC",
       limit: limit,
       offset: offset
     }
