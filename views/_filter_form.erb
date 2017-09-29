@@ -1,0 +1,65 @@
+<% if @to_clickhouse %>
+  <div id="toClickhouse" class="search-params-popover">
+    <pre><%= h @to_clickhouse %></pre>
+  </div>
+<% end %>
+
+<div id="queryPicker" class="search-params-popover">
+  <div class="list-group">
+    <% @queries.each do |q| %>
+    <a href="/query?query_id=<%= q.id %>" class="list-group-item">
+      <%= q.attributes[:name] %>
+    </a>
+    <% end %>
+  </div>
+</div>
+
+<nav class="navbar navbar-inverse navbar-fixed-bottom">
+  <div class="row">
+    <div class="col-xs-6">
+      <form id="filter-form" action="/query" method="get">
+        <%= erb :_super_date_picker %>
+        <div class="navbar-form">
+          <div class="input-group">
+            <input type="text" class="form-control" id="query" placeholder="Query..." name='query' size="60" value="<%= h @query.attributes[:query] if @query %>">
+            <span class="input-group-btn">
+              <button type="submit" class="btn btn-primary">Send</button>
+            </span>
+          </div>
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default <%= 'active' if @query && @query.follow? %>" data-toggle="tooltip" title="Follow">
+              <input id="filter-follow" type="checkbox" name="follow" <%= 'checked="checked"' if @query && @query.follow? %>>
+              <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
+            </label>
+          </div>
+          <div class="form-group">
+            <a class="btn btn-default search-params-btn" id="superDatePickerBtn" role="button" data-target="#superDatePicker" data-toggle="tooltip" data-default-title="Period" data-original-title="Period">
+              <span class="glyphicon glyphicon-time" aria-hidden="true"></span>
+              <span class="super-date-picker__period-title"></span>
+            </a>
+          </div>
+          <div class="form-group" data-toggle="tooltip" title="Show clickhouse info">
+            <a class="btn btn-default <% if @to_clickhouse %>search-params-btn<% else %>disabled<% end %>" role="button" data-target="#toClickhouse">
+              <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+            </a>
+          </div>
+          <button type="button" class="btn btn-default search-params-btn" data-toggle="tooltip" title="Load query" role="button" data-target="#queryPicker">
+            <span class="glyphicon glyphicon glyphicon-th-list" aria-hidden="true"></span>
+          </button>
+          <% if @query %>
+            <button type="button" class="btn btn-default" id="save-query" data-toggle="tooltip" title="Save query">
+              <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+            </button>
+          <% end %>
+        </div>
+      </form>
+    </div>
+    <div class="col-xs-6">
+      <div class="will-paginate-navbar">
+        <% if @to_clickhouse %>
+          <%= will_paginate(@query, renderer: WillPaginate::Sinatra::BootstrapLinkRenderer) %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</nav>
