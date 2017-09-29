@@ -8,7 +8,7 @@ class LoghouseQuery
     alias :current_page :page
 
     def per_page
-      @per_page || 10
+      @per_page || 50
     end
     alias :limit :per_page
 

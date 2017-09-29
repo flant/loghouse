@@ -108,4 +108,12 @@ $(document).ready(function() {
 
   refreshPeriodTitle();
   refreshCurrentQuickItem();
+
+  // Auto-pagination
+  var paginatable_element = $('.logs-result__container');
+	paginatable_element.scroll(function() {
+		if (paginatable_element.scrollTop() == 0) {
+      // TODO
+		}
+	});
 });

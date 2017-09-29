@@ -13,3 +13,7 @@ body {
   top: 60px;
   z-index: 2000;
 }
+
+.table-queries pre {
+  margin-bottom: 0px;
+}

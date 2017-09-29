@@ -4,10 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
     <title>Loghouse</title>
 
-    <!-- Bootstrap -->
     <link href="<%= url('vendor/bootstrap/css/bootstrap.min.css') %>" rel="stylesheet" type="text/css" />
     <link href="<%= url('vendor/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css') %>" rel="stylesheet" type="text/css" />
 
@@ -21,14 +20,14 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
-          <a class="navbar-brand" href="#">Loghouse</a>
+          <a class="navbar-brand" href="/">Loghouse</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li <%= 'class="active"' if @tab.blank? %>><a href="/">Home</a></li>
-            <li <%= 'class="active"' if @tab == :queries %>><a href="/queries">Queries</a></li>
+            <li <%= 'class="active"' if @tab.blank? %>><a href="/">Monitor</a></li>
+            <li <%= 'class="active"' if @tab == :queries %>><a href="/queries">Manage queries</a></li>
           </ul>
-        </div><!--/.nav-collapse -->
+        </div>
       </div>
     </nav>
 
@@ -40,12 +39,11 @@
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
           </div>
         <% end %>
-      </div><!-- /.container -->
+      </div>
     </div>
 
     <%= yield %>
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="<%= url('vendor/jquery-3.2.1.min.js') %>" charset="utf-8"></script>
     <script src="<%= url('vendor/moment-with-locales.min.js') %>" charset="utf-8"></script>
     <script src="<%= url('vendor/bootstrap/js/bootstrap.min.js') %>" charset="utf-8"></script>
