@@ -1,0 +1,11 @@
+.super-date-picker {
+  margin: 10px 0;
+}
+
+.super-date-picker__quick-item-group {
+  width: 100% !important;
+}
+
+.super-date-picker__quick-item-group .super-date-picker__quick-item {
+  text-align: left;
+}

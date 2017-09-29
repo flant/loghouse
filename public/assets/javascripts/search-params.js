@@ -16,14 +16,29 @@ function SearchParams(btn_selector) {
 
 SearchParams.prototype.initEvents = function() {
   var search_params = this;
+  $(document).click( function() {
+      search_params.closeAll();
+  });
+  $(document).keyup(function(e) {
+    if (e.keyCode == 27) {
+      search_params.closeAll();
+    }
+  });
+  $(document).on('click', function() {
+    event.stopPropagation();
+  });
   $.each(this.params, function(key, param) {
     param.btn.on('click', function() {
+      event.stopPropagation();
       if (param.is_open) {
         param.close();
       } else {
         search_params.closeAll();
         param.open();
       }
+    });
+    param.popover.on('click', function() {
+      event.stopPropagation();
     });
   });
 }
@@ -39,7 +54,7 @@ function SearchParam(selector) {
   this.btn = $('[data-target="#' + this.popover.attr('id') + '"]');
   this.is_open = false;
   this._popover_active_class = 'search-params-popover_active';
-  this._btn_active_class = 'search-params-popover_active';
+  this._btn_active_class = 'active';
 }
 
 SearchParam.prototype.close = function() {

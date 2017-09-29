@@ -34,14 +34,15 @@ function refreshPeriodTitle() {
   } else {
     var new_period_title = $('#time-from').val() + ' – ' + $('#time-to').val();
   }
-  $('#superDatePickerBtn').attr('data-original-title', new_period_title);
+  //$('#superDatePickerBtn').attr('data-original-title', new_period_title);
+  $('.super-date-picker__period-title').text(new_period_title);
 }
 
 function refreshCurrentQuickItem() {
   var quick_item = getCurrentQuickItem();
   if (quick_item.length) {
-    $('.super-date-picker__quick-item').removeClass('btn-primary').removeClass('active').addClass('btn-default');
-    $(quick_item).removeClass('btn-default').addClass('btn-primary').addClass('active');
+    $('.super-date-picker__quick-item').removeClass('btn-success').removeClass('btn-inverse').removeClass('active').addClass('btn-default');
+    $(quick_item).removeClass('btn-default').addClass('btn-success').addClass('btn-inverse').addClass('active');
   }
 }
 
