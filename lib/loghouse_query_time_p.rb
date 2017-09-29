@@ -6,7 +6,7 @@ class LoghouseQueryTimeP < Parslet::Parser
     now >>
     str('-') >>
     match['\d+'].repeat(1).as(:count) >>
-    match['mdhw'].as(:type)
+    match['mdhwMy'].as(:type)
   end
 
   rule(:time) { from_now.as(:from_now) | now.as(:now) }
@@ -29,6 +29,10 @@ class LoghouseQueryTimeP < Parslet::Parser
                           'days'
                         when 'w'
                           'weeks'
+                        when 'M'
+                          'months'
+                        when 'y'
+                          'years'
                         end
                 parsed[:from_now][:count].to_i.send(type).ago
               end
