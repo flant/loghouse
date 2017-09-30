@@ -25,15 +25,14 @@
 
 .logs-result__container::before, .logs-result__container::after {
   content: 'Loading...';
-  color: #999;
+  color: #000;
   height: 25px;
   line-height: 25px;
   animation: blink 1s step-start 0s infinite;
-  opacity: 0;
 }
 
 .logs-result__container.logs-result__container_loading-newer::before, .logs-result__container.logs-result__container_loading-older::after {
-  opacity: 1;
+  color: #999;
 }
 
 .logs-result_default-theme {
@@ -48,16 +47,22 @@
   margin-right: 2px;
 }
 
-.logs-result__entry_timestamp {
+.logs-result__entry-timestamp {
   background: #262626;
   color: #CD8D25;
 }
 
-.logs-result__entry_key {
+.logs-result__entry-key {
   background: #262626;
   color: #258CCD;
 }
 
-.logs-result__entry_value {
+.logs-result__entry-value {
 
+}
+
+.logs-result__breakpoint {
+  background: #262626;
+  color: #CCCCCC;
+  margin: 10px 0;
 }

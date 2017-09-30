@@ -20,7 +20,7 @@ module Loghouse
     end
 
     get '/query' do
-      @queries = LoghouseQuery.all
+      @queries = LoghouseQuery.all.first(10)
       @query =  if params[:query_id]
                   LoghouseQuery.find!(params[:query_id])
                 else

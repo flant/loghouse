@@ -1,5 +1,10 @@
-function queryOlder(timestamp) {
+function commonTimestamp() {
+  return moment().format('YYYY-MM-DD HH:mm:ss');
+}
+
+function queryOlder() {
   if (window.query_older_is_loading != true) {
+    console.log(commonTimestamp() + ' Started loading older entries.');
     window.query_older_is_loading = true;
     var $resultContainer = $('.logs-result__container');
     var oldest = $resultContainer.data('entry-oldest');
@@ -12,9 +17,15 @@ function queryOlder(timestamp) {
       url: '/query',
       data: data,
       success: function (res) {
-        $resultContainer.append(res);
-        oldest = $resultContainer.find('div:last-child .logs-result__entry_timestamp').text();
-        $resultContainer.data('entry-oldest', oldest);
+        if (res != '') {
+          console.log(commonTimestamp() + ' Loaded older entries to monitor.');
+          $resultContainer.append(res);
+          oldest = $resultContainer.find('div:last-child .logs-result__entry-timestamp').text();
+          $resultContainer.data('entry-oldest', oldest);
+        } else {
+          console.log(commonTimestamp() + ' No more older entries.');
+          $resultContainer.append('<div class="logs-result__breakpoint">--- END ---</div>');
+        }
         $resultContainer.removeClass('logs-result__container_loading-older');
         window.query_older_is_loading = false;
       }
@@ -36,28 +47,40 @@ function queryNewer() {
       url: '/query',
       data: data,
       success: function (res) {
-        $resultContainer.prepend(res);
-        newest = $resultContainer.find('div:last-child .logs-result__entry_timestamp').text();
-        $resultContainer.data('entry-newest', newest);
+        if (res != '') {
+          console.log(commonTimestamp() + ' Loaded new entries to monitor.');
+          $resultContainer.prepend(res);
+          newest = $resultContainer.find('div:first-child .logs-result__entry-timestamp').text();
+          $resultContainer.data('entry-newest', newest);
+        } else {
+          console.log(commonTimestamp() + ' Monitor is up to date.');
+        }
         $resultContainer.removeClass('logs-result__container_loading-newer');
-        window.query_newest_is_loading = false;
+        window.query_newer_is_loading = false;
       }
     });
   }
 }
 
 function queryNewerPlay() {
-  if (window.followInterval) {
-    clearInterval(window.followInterval);
+  if (window.newerInterval) {
+    clearInterval(window.newerInterval);
   }
   queryNewer();
-  window.followInterval = setInterval(function () {
+  window.newerInterval = setInterval(function () {
     queryNewer();
   }, 5000);
+  console.log(commonTimestamp() + ' Started auto-update.');
 }
 
 function queryNewerPause() {
-  clearInterval(window.followInterval);
+  clearInterval(window.newerInterval);
+  console.log(commonTimestamp() + ' Paused auto-update.');
+}
+
+function addBreakpoint() {
+  var $resultContainer = $('.logs-result__container');
+  $resultContainer.prepend('<div class="logs-result__breakpoint">--- Breakpoint at ' + commonTimestamp() + ' ---</div>');
 }
 
 function getCurrentQuickItem() {
@@ -91,34 +114,9 @@ $(document).ready(function() {
   // Lib inits
   $('[data-toggle="tooltip"]').tooltip();
 
+  // Save query
   $('#save-query').on('click', function() {
-    console.log("aaa/queries/new?" + $('#filter-form').serialize());
     window.location.href = "/queries/new?" + $('#filter-form').serialize();
-  });
-
-  $('#delete-queries').on('click', function() {
-    if (confirm("Really?")) {
-      $.ajax({
-        url: 'queries',
-        type: "DELETE",
-        success: function() {
-          location.reload();
-        }
-      });
-    }
-  });
-
-  $('.delete-query').on('click', function() {
-    if (confirm("Really?")) {
-      id = $(this).data('id');
-      $.ajax({
-        url: 'queries/' + id,
-        type: "DELETE",
-        success: function() {
-          location.reload();
-        }
-      });
-    }
   });
 
   // Search params
@@ -159,7 +157,6 @@ $(document).ready(function() {
   refreshCurrentQuickItem();
 
   // Play/pause
-
   var $playBtn = $('#playBtn');
   var $pauseBtn = $('#pauseBtn');
 
@@ -175,6 +172,13 @@ $(document).ready(function() {
     queryNewerPause();
   });
 
+  // Breakpoint
+  var $breakpointBtn = $('#breakpointBtn');
+
+  $breakpointBtn.on('click', function() {
+    addBreakpoint();
+  });
+
   // Infinite scroll
   var paginatable_element = $('.logs-result__container');
 	paginatable_element.scroll(function() {
@@ -182,4 +186,53 @@ $(document).ready(function() {
       queryOlder();
 		}
 	});
+
+  // Manage queries
+  $('#delete-queries').on('click', function() {
+    if (confirm("Are you sure?")) {
+      $.ajax({
+        url: 'queries',
+        type: "DELETE",
+        success: function() {
+          location.reload();
+        }
+      });
+    }
+  });
+
+  $('.delete-query').on('click', function() {
+    if (confirm("Are you sure?")) {
+      id = $(this).data('id');
+      $.ajax({
+        url: 'queries/' + id,
+        type: "DELETE",
+        success: function() {
+          location.reload();
+        }
+      });
+    }
+  });
+
+  if($('.sortable-queries').length) {
+    sortable('.sortable-queries', {
+      items: 'tr',
+      handle: '.sortable-handle',
+      placeholder: "<tr><td colspan=\"7\" align=\"center\">Query will be moved here</tr>",
+      forcePlaceholderSize: false
+    });
+
+    sortable('.sortable-queries')[0].addEventListener('sortstop', function(e) {
+      var new_order = [];
+      $('.sortable-queries tr').each(function() {
+        new_order.push($(this).data('query-id'));
+      });
+      $.ajax({
+        url: '/queries/update_order',
+        dataType: 'json',
+        data: {'new_order': JSON.stringify(new_order)},
+        type: 'PUT'
+      });
+    });
+  }
+
 });

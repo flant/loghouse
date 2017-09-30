@@ -13,9 +13,9 @@
     <div class="panel-body">
       <div class="list-group">
         <% @queries.each do |q| %>
-        <a href="/query?query_id=<%= q.id %>" class="list-group-item">
-          <%= q.attributes[:name] %>
-        </a>
+          <a href="/query?query_id=<%= q.id %>" class="list-group-item">
+            <%= q.attributes[:name] %>
+          </a>
         <% end %>
       </div>
     </div>
@@ -38,19 +38,22 @@
             <a role="button" class="btn btn-link btn-link-alt<% if !@query %> disabled<% end %>" <% if @query %> id="save-query"<% end %>><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></a>
           </div>
           <div class="form-group" data-toggle="tooltip" title="Load query">
-            <a role="button" class="btn btn-link btn-link-alt search-params-btn" role="button" data-target="#queryPicker"><span class="glyphicon glyphicon glyphicon-th-list" aria-hidden="true"></span></a>
+            <a role="button" class="btn btn-link btn-link-alt search-params-btn<% if (@queries.length == 0) %> disabled<% end %>" role="button" data-target="#queryPicker"><span class="glyphicon glyphicon glyphicon-th-list" aria-hidden="true"></span></a>
           </div>
           <div class="form-group" data-toggle="tooltip" title="Show clickhouse info">
             <a class="btn btn-link btn-link-alt <% if @to_clickhouse %>search-params-btn<% else %>disabled<% end %>" role="button" data-target="#toClickhouse"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
           </div>
           <div class="form-group">
-            <a class="btn btn-link btn-link-alt search-params-btn" id="superDatePickerBtn" role="button" data-target="#superDatePicker" data-toggle="tooltip" data-default-title="" data-original-title="Period"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> <span class="super-date-picker__period-title"></span></a>
+            <a class="btn btn-link btn-link-alt search-params-btn" id="superDatePickerBtn" role="button" data-target="#superDatePicker" data-toggle="tooltip" data-default-title="" data-original-title="Set period"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> <span class="super-date-picker__period-title"></span></a>
           </div>
         </div>
       </form>
     </div>
     <div class="col-xs-4" align="right">
       <div class="navbar-form">
+        <div class="form-group" data-toggle="tooltip" title="Add breakpoint">
+          <a role="button" class="btn btn-link btn-link-alt" id="breakpointBtn"><span class="glyphicon glyphicon-eject" aria-hidden="true"></span></a>
+        </div>
         <div class="form-group" data-toggle="tooltip" title="Play">
           <a role="button" class="btn btn-link btn-link-alt" id="playBtn"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
         </div>
