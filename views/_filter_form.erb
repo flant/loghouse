@@ -24,7 +24,7 @@
 
 <nav class="navbar navbar-inverse navbar-fixed-bottom">
   <div class="row">
-    <div class="col-xs-6">
+    <div class="col-xs-8">
       <form id="filter-form" action="/query" method="get">
         <%= erb :_super_date_picker %>
         <div class="navbar-form">
@@ -43,14 +43,21 @@
           <div class="form-group" data-toggle="tooltip" title="Show clickhouse info">
             <a class="btn btn-link btn-link-alt <% if @to_clickhouse %>search-params-btn<% else %>disabled<% end %>" role="button" data-target="#toClickhouse"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
           </div>
-          <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-link btn-link-alt <%= 'active' if follow? %>" data-toggle="tooltip" title="Follow"><input id="filter-follow" type="checkbox" name="follow" <%= 'checked="checked"' if follow? %>><span class="glyphicon glyphicon-retweet" aria-hidden="true"></span></label>
-          </div>
           <div class="form-group">
             <a class="btn btn-link btn-link-alt search-params-btn" id="superDatePickerBtn" role="button" data-target="#superDatePicker" data-toggle="tooltip" data-default-title="" data-original-title="Period"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> <span class="super-date-picker__period-title"></span></a>
           </div>
         </div>
       </form>
+    </div>
+    <div class="col-xs-4" align="right">
+      <div class="navbar-form">
+        <div class="form-group" data-toggle="tooltip" title="Play">
+          <a role="button" class="btn btn-link btn-link-alt" id="playBtn"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
+        </div>
+        <div class="form-group" data-toggle="tooltip" title="Pause">
+          <a role="button" class="btn btn-link btn-link-alt disabled" id="pauseBtn"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span></a>
+        </div>
+      </div>
     </div>
   </div>
 </nav>

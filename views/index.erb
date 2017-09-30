@@ -1,4 +1,12 @@
 <div id="result">
-  <%= erb :_result %>
+  <div class="logs-result logs-result_default-theme">
+  <% if @to_clickhouse %>
+    <div class="logs-result__container"
+      data-entry-oldest='<%= @query.result.last.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") %>'
+      data-entry-newest='<%= @query.result.first.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") %>'>
+        <%= erb :_result %>
+      </div>
+    </div>
+  <% end %>
 </div>
 <%= erb :_filter_form %>

@@ -11,10 +11,29 @@
   position: fixed;
   top: 50px;
   bottom: 50px;
-  padding: 15px 10px;
+  padding: 0 10px;
   overflow: auto;
   display: flex;
   flex-direction: column-reverse;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.0;
+  }
+}
+
+.logs-result__container::before, .logs-result__container::after {
+  content: 'Loading...';
+  color: #999;
+  height: 25px;
+  line-height: 25px;
+  animation: blink 1s step-start 0s infinite;
+  opacity: 0;
+}
+
+.logs-result__container.logs-result__container_loading-newer::before, .logs-result__container.logs-result__container_loading-older::after {
+  opacity: 1;
 }
 
 .logs-result_default-theme {
