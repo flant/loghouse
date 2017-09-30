@@ -26,7 +26,13 @@
   <div class="row">
     <div class="col-xs-8">
       <form id="filter-form" action="/query" method="get">
-        <%= erb :_super_date_picker %>
+        <div id="superDatePicker" class="search-params-popover">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <%= erb :_super_date_picker %>
+            </div>
+          </div>
+        </div>
         <div class="navbar-form">
           <div class="input-group">
             <input type="text" class="form-control" id="query" placeholder="Query..." name='query' size="60" value="<%= h @query.attributes[:query] if @query %>">

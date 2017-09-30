@@ -1,4 +1,10 @@
 <div class="container-fluid">
+  <% unless @error.nil? %>
+    <div class="alert alert-danger alert-dismissible" role="alert">
+      <%= @error %>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    </div>
+  <% end %>
   <div class="row">
     <div class="col-lg-6">
       <h2>Add query</h2>
@@ -11,30 +17,7 @@
           <label for="query" class="control-label">Query</label>
           <input type="text" class="form-control" id="query" name="query" value="<%= @query.attributes[:query] %>">
         </div>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="form-group">
-              <label for="time_from" class="control-label">Time from</label>
-              <div class="input-group date">
-                  <input type="text" class="form-control" id="time_from" name="time_from" size="10" value="<%= @query.attributes[:time_from] %>">
-                  <span class="input-group-addon">
-                      <span class="glyphicon glyphicon-calendar"></span>
-                  </span>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-group">
-              <label for="time_to" class="control-label">Time to</label>
-              <div class="input-group date">
-                  <input type="text" class="form-control" id="time_to" name="time_to" size="10" value="<%= @query.attributes[:time_to] %>">
-                  <span class="input-group-addon">
-                      <span class="glyphicon glyphicon-calendar"></span>
-                  </span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <%= erb :_super_date_picker %>       
         <div class="form-group">
           <button type="submit" class="btn btn-primary">Add</button>
         </div>
