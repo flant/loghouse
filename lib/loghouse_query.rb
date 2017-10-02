@@ -8,8 +8,9 @@ class LoghouseQuery
   include Storable
   include Pagination
 
-  LOGS_TABLE          = ENV.fetch('CLICKHOUSE_LOGS_TABLE') { 'logs6' }
+  LOGS_TABLE          = ENV.fetch('CLICKHOUSE_LOGS_TABLE')          { 'logs6' }
   TIMESTAMP_ATTRIBUTE = ENV.fetch('CLICKHOUSE_TIMESTAMP_ATTRIBUTE') { 'timestamp' }
+  NSEC_ATTRIBUTE      = ENV.fetch('CLICKHOUSE_NSEC_ATTRIBUTE')      { 'nsec' }
 
   attr_accessor :attributes
 
@@ -22,17 +23,16 @@ class LoghouseQuery
     attributes[:id]
   end
 
-  def follow?
-    attributes[:follow] == 1
+  def order_by
+    [attributes[:order_by], "#{TIMESTAMP_ATTRIBUTE} DESC", "#{NSEC_ATTRIBUTE} DESC"].compact.join(', ')
   end
 
   def to_clickhouse
     params = {
       select: '*',
       from: LOGS_TABLE,
-      order: "#{TIMESTAMP_ATTRIBUTE} DESC",
-      limit: limit,
-      offset: offset
+      order: order_by,
+      limit: limit
     }
     if (where = to_clickhouse_where)
       params[:where] = where
@@ -45,9 +45,17 @@ class LoghouseQuery
     @result ||= LogEntry.from_result_set Clickhouse.connection.select_rows(to_clickhouse)
   end
 
+  def validate!
+    to_clickhouse # sort of validation: will fail if queries is not correct
+
+    super
+  end
+
   protected
 
   def to_clickhouse_time(time)
+    time = Time.zone.parse(time) if time.is_a? String
+
     "toDateTime('#{time.utc.strftime('%Y-%m-%d %H:%M:%S')}')"
   end
 
@@ -57,6 +65,9 @@ class LoghouseQuery
 
     where_parts << "#{TIMESTAMP_ATTRIBUTE} >= #{to_clickhouse_time parsed_time_from}" if parsed_time_from
     where_parts << "#{TIMESTAMP_ATTRIBUTE} <= #{to_clickhouse_time parsed_time_to}" if parsed_time_to
+
+    where_parts << to_clickhouse_pagination_where
+    where_parts.compact!
 
     return if where_parts.blank?
 

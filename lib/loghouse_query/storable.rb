@@ -21,13 +21,27 @@ class LoghouseQuery
           t.string       :query
           t.string       :time_from
           t.string       :time_to
-          t.uint8        :follow
+          t.uint8        :position
           t.engine       "TinyLog"
         end
       end
 
-      def all
-        Clickhouse.connection.select_rows(select: '*', from: QUERIES_TABLE).map { |r| build_from_row r }
+      def count(params = {})
+        params.merge!({
+          from: QUERIES_TABLE
+        })
+
+        Clickhouse.connection.count(params)
+      end
+
+      def all(params = {})
+        params.merge!({
+          select: '*',
+          from: QUERIES_TABLE,
+          order: 'position ASC'
+        })
+
+        Clickhouse.connection.select_rows(params).map { |r| build_from_row r }
       end
 
       def find(id)
@@ -40,11 +54,31 @@ class LoghouseQuery
         find(id) || raise(NotFound.new("Record with id='#{id} not found!'"))
       end
 
+      def update_order!(new_order)
+        all_queries = self.all
+
+        all_queries.each do |q|
+          q.attributes[:position] = new_order.index(q.id)
+        end
+
+        create_table!(true)
+        all_queries.each(&:save!)
+      end
+
       protected
 
       def build_from_row(row)
-        new id: row[0], name: row[1], query: row[2], time_from: row[3], time_to: row[4], follow: row[5]
+        new id: row[0], name: row[1], query: row[2], time_from: row[3], time_to: row[4], position: row[5]
       end
+    end
+
+    def destroy!
+      all_queries = self.class.all
+      all_queries.reject!{ |q| q.id == id }
+
+      self.class.create_table!(true)
+
+      all_queries.each(&:save!)
     end
 
     def save!
@@ -58,7 +92,7 @@ class LoghouseQuery
         query:     nil,
         time_from: nil,
         time_to:   nil,
-        follow:    0
+        position:  self.class.count
       } # Trick for all-attributes-hash in correct order in insert
 
       Clickhouse.connection.insert_rows QUERIES_TABLE do |rows|

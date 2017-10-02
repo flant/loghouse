@@ -72,6 +72,19 @@ $(document).ready(function() {
     }
   });
 
+  $('.delete-query').on('click', function() {
+    if (confirm("Really?")) {
+      id = $(this).data('id');
+      $.ajax({
+        url: 'queries/' + id,
+        type: "DELETE",
+        success: function() {
+          location.reload();
+        }
+      });
+    }
+  });
+
   // Search params
   var search_params = new SearchParams('.search-params-btn');
 

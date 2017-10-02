@@ -16,8 +16,7 @@ module Loghouse
     end
 
     get '/' do
-      @queries = LoghouseQuery.all
-      erb :index
+      redirect '/query'
     end
 
     get '/query' do
@@ -29,7 +28,7 @@ module Loghouse
                 end
 
       begin
-        @query.paginate(page: params[:page], per_page: params[:per_page])
+        @query.paginate(newer_than: params[:newer_than], older_than: params[:older_than], per_page: params[:per_page])
         @to_clickhouse = @query.to_clickhouse
       rescue LoghouseQuery::BadFormat => e
         @error = "Bad query format: #{e}"
@@ -63,9 +62,26 @@ module Loghouse
     post '/queries' do
       @query = query_from_params
 
-      @query.save!
+      begin
+        @query.save!
 
-      redirect '/queries'
+        return redirect '/queries'
+      rescue LoghouseQuery::BadFormat => e
+        @error = "Bad query format: #{e}"
+      rescue LoghouseQuery::BadTimeFormat => e
+        @error = "Bad time format: #{e}"
+      rescue LoghouseQuery::Storable::NotValid => e
+        @error = "Validation failed: #{e}"
+      end
+
+      erb :'queries/new'
+    end
+
+    delete '/queries/:query_id' do
+      query = LoghouseQuery.find!(params[:query_id])
+      query.destroy!
+
+      body ''
     end
 
     delete '/queries' do
@@ -74,9 +90,20 @@ module Loghouse
       body ''
     end
 
+    put '/queries/update_order' do
+      new_order = JSON.parse(params[:new_order])
+      LoghouseQuery.update_order!(new_order)
+
+      body ''
+    end
+
     helpers do
       def h(text)
         Rack::Utils.escape_html(text)
+      end
+
+      def follow?
+        params[:follow] == 'on'
       end
     end
 
@@ -84,8 +111,7 @@ module Loghouse
 
     def query_from_params
       LoghouseQuery.new(name: params[:name], query: params[:query].to_s,
-                        time_from: params[:time_from], time_to: params[:time_to],
-                        follow: (params[:follow] == 'on') ? 1 : 0)
+                        time_from: params[:time_from], time_to: params[:time_to])
     end
   end
 end

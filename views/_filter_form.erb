@@ -44,20 +44,13 @@
             <a class="btn btn-link btn-link-alt <% if @to_clickhouse %>search-params-btn<% else %>disabled<% end %>" role="button" data-target="#toClickhouse"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
           </div>
           <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-link btn-link-alt <%= 'active' if @query && @query.follow? %>" data-toggle="tooltip" title="Follow"><input id="filter-follow" type="checkbox" name="follow" <%= 'checked="checked"' if @query && @query.follow? %>><span class="glyphicon glyphicon-retweet" aria-hidden="true"></span></label>
+            <label class="btn btn-link btn-link-alt <%= 'active' if follow? %>" data-toggle="tooltip" title="Follow"><input id="filter-follow" type="checkbox" name="follow" <%= 'checked="checked"' if follow? %>><span class="glyphicon glyphicon-retweet" aria-hidden="true"></span></label>
           </div>
           <div class="form-group">
             <a class="btn btn-link btn-link-alt search-params-btn" id="superDatePickerBtn" role="button" data-target="#superDatePicker" data-toggle="tooltip" data-default-title="" data-original-title="Period"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> <span class="super-date-picker__period-title"></span></a>
           </div>
         </div>
       </form>
-    </div>
-    <div class="col-xs-6">
-      <div class="will-paginate-navbar">
-        <% if @to_clickhouse %>
-          <%= will_paginate(@query, renderer: WillPaginate::Sinatra::BootstrapLinkRenderer) %>
-        <% end %>
-      </div>
     </div>
   </div>
 </nav>

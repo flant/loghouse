@@ -28,7 +28,6 @@
               <th>From</th>
               <th>To</th>
               <th></th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -52,12 +51,9 @@
                 <%= h q.attributes[:time_to] %>
               </td>
               <td>
-                <% if q.attributes[:follow] == 1 %><span class="label label-default">follow</span><% end %>
-              </td>
-              <td>
-                <a href="#" type="button" class="btn btn-danger btn-xs">
+                <button class="btn btn-danger btn-xs delete-query" data-id="<%= q.id %>">
                   <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-                </a>
+                </button>
               </td>
             </tr>
             <% end %>
