@@ -86,17 +86,10 @@ class LoghouseQuery
 
       return false unless self.class.find(id).blank?
 
-      all_attrs = {
-        id:        nil,
-        name:      nil,
-        query:     nil,
-        time_from: nil,
-        time_to:   nil,
-        position:  self.class.count
-      } # Trick for all-attributes-hash in correct order in insert
+      attributes[:position] ||= self.class.count
 
       Clickhouse.connection.insert_rows QUERIES_TABLE do |rows|
-        rows << all_attrs.merge(attributes)
+        rows << attributes
       end
     end
 

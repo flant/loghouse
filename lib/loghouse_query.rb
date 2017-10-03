@@ -12,10 +12,23 @@ class LoghouseQuery
   TIMESTAMP_ATTRIBUTE = ENV.fetch('CLICKHOUSE_TIMESTAMP_ATTRIBUTE') { 'timestamp' }
   NSEC_ATTRIBUTE      = ENV.fetch('CLICKHOUSE_NSEC_ATTRIBUTE')      { 'nsec' }
 
+  DEFAULTS = {
+    id:        nil,
+    name:      nil,
+    query:     nil,
+    time_from: 'now-7d',
+    time_to:   'now',
+    position:  nil
+  } # Trick for all-attributes-hash in correct order in insert
+
   attr_accessor :attributes
 
   def initialize(attrs = {})
-    @attributes = attrs.symbolize_keys
+    attrs.symbolize_keys!
+    @attributes = DEFAULTS.dup
+    @attributes.each do |k, v|
+      @attributes[k] = attrs[k] if attrs[k].present?
+    end
     @attributes[:id] ||= SecureRandom.uuid
   end
 
