@@ -81,20 +81,21 @@ module Loghouse
       query = LoghouseQuery.find!(params[:query_id])
       query.destroy!
 
-      body ''
+      ''
     end
 
     delete '/queries' do
       LoghouseQuery.create_table!(true)
 
-      body ''
+      ''
     end
 
     put '/queries/update_order' do
       new_order = JSON.parse(params[:new_order])
       LoghouseQuery.update_order!(new_order)
 
-      body ''
+      content_type :json
+      { status: :ok }.to_json
     end
 
     helpers do
