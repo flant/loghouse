@@ -7,7 +7,7 @@ body {
   margin: 8px 0 0; /* TODO: Remove */
 }
 
-.error-container {
+.error-container_fixed {
   position: fixed;
   width: 100%;
   top: 60px;

@@ -2,6 +2,11 @@ function commonTimestamp() {
   return moment().format('YYYY-MM-DD HH:mm:ss');
 }
 
+function commonShowError(text) {
+  var $errorContainer = $('.error-container .error-container__content');
+  $errorContainer.append("<div class=\"alert alert-danger alert-dismissible\" role=\"alert\">" + text + "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button></div>")
+}
+
 function queryOlder() {
   if (window.query_older_is_loading != true) {
     console.log(commonTimestamp() + ' Started loading older entries.');
@@ -26,6 +31,13 @@ function queryOlder() {
           console.log(commonTimestamp() + ' No more older entries.');
           $resultContainer.append('<div class="logs-result__breakpoint">--- END ---</div>');
         }
+        $resultContainer.removeClass('logs-result__container_loading-older');
+        window.query_older_is_loading = false;
+      },
+      error: function(res) {
+        commonShowError('Something went wrong during loading older entries. Error log available at console.');
+        console.log(commonTimestamp() + ' Something went wrong during loading older entries:');
+        console.log(res);
         $resultContainer.removeClass('logs-result__container_loading-older');
         window.query_older_is_loading = false;
       }
@@ -55,6 +67,13 @@ function queryNewer() {
         } else {
           console.log(commonTimestamp() + ' Monitor is up to date.');
         }
+        $resultContainer.removeClass('logs-result__container_loading-newer');
+        window.query_newer_is_loading = false;
+      },
+      error: function(res) {
+        commonShowError('Something went wrong during loading newer entries. Error log available at console.');
+        console.log(commonTimestamp() + ' Something went wrong during loading newer entries:');
+        console.log(res);
         $resultContainer.removeClass('logs-result__container_loading-newer');
         window.query_newer_is_loading = false;
       }
@@ -195,6 +214,11 @@ $(document).ready(function() {
         type: "DELETE",
         success: function() {
           location.reload();
+        },
+        error: function(res) {
+          commonShowError('Something went wrong during deleting all queries. Error log available at console.');
+          console.log(commonTimestamp() + ' Something went wrong during deleting all queries:');
+          console.log(res);
         }
       });
     }
@@ -208,6 +232,11 @@ $(document).ready(function() {
         type: "DELETE",
         success: function() {
           location.reload();
+        },
+        error: function(res) {
+          commonShowError('Something went wrong during deleting query. Error log available at console.');
+          console.log(commonTimestamp() + ' Something went wrong during deleting query:');
+          console.log(res);
         }
       });
     }
@@ -229,8 +258,13 @@ $(document).ready(function() {
       $.ajax({
         url: '/queries/update_order',
         dataType: 'json',
-        data: {'new_order': JSON.stringify(new_order)},
-        type: 'PUT'
+        data: {'new_order': JSON.stringify(new_order) + 1},
+        type: 'PUT',
+        error: function(res) {
+          commonShowError('Something went wrong during sorting queries. Error log available at console.');
+          console.log(commonTimestamp() + ' Something went wrong during sorting queries:');
+          console.log(res);
+        }
       });
     });
   }
