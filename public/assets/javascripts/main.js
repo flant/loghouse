@@ -258,7 +258,7 @@ $(document).ready(function() {
       $.ajax({
         url: '/queries/update_order',
         dataType: 'json',
-        data: {'new_order': JSON.stringify(new_order) + 1},
+        data: {'new_order': JSON.stringify(new_order)},
         type: 'PUT',
         error: function(res) {
           commonShowError('Something went wrong during sorting queries. Error log available at console.');
