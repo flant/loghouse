@@ -260,6 +260,9 @@ $(document).ready(function() {
         dataType: 'json',
         data: {'new_order': JSON.stringify(new_order)},
         type: 'PUT',
+        success: function(res) {
+          console.log(commonTimestamp() + ' Updated queries order.');
+        },
         error: function(res) {
           commonShowError('Something went wrong during sorting queries. Error log available at console.');
           console.log(commonTimestamp() + ' Something went wrong during sorting queries:');
