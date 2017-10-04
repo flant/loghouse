@@ -7,6 +7,7 @@ gem 'puma'
 gem 'clickhouse', github: 'archan937/clickhouse'
 gem 'parslet'
 gem 'activesupport'
+gem 'json'
 
 gem 'will_paginate'
 

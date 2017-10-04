@@ -1,37 +1,39 @@
 class LoghouseQuery
   module Pagination
-    attr_reader :page, :per_page
-
-    def page
-      @page || 1
-    end
-    alias :current_page :page
+    attr_reader :per_page, :older_than, :newer_than
 
     def per_page
-      @per_page || 10
+      @per_page || 50
     end
     alias :limit :per_page
 
-    def total_entries
-      @total_entries ||= Clickhouse.connection.count(from: LOGS_TABLE, where: to_clickhouse_where)
-    end
-
-    def total_pages
-      follow? ? 1 : (total_entries / per_page.to_f).ceil
-    end
-
-    def paginate(page: nil, per_page: nil)
-      @page     = page.to_i if page.present?
+    def paginate(newer_than:, older_than: nil, per_page: nil)
+      @newer_than = newer_than if newer_than.present?
+      @older_than = older_than if older_than.present? && !@newer_than
       @per_page = per_page.to_i if per_page.present?
       self
     end
 
-    def offset
-      if follow?
-        (total_entries > per_page) ? (total_entries - per_page) : 0
-      else
-        (page - 1) * per_page
+    def to_clickhouse_pagination_where
+      if newer_than
+        time_comparation newer_than, '>'
+      elsif older_than
+        time_comparation older_than, '<'
       end
+    end
+
+    private
+
+    def time_comparation(time, comparation)
+      timestamp, nsec = time.split('.')
+
+      [
+        [
+          [TIMESTAMP_ATTRIBUTE, to_clickhouse_time(timestamp)].join(' = '),
+          [NSEC_ATTRIBUTE, nsec].join(" #{comparation} ")
+        ].join(' AND '),
+        [TIMESTAMP_ATTRIBUTE, to_clickhouse_time(timestamp)].join(" #{comparation} "),
+      ].join(' OR ')
     end
   end
 end

@@ -1,4 +1,22 @@
+<div class="error-container error-container_fixed">
+  <div class="container-fluid error-container__content">
+    <% unless @error.nil? %>
+      <div class="alert alert-danger alert-dismissible" role="alert">
+        <%= @error %>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+    <% end %>
+  </div>
+</div>
 <div id="result">
-  <%= erb :_result %>
+  <div class="logs-result logs-result_default-theme">
+  <% if @to_clickhouse %>
+    <div class="logs-result__container"
+        data-entry-oldest='<%= @query.result.length > 0 ? @query.result.last.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") : Time.now.strftime("%Y-%m-%d %H:%M:%S.%N") %>'
+        data-entry-newest='<%= @query.result.length > 0 ? @query.result.first.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") : Time.now.strftime("%Y-%m-%d %H:%M:%S.%N") %>'>
+        <%= erb :_result %>
+      </div>
+    </div>
+  <% end %>
 </div>
 <%= erb :_filter_form %>

@@ -1,44 +1,31 @@
-<div class="container">
-  <form class="form-horizontal" action="/queries" method="post">
-    <div class="form-group">
-      <label for="name" class="col-sm-2 control-label">Name</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="name" name="name">
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="query" class="col-sm-2 control-label">Query</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="query" name="query" value="<%= @query.attributes[:query] %>" readonly="readonly">
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="time_from" class="col-sm-2 control-label">Time from</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="time_from" name="time_from" value="<%= @query.attributes[:time_from] %>" readonly="readonly">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="time_to" class="col-sm-2 control-label">Time to</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="time_to" name="time_to" value="<%= @query.attributes[:time_to] %>" readonly="readonly">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" name="follow" <%= 'checked="checked"' if @query.follow? %>> Follow
-          </label>
+<div class="container-fluid">
+  <div class="error-container">
+    <div class="error-container__content">
+      <% unless @error.nil? %>
+        <div class="alert alert-danger alert-dismissible" role="alert">
+          <%= @error %>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         </div>
-      </div>
+      <% end %>
     </div>
-    <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10">
-        <button type="submit" class="btn btn-default">Create</button>
-      </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-6">
+      <h2>Add query</h2>
+      <form class="form" action="/queries" method="post">
+        <div class="form-group">
+          <label for="name" class="control-label">Name</label>
+          <input type="text" class="form-control" id="name" name="name" value="<%= @query.attributes[:name] %>">
+        </div>
+        <div class="form-group">
+          <label for="query" class="control-label">Query</label>
+          <input type="text" class="form-control" id="query" name="query" value="<%= @query.attributes[:query] %>">
+        </div>
+        <%= erb :_super_date_picker %>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary">Add</button>
+        </div>
+      </form>
     </div>
-  </form>
+  </div>
 </div>

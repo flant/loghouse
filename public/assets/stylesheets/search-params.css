@@ -1,0 +1,19 @@
+.search-params-popover {
+  position: fixed;
+  bottom: -10000px;
+  margin: 0px;
+  /* padding: 10px 25px 10px 15px; */
+  width: 40%;
+  min-width: 800px;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.2s;
+  /* background: #fff; */
+}
+
+.search-params-popover.search-params-popover_active {
+  display: block;
+  bottom: 49px;
+  opacity: 1;
+  left: 20px;
+}
