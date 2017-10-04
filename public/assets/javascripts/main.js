@@ -4,7 +4,7 @@ function commonTimestamp() {
 
 function commonShowError(text) {
   var $errorContainer = $('.error-container .error-container__content');
-  $errorContainer.append("<div class=\"alert alert-danger alert-dismissible\" role=\"alert\">" + text + "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button></div>")
+  $errorContainer.append("<div class=\"alert alert-danger alert-dismissible\" role=\"alert\">" + text + "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button></div>");
 }
 
 function queryOlder() {
@@ -108,13 +108,14 @@ function getCurrentQuickItem() {
 
 function refreshPeriodTitle() {
   var quick_item = getCurrentQuickItem();
+  var new_period_title;
 
   if ($('#time-from').val() == '' && $('#time-to').val() == '') {
-    var new_period_title = $('#superDatePickerBtn').data('default-title');
+    new_period_title = $('#superDatePickerBtn').data('default-title');
   } else if (quick_item.length) {
-    var new_period_title = quick_item.text();
+    new_period_title = quick_item.text();
   } else {
-    var new_period_title = $('#time-from').val() + ' – ' + $('#time-to').val();
+    new_period_title = $('#time-from').val() + ' – ' + $('#time-to').val();
   }
   //$('#superDatePickerBtn').attr('data-original-title', new_period_title);
   $('.super-date-picker__period-title').text(new_period_title);
@@ -154,6 +155,7 @@ $(document).ready(function() {
     refreshCurrentQuickItem();
     // close popover
     search_params.closeAll();
+    submitForm();
   });
 
   $('.super-date-picker__reset').on('click', function() {
@@ -162,6 +164,7 @@ $(document).ready(function() {
     refreshPeriodTitle();
     refreshCurrentQuickItem();
     search_params.closeAll();
+    submitForm();
   });
 
   $('.input-group.date .input-group-addon').on('click', function() {
@@ -169,8 +172,8 @@ $(document).ready(function() {
   });
 
   $('.input-group.date').datetimepicker({locale: 'ru', keepInvalid: true, useStrict: true});
-  $('.input-group.date input').on('input', function(e) {refreshPeriodTitle()})
-  $('.input-group.date').on('dp.change', function(e) {refreshPeriodTitle()})
+  $('.input-group.date input').on('input', function(e) {refreshPeriodTitle();});
+  $('.input-group.date').on('dp.change', function(e) {refreshPeriodTitle();});
 
   refreshPeriodTitle();
   refreshCurrentQuickItem();
@@ -272,4 +275,10 @@ $(document).ready(function() {
     });
   }
 
+  // Autosend query
+  submitForm = function () {
+    $('#filter-form').submit();
+  };
+
+  $(document).on('change', '#query', submitForm);
 });
