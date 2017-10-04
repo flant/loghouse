@@ -16,7 +16,7 @@ class LoghouseQuery
     id:        nil,
     name:      nil,
     query:     nil,
-    time_from: 'now-7d',
+    time_from: 'now-12h',
     time_to:   'now',
     position:  nil
   } # Trick for all-attributes-hash in correct order in insert
