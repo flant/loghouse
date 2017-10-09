@@ -9,13 +9,13 @@ class LoghouseQuery
 
     module ClassMethods
       def create_table!(force = false)
-        if Clickhouse.connection.exists_table(QUERIES_TABLE)
+        if ::Clickhouse.connection.exists_table(QUERIES_TABLE)
           return unless force
 
-          Clickhouse.connection.drop_table(QUERIES_TABLE)
+          ::Clickhouse.connection.drop_table(QUERIES_TABLE)
         end
 
-        Clickhouse.connection.create_table(QUERIES_TABLE) do |t|
+        ::Clickhouse.connection.create_table(QUERIES_TABLE) do |t|
           t.fixed_string :id, 36
           t.string       :name
           t.string       :query
@@ -31,7 +31,7 @@ class LoghouseQuery
           from: QUERIES_TABLE
         })
 
-        Clickhouse.connection.count(params)
+        ::Clickhouse.connection.count(params)
       end
 
       def all(params = {})
@@ -41,11 +41,11 @@ class LoghouseQuery
           order: 'position ASC'
         })
 
-        Clickhouse.connection.select_rows(params).map { |r| build_from_row r }
+        ::Clickhouse.connection.select_rows(params).map { |r| build_from_row r }
       end
 
       def find(id)
-        if (row = Clickhouse.connection.select_row(select: '*', from: QUERIES_TABLE, where: { id: id }))
+        if (row = ::Clickhouse.connection.select_row(select: '*', from: QUERIES_TABLE, where: { id: id }))
           build_from_row row
         end
       end
@@ -88,7 +88,7 @@ class LoghouseQuery
 
       attributes[:position] ||= self.class.count
 
-      Clickhouse.connection.insert_rows QUERIES_TABLE do |rows|
+      ::Clickhouse.connection.insert_rows QUERIES_TABLE do |rows|
         rows << attributes
       end
     end
