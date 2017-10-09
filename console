@@ -24,9 +24,24 @@ def insert
       ['x'].to_s.gsub(/"/, "'"),
     ]
   end
-  puts s
 
-  Clickhouse.connection.insert_rows(:'logs.logs6', csv: s)
+  Clickhouse.connection.insert_rows(LoghouseQuery::LOGS_TABLE, csv: s)
+end
+
+def insert_fake_data
+  res = Clickhouse.connection.select_rows(from: LoghouseQuery::LOGS_TABLE, limit: 500)
+  s = CSV.generate do |csv|
+    csv << res.names
+    res.each do |r|
+      o = []
+      o << (Time.zone.now - rand(100_000).to_i.seconds).utc.strftime('%Y-%m-%d %H:%M:%S')
+      o << rand(10**6).to_i
+      r[2..10].each{|x| o << (x || []).to_s.gsub(/'/, "").gsub(/"/, "'") }
+      csv << o
+    end
+  end
+
+  Clickhouse.connection.insert_rows(LoghouseQuery::LOGS_TABLE, csv: s)
 end
 
 reload!
