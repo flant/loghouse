@@ -1,6 +1,5 @@
 window.available_keys = [];
 window.hidden_keys = [];
-window.keys_option = Cookies.get('keys_option') || 'hide';
 
 function commonTimestamp() {
   return moment().format('YYYY-MM-DD HH:mm:ss');
@@ -136,7 +135,6 @@ function refreshPeriodTitle() {
   } else {
     new_period_title = $('#time-from').val() + ' – ' + $('#time-to').val();
   }
-  //$('#superDatePickerBtn').attr('data-original-title', new_period_title);
   $('.super-date-picker__period-title').text(new_period_title);
 }
 
@@ -157,10 +155,8 @@ function initHideShow() {
 }
 
 function initHideShowWidget() {
-
   // init search params widget
   window.hsk_select = $('#hide-show-keys-select');
-
   window.hsk_select.select2({
     placeholder: 'Select some keys',
     multiple: true,
@@ -168,17 +164,37 @@ function initHideShowWidget() {
     theme: "bootstrap",
     data: window.available_keys
   });
-
-  window.hsk_select.val((Cookies.get('selected_keys') ? JSON.parse(Cookies.get('selected_keys')) : [])).trigger('change');
-
+  var selected_keys;
+  if (URI(location.href).hasQuery('selected_keys', true)) {
+    selected_keys = URI(location.href).search(true)['selected_keys'].split(',');
+  } else if (Cookies.get('selected_keys')) {
+    selected_keys = JSON.parse(Cookies.get('selected_keys'));
+  } else {
+    selected_keys = [];
+  }
+  window.hsk_select.val(selected_keys).trigger('change');
   window.hsk_select.on("select2:select", function(e) {
     Cookies.set('selected_keys', JSON.stringify(window.hsk_select.val()));
     updateSelectedKeysClasses();
+    updateSelectedKeysUri();
   });
   window.hsk_select.on("select2:unselect", function(e) {
     Cookies.set('selected_keys', JSON.stringify(window.hsk_select.val()));
     updateSelectedKeysClasses();
+    updateSelectedKeysUri();
   });
+
+  if (window.hsk_select.val().length == 0) {
+    window.keys_option = 'hide';
+    Cookies.set('keys_option', 'hide');
+    updateSelectedKeysUri();
+  } else if (URI(location.href).hasQuery('keys_option', true)) {
+    window.keys_option = URI(location.href).search(true)['keys_option'];
+  } else if (Cookies.get('keys_option')) {
+    window.keys_option = Cookies.get('keys_option');
+  } else {
+    window.keys_option = 'hide';
+  }
   $('.hide-show-keys-btn[data-option=' + window.keys_option + ']').addClass('active');
   $('.hide-show-keys-btn').each(function() {
     $(this).on('click', function() {
@@ -187,6 +203,7 @@ function initHideShowWidget() {
       window.keys_option = $(this).data('option');
       Cookies.set('keys_option', window.keys_option);
       updateSelectedKeysClasses();
+      updateSelectedKeysUri();
     });
   });
 }
@@ -203,7 +220,7 @@ function updateAvailableKeys() {
     $('.hide-show-keys-toggle').removeClass('disabled');
   }  else {
     window.available_keys = [];
-    window.hsk_select.val([]);
+    window.hsk_select && window.hsk_select.val([]);
     Cookies.set('selected_keys', JSON.stringify([]));
     $('.hide-show-keys-toggle').addClass('disabled');
   }
@@ -241,6 +258,15 @@ function updateSelectedKeysClasses() {
     key_css_friendly = key.replace('.', '_');
     body.addClass('hide_' + key_css_friendly);
   }
+}
+
+function updateSelectedKeysUri() {
+  var uri = URI(location.href);
+  uri.removeSearch('selected_keys');
+  uri.removeSearch('keys_option');
+  uri.addSearch('selected_keys', window.hsk_select.val().join(','));
+  uri.addSearch('keys_option', window.keys_option);
+  history.pushState({}, 'Loghouse', uri);
 }
 
 $(document).ready(function() {
@@ -397,6 +423,8 @@ $(document).ready(function() {
   $(document).on('change', '#query', submitForm);
 
   // Init show hide keys
-  initHideShow();
+  if($('#hide-show-keys-select').length) {
+    initHideShow();  
+  }
 
 });
