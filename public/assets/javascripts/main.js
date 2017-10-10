@@ -166,6 +166,8 @@ function initHideShowWidget() {
     data: window.available_keys
   });
 
+  $('#hide-show-keys-select').val(window.selected_keys).trigger('change');
+
   $('#hide-show-keys-select').on("select2:select", function(e) {
     window.selected_keys.push(e.params.data.id);
     Cookies.set('selected_keys', JSON.stringify(window.selected_keys));
