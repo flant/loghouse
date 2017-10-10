@@ -23,6 +23,7 @@ module Loghouse
     get '/query' do
       @queries = LoghouseQuery.all.first(10)
       @query =  if params[:query_id]
+                  @tab = params[:query_id]
                   LoghouseQuery.find!(params[:query_id])
                 else
                   query_from_params

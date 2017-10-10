@@ -8,20 +8,6 @@
   </div>
 <% end %>
 
-<div id="queryPicker" class="search-params-popover">
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <div class="list-group">
-        <% @queries.each do |q| %>
-          <a href="/query?query_id=<%= q.id %>" class="list-group-item">
-            <%= q.attributes[:name] %>
-          </a>
-        <% end %>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div id="hideShowKeys" class="search-params-popover">
   <div class="panel panel-default">
     <div class="panel-body">
@@ -58,9 +44,6 @@
           </div>
           <div class="form-group" data-toggle="tooltip" title="Save query">
             <a role="button" class="btn btn-link btn-link-alt<% if !@query %> disabled<% end %>" <% if @query %> id="save-query"<% end %>><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></a>
-          </div>
-          <div class="form-group" data-toggle="tooltip" title="Load query">
-            <a role="button" class="btn btn-link btn-link-alt search-params-btn<% if (@queries.length == 0) %> disabled<% end %>" role="button" data-target="#queryPicker"><span class="glyphicon glyphicon glyphicon-th-list" aria-hidden="true"></span></a>
           </div>
           <div class="form-group" data-toggle="tooltip" title="Show clickhouse info">
             <a class="btn btn-link btn-link-alt <% if @to_clickhouse %>search-params-btn<% else %>disabled<% end %>" role="button" data-target="#toClickhouse"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>

@@ -17,3 +17,7 @@ body {
 .select2-results__option[aria-selected=true] {
   display: none;
 }
+
+.navbar .nav.navbar-nav {
+  float: none;
+}

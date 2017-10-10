@@ -424,7 +424,21 @@ $(document).ready(function() {
 
   // Init show hide keys
   if($('#hide-show-keys-select').length) {
-    initHideShow();  
+    initHideShow();
   }
+
+  // Fix for navbar overflow
+  function fixResultsPosition() {
+    $('.logs-result__container').css('top', $('#topNavBar').height());
+  }
+  fixResultsPosition();
+
+  var resizeTimer;
+  $(window).on('resize', function(e) {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      fixResultsPosition();
+    }, 250);
+  });
 
 });
