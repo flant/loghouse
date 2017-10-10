@@ -1,0 +1,9 @@
+<div class="form-group">
+  <label for="name" class="control-label">Name</label>
+  <input type="text" class="form-control" id="name" name="name" value="<%= @query.attributes[:name] %>">
+</div>
+<div class="form-group">
+  <label for="query" class="control-label">Query</label>
+  <input type="text" class="form-control" id="query" name="query" value="<%= @query.attributes[:query] %>">
+</div>
+<%= erb :_super_date_picker %>

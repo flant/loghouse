@@ -56,7 +56,9 @@
                   </a>
                 </td>
                 <td>
-                  <%= h q.attributes[:name] %>
+                  <a href="/queries/<%= q.id %>/edit">
+                    <%= h q.attributes[:name] %>
+                  </a>
                 </td>
                 <td>
                   <i><%= h q.attributes[:query] %></i>

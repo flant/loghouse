@@ -7,6 +7,7 @@ module Loghouse
   class Application < Sinatra::Base
     configure do
       register WillPaginate::Sinatra
+      use Rack::MethodOverride
 
       enable :logging
     end
@@ -77,6 +78,37 @@ module Loghouse
       erb :'queries/new'
     end
 
+    get '/queries/:query_id/edit' do
+      @query = LoghouseQuery.find!(params[:query_id])
+
+      erb :'queries/edit'
+    end
+
+    put '/queries/update_order' do
+      new_order = JSON.parse(params[:new_order])
+      LoghouseQuery.update_order!(new_order)
+
+      content_type :json
+      { status: :ok }.to_json
+    end
+
+    put '/queries/:query_id' do
+      @query = LoghouseQuery.find!(params[:query_id])
+      begin
+        @query.update!(query_from_params.attributes)
+
+        return redirect '/queries'
+      rescue LoghouseQuery::BadFormat => e
+        @error = "Bad query format: #{e}"
+      rescue LoghouseQuery::BadTimeFormat => e
+        @error = "Bad time format: #{e}"
+      rescue LoghouseQuery::Storable::NotValid => e
+        @error = "Validation failed: #{e}"
+      end
+
+      erb :'queries/edit'
+    end
+
     delete '/queries/:query_id' do
       query = LoghouseQuery.find!(params[:query_id])
       query.destroy!
@@ -88,14 +120,6 @@ module Loghouse
       LoghouseQuery.create_table!(true)
 
       ''
-    end
-
-    put '/queries/update_order' do
-      new_order = JSON.parse(params[:new_order])
-      LoghouseQuery.update_order!(new_order)
-
-      content_type :json
-      { status: :ok }.to_json
     end
 
     helpers do

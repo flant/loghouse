@@ -81,6 +81,14 @@ class LoghouseQuery
       all_queries.each(&:save!)
     end
 
+    def update!(attrs)
+      attributes.merge!(attrs.except(:id))
+      validate!
+
+      destroy!
+      save!
+    end
+
     def save!
       validate!
 
