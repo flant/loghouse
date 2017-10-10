@@ -1,6 +1,5 @@
 window.available_keys = [];
 window.hidden_keys = [];
-window.selected_keys = (Cookies.get('selected_keys') ? JSON.parse(Cookies.get('selected_keys')) : []);
 window.keys_option = Cookies.get('keys_option') || 'hide';
 
 function commonTimestamp() {
@@ -158,24 +157,26 @@ function initHideShow() {
 }
 
 function initHideShowWidget() {
+
   // init search params widget
-  $('#hide-show-keys-select').select2({
+  window.hsk_select = $('#hide-show-keys-select');
+
+  window.hsk_select.select2({
     placeholder: 'Select some keys',
     multiple: true,
+    allowClear: true,
     theme: "bootstrap",
     data: window.available_keys
   });
 
-  $('#hide-show-keys-select').val(window.selected_keys).trigger('change');
+  window.hsk_select.val((Cookies.get('selected_keys') ? JSON.parse(Cookies.get('selected_keys')) : [])).trigger('change');
 
-  $('#hide-show-keys-select').on("select2:select", function(e) {
-    window.selected_keys.push(e.params.data.id);
-    Cookies.set('selected_keys', JSON.stringify(window.selected_keys));
+  window.hsk_select.on("select2:select", function(e) {
+    Cookies.set('selected_keys', JSON.stringify(window.hsk_select.val()));
     updateSelectedKeysClasses();
   });
-  $('#hide-show-keys-select').on("select2:unselect", function(e) {
-    window.selected_keys.delete(e.params.data.id);
-    Cookies.set('selected_keys', JSON.stringify(window.selected_keys));
+  window.hsk_select.on("select2:unselect", function(e) {
+    Cookies.set('selected_keys', JSON.stringify(window.hsk_select.val()));
     updateSelectedKeysClasses();
   });
   $('.hide-show-keys-btn[data-option=' + window.keys_option + ']').addClass('active');
@@ -202,8 +203,8 @@ function updateAvailableKeys() {
     $('.hide-show-keys-toggle').removeClass('disabled');
   }  else {
     window.available_keys = [];
-    window.selected_keys = [];
-    Cookies.set('selected_keys', JSON.stringify(window.selected_keys));
+    window.hsk_select.val([]);
+    Cookies.set('selected_keys', JSON.stringify([]));
     $('.hide-show-keys-toggle').addClass('disabled');
   }
 }
@@ -231,9 +232,9 @@ function updateSelectedKeysClasses() {
     return (className.match (/\bhide_\S+/g) || []).join(' ');
   });
   if (window.keys_option == 'hide') {
-    window.hidden_keys = window.selected_keys;
+    window.hidden_keys = window.hsk_select.val();
   } else {
-    window.hidden_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.selected_keys) == -1; });
+    window.hidden_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.hsk_select.val()) == -1; });
   }
   for (var i = 0; i < window.hidden_keys.length; i++) {
     key = window.hidden_keys[i];
