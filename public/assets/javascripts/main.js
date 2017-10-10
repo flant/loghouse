@@ -1,5 +1,7 @@
 window.available_keys = [];
 window.hidden_keys = [];
+window.selected_keys = (Cookies.get('selected_keys') ? JSON.parse(Cookies.get('selected_keys')) : []);
+window.keys_option = Cookies.get('keys_option') || 'hide';
 
 function commonTimestamp() {
   return moment().format('YYYY-MM-DD HH:mm:ss');
@@ -8,6 +10,15 @@ function commonTimestamp() {
 function commonShowError(text) {
   var $errorContainer = $('.error-container .error-container__content');
   $errorContainer.append("<div class=\"alert alert-danger alert-dismissible\" role=\"alert\">" + text + "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button></div>");
+}
+
+function addCSSRule(sheet, selector, rules, index) {
+  if('insertRule' in sheet) {
+    sheet.insertRule(selector + '{' + rules + '}', index);
+  }
+  else if('addRule' in sheet) {
+    sheet.addRule(selector, rules, index);
+  }
 }
 
 function queryOlder() {
@@ -28,7 +39,9 @@ function queryOlder() {
         if (res != '') {
           console.log(commonTimestamp() + ' Loaded older entries to monitor.');
           $resultContainer.append(res);
-          setupAvailableKeys();
+          updateAvailableKeys();
+          updateAvailableKeysStyles();
+          updateSelectedKeysClasses();
           oldest = $resultContainer.find('div:last-child .logs-result__entry-timestamp').text();
           $resultContainer.data('entry-oldest', oldest);
         } else {
@@ -66,7 +79,9 @@ function queryNewer() {
         if (res != '') {
           console.log(commonTimestamp() + ' Loaded new entries to monitor.');
           $resultContainer.prepend(res);
-          setupAvailableKeys();
+          updateAvailableKeys();
+          updateAvailableKeysStyles();
+          updateSelectedKeysClasses();
           newest = $resultContainer.find('div:first-child .logs-result__entry-timestamp').text();
           $resultContainer.data('entry-newest', newest);
         } else {
@@ -134,51 +149,94 @@ function refreshCurrentQuickItem() {
   }
 }
 
-function setupAvailableKeys() {
-  el = $('#result');
+function initHideShow() {
+  updateAvailableKeys();
+  initHideShowWidget();
+  initAvailableKeysStyles();
+  updateAvailableKeysStyles();
+  updateSelectedKeysClasses();
+}
 
+function initHideShowWidget() {
+  // init search params widget
+  $('#hide-show-keys-select').select2({
+    placeholder: 'Select some keys',
+    multiple: true,
+    theme: "bootstrap",
+    data: window.available_keys
+  });
+
+  $('#hide-show-keys-select').on("select2:select", function(e) {
+    window.selected_keys.push(e.params.data.id);
+    Cookies.set('selected_keys', JSON.stringify(window.selected_keys));
+    updateSelectedKeysClasses();
+  });
+  $('#hide-show-keys-select').on("select2:unselect", function(e) {
+    window.selected_keys.delete(e.params.data.id);
+    Cookies.set('selected_keys', JSON.stringify(window.selected_keys));
+    updateSelectedKeysClasses();
+  });
+  $('.hide-show-keys-btn[data-option=' + window.keys_option + ']').addClass('active');
+  $('.hide-show-keys-btn').each(function() {
+    $(this).on('click', function() {
+      $(this).parent().find('.hide-show-keys-btn').removeClass('active');
+      $(this).addClass('active');
+      window.keys_option = $(this).data('option');
+      Cookies.set('keys_option', window.keys_option);
+      updateSelectedKeysClasses();
+    });
+  });
+}
+
+function updateAvailableKeys() {
+  var el = $('#result');
   el.find('span[data-key]').each(function() {
     var key = $(this).data('key');
     if (window.available_keys.indexOf(key) < 0)
       window.available_keys.push(key);
   });
-
   if (window.available_keys.length != 0) {
-    $('.toggle-show-hide-keys').removeClass('disabled');
-    $('.skip-keys').select2({
-      placeholder: 'Select an keys to skip them in view',
-      multiple: true,
-      theme: "bootstrap",
-      data: window.available_keys
-    });
-    $('.skip-keys').on("select2:select", function(e) {
-      console.log('SELECT', e);
-      window.hidden_keys.push(e.params.data.id);
-      showHideKeys();
-    });
-    $('.skip-keys').on("select2:unselect", function(e) {
-      console.log('UNSELECT', e);
-      window.hidden_keys.delete(e.params.data.id);
-      showHideKeys();
-    });
+    window.available_keys.sort();
+    $('.hide-show-keys-toggle').removeClass('disabled');
   }  else {
     window.available_keys = [];
-    window.hidden_keys = [];
-    $('.toggle-show-hide-keys').addClass('disabled');
+    window.selected_keys = [];
+    Cookies.set('selected_keys', JSON.stringify(window.selected_keys));
+    $('.hide-show-keys-toggle').addClass('disabled');
   }
-
-  showHideKeys();
-
-  return window.available_keys;
 }
 
-function showHideKeys() {
-  el = $('#result');
+function initAvailableKeysStyles() {
+  window.keys_style = document.createElement('style');
+  window.keys_style.appendChild(document.createTextNode('')); // WebKit hack
+  document.head.appendChild(window.keys_style);
+}
 
-  el.find('span[data-key]').show();
+function updateAvailableKeysStyles() {
+  while (window.keys_style.sheet.cssRules.length > 0) {
+    window.keys_style.sheet.deleteRule(0);
+  }
+  for (var i = 0; i < window.available_keys.length; i++) {
+    key = window.available_keys[i];
+    key_css_friendly = key.replace('.', '_');
+    addCSSRule(window.keys_style.sheet, 'body.hide_' + key_css_friendly + ' #result span[data-key="' + key + '"]', 'display: none', 0);
+  }
+}
+
+function updateSelectedKeysClasses() {
+  var body = $('body');
+  body.removeClass(function (index, className) {
+    return (className.match (/\bhide_\S+/g) || []).join(' ');
+  });
+  if (window.keys_option == 'hide') {
+    window.hidden_keys = window.selected_keys;
+  } else {
+    window.hidden_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.selected_keys) == -1; });
+  }
   for (var i = 0; i < window.hidden_keys.length; i++) {
     key = window.hidden_keys[i];
-    el.find('span[data-key="' + key + '"]').hide();
+    key_css_friendly = key.replace('.', '_');
+    body.addClass('hide_' + key_css_friendly);
   }
 }
 
@@ -335,6 +393,7 @@ $(document).ready(function() {
 
   $(document).on('change', '#query', submitForm);
 
-  setupAvailableKeys();
+  // Init show hide keys
+  initHideShow();
 
 });

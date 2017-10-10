@@ -22,10 +22,18 @@
   </div>
 </div>
 
-<div id="showHideKeys" class="search-params-popover">
+<div id="hideShowKeys" class="search-params-popover">
   <div class="panel panel-default">
     <div class="panel-body">
-      SKIP keys: <input name="skip_keys" class="skip-keys" size="50"/>
+      <div class="form-group">
+        <select name="hide_show_keys" id="hide-show-keys-select" class="form-control" size="50"></select>
+      </div>
+      <div class="form-group">
+        <div class="btn-group btn-group-xs btn-group-justified" role="group">
+          <a class="btn btn-default hide-show-keys-btn" data-option="hide">Hide them</a>
+          <a class="btn btn-default hide-show-keys-btn" data-option="show">Show only them</a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -57,8 +65,8 @@
           <div class="form-group" data-toggle="tooltip" title="Show clickhouse info">
             <a class="btn btn-link btn-link-alt <% if @to_clickhouse %>search-params-btn<% else %>disabled<% end %>" role="button" data-target="#toClickhouse"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
           </div>
-          <div class="form-group" data-toggle="tooltip" title="Show/Hide keys">
-            <a class="btn btn-link btn-link-alt toggle-show-hide-keys search-params-btn disabled" role="button" data-target="#showHideKeys"><span class="glyphicon glyphicon-th" aria-hidden="true"></span></a>
+          <div class="form-group" data-toggle="tooltip" title="Hide/Show keys">
+            <a class="btn btn-link btn-link-alt hide-show-keys-toggle search-params-btn disabled" role="button" data-target="#hideShowKeys"><span class="glyphicon glyphicon-th" aria-hidden="true"></span></a>
           </div>
           <div class="form-group">
             <a class="btn btn-link btn-link-alt search-params-btn" id="superDatePickerBtn" role="button" data-target="#superDatePicker" data-toggle="tooltip" data-default-title="" data-original-title="Set period"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> <span class="super-date-picker__period-title"></span></a>
