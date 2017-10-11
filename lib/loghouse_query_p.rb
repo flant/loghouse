@@ -3,7 +3,7 @@ class LoghouseQueryP < Parslet::Parser
 
   QUERY_OPERATORS      = %w[and or]
   EXPRESSION_OPERATORS = %w[>= <= =~ != = > < ]
-  ANY_RESERVED_KEY     = "_any"
+  ANY_RESERVED_KEY     = "~"
 
   rule(:query_operator) do
     q_op = nil
