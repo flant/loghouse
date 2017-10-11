@@ -82,7 +82,7 @@ class LoghouseQuery
     end
 
     def update!(attrs)
-      attributes.merge!(attrs.except(:id))
+      attributes.merge!(attrs.except(:id, :position))
       validate!
 
       destroy!
