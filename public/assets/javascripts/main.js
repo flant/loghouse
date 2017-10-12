@@ -1,3 +1,6 @@
+window.available_keys = [];
+window.hidden_keys = [];
+
 function commonTimestamp() {
   return moment().format('YYYY-MM-DD HH:mm:ss');
 }
@@ -5,6 +8,15 @@ function commonTimestamp() {
 function commonShowError(text) {
   var $errorContainer = $('.error-container .error-container__content');
   $errorContainer.append("<div class=\"alert alert-danger alert-dismissible\" role=\"alert\">" + text + "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button></div>");
+}
+
+function addCSSRule(sheet, selector, rules, index) {
+  if('insertRule' in sheet) {
+    sheet.insertRule(selector + '{' + rules + '}', index);
+  }
+  else if('addRule' in sheet) {
+    sheet.addRule(selector, rules, index);
+  }
 }
 
 function queryOlder() {
@@ -25,6 +37,9 @@ function queryOlder() {
         if (res != '') {
           console.log(commonTimestamp() + ' Loaded older entries to monitor.');
           $resultContainer.append(res);
+          updateAvailableKeys();
+          updateAvailableKeysStyles();
+          updateSelectedKeysClasses();
           oldest = $resultContainer.find('div:last-child .logs-result__entry-timestamp').text();
           $resultContainer.data('entry-oldest', oldest);
         } else {
@@ -62,6 +77,9 @@ function queryNewer() {
         if (res != '') {
           console.log(commonTimestamp() + ' Loaded new entries to monitor.');
           $resultContainer.prepend(res);
+          updateAvailableKeys();
+          updateAvailableKeysStyles();
+          updateSelectedKeysClasses();
           newest = $resultContainer.find('div:first-child .logs-result__entry-timestamp').text();
           $resultContainer.data('entry-newest', newest);
         } else {
@@ -117,7 +135,6 @@ function refreshPeriodTitle() {
   } else {
     new_period_title = $('#time-from').val() + ' – ' + $('#time-to').val();
   }
-  //$('#superDatePickerBtn').attr('data-original-title', new_period_title);
   $('.super-date-picker__period-title').text(new_period_title);
 }
 
@@ -127,6 +144,129 @@ function refreshCurrentQuickItem() {
     $('.super-date-picker__quick-item').removeClass('btn-success').removeClass('btn-inverse').removeClass('active').addClass('btn-default');
     $(quick_item).removeClass('btn-default').addClass('btn-success').addClass('btn-inverse').addClass('active');
   }
+}
+
+function initHideShow() {
+  updateAvailableKeys();
+  initHideShowWidget();
+  initAvailableKeysStyles();
+  updateAvailableKeysStyles();
+  updateSelectedKeysClasses();
+}
+
+function initHideShowWidget() {
+  // init search params widget
+  window.hsk_select = $('#hide-show-keys-select');
+  window.hsk_select.select2({
+    placeholder: 'Select some keys',
+    multiple: true,
+    allowClear: true,
+    theme: "bootstrap",
+    data: window.available_keys
+  });
+  var selected_keys;
+  if (URI(location.href).hasQuery('selected_keys', true)) {
+    selected_keys = URI(location.href).search(true)['selected_keys'].split(',');
+  } else if (Cookies.get('selected_keys')) {
+    selected_keys = JSON.parse(Cookies.get('selected_keys'));
+  } else {
+    selected_keys = [];
+  }
+  window.hsk_select.val(selected_keys).trigger('change');
+  window.hsk_select.on("select2:select", function(e) {
+    Cookies.set('selected_keys', JSON.stringify(window.hsk_select.val()));
+    updateSelectedKeysClasses();
+    updateSelectedKeysUri();
+  });
+  window.hsk_select.on("select2:unselect", function(e) {
+    Cookies.set('selected_keys', JSON.stringify(window.hsk_select.val()));
+    updateSelectedKeysClasses();
+    updateSelectedKeysUri();
+  });
+
+  if (window.hsk_select.val().length == 0) {
+    window.keys_option = 'hide';
+    Cookies.set('keys_option', 'hide');
+    updateSelectedKeysUri();
+  } else if (URI(location.href).hasQuery('keys_option', true)) {
+    window.keys_option = URI(location.href).search(true)['keys_option'];
+  } else if (Cookies.get('keys_option')) {
+    window.keys_option = Cookies.get('keys_option');
+  } else {
+    window.keys_option = 'hide';
+  }
+  $('.hide-show-keys-btn[data-option=' + window.keys_option + ']').addClass('active');
+  $('.hide-show-keys-btn').each(function() {
+    $(this).on('click', function() {
+      $(this).parent().find('.hide-show-keys-btn').removeClass('active');
+      $(this).addClass('active');
+      window.keys_option = $(this).data('option');
+      Cookies.set('keys_option', window.keys_option);
+      updateSelectedKeysClasses();
+      updateSelectedKeysUri();
+    });
+  });
+}
+
+function updateAvailableKeys() {
+  var el = $('#result');
+  el.find('span[data-key]').each(function() {
+    var key = $(this).data('key');
+    if (window.available_keys.indexOf(key) < 0)
+      window.available_keys.push(key);
+  });
+  if (window.available_keys.length != 0) {
+    window.available_keys.sort();
+    $('.hide-show-keys-toggle').removeClass('disabled');
+  }  else {
+    window.available_keys = [];
+    window.hsk_select && window.hsk_select.val([]);
+    Cookies.set('selected_keys', JSON.stringify([]));
+    $('.hide-show-keys-toggle').addClass('disabled');
+  }
+}
+
+function initAvailableKeysStyles() {
+  window.keys_style = document.createElement('style');
+  window.keys_style.appendChild(document.createTextNode('')); // WebKit hack
+  document.head.appendChild(window.keys_style);
+}
+
+function updateAvailableKeysStyles() {
+  while (window.keys_style.sheet.cssRules.length > 0) {
+    window.keys_style.sheet.deleteRule(0);
+  }
+  for (var i = 0; i < window.available_keys.length; i++) {
+    key = window.available_keys[i];
+    key_css_friendly = key.replace('.', '_');
+    addCSSRule(window.keys_style.sheet, 'body.hide_' + key_css_friendly + ' #result span[data-key="' + key + '"]', 'display: none', 0);
+  }
+}
+
+function updateSelectedKeysClasses() {
+  var body = $('body');
+  body.removeClass(function (index, className) {
+    return (className.match (/\bhide_\S+/g) || []).join(' ');
+  });
+  if (window.keys_option == 'hide') {
+    window.hidden_keys = window.hsk_select.val();
+  } else {
+    window.hidden_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.hsk_select.val()) == -1; });
+  }
+  for (var i = 0; i < window.hidden_keys.length; i++) {
+    key = window.hidden_keys[i];
+    key_css_friendly = key.replace('.', '_');
+    body.addClass('hide_' + key_css_friendly);
+  }
+}
+
+function updateSelectedKeysUri() {
+  var uri = URI(location.href);
+  uri.removeSearch('selected_keys');
+  uri.removeSearch('keys_option');
+  uri.addSearch('selected_keys', window.hsk_select.val().join(','));
+  uri.addSearch('keys_option', window.keys_option);
+  history.pushState({}, 'Loghouse', uri);
 }
 
 $(document).ready(function() {
@@ -281,4 +421,10 @@ $(document).ready(function() {
   };
 
   $(document).on('change', '#query', submitForm);
+
+  // Init show hide keys
+  if($('#hide-show-keys-select').length) {
+    initHideShow();  
+  }
+
 });

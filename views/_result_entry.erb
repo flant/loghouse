@@ -1,17 +1,25 @@
 <span class="logs-result__entry-timestamp"><%= entry.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") %></span>
 
 <% entry.strings.each do |k, v| %>
-  <span class="logs-result__entry-key"><%= k %>:</span> <span class="logs-result__entry-value"><%= v %></span>
+  <span data-key="<%= k %>">
+    <span class="logs-result__entry-key"><%= k %>:</span> <span class="logs-result__entry-value"><%= v %></span>
+  </span>
 <% end %>
 
 <% entry.numbers.each do |k, v| %>
-  <span class="logs-result__entry-key"><%= k %>:</span> <span class="logs-result__entry-value"><%= v %></span>
+  <span data-key="<%= k %>">
+    <span class="logs-result__entry-key"><%= k %>:</span> <span class="logs-result__entry-value"><%= v %></span>
+  </span>
 <% end %>
 
 <% entry.booleans.each do |k, v| %>
-  <span class="logs-result__entry-key"><%= k %>:</span> <span class="logs-result__entry-value"><%= v ? 'true' : 'false' %></span>
+  <span data-key="<%= k %>">
+    <span class="logs-result__entry-key"><%= k %>:</span> <span class="logs-result__entry-value"><%= v ? 'true' : 'false' %></span>
+  </span>
 <% end %>
 
 <% entry.nulls.each do |k| %>
-  <span class="logs-result__entry-key"><%= k %>:</span> <span class="logs-result__entry-value">is NULL</span>
+  <span data-key="<%= k %>">
+    <span class="logs-result__entry-key"><%= k %>:</span> <span class="logs-result__entry-value">NULL</span>
+  </span>
 <% end %>
