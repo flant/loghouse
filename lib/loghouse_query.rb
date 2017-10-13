@@ -2,6 +2,7 @@ require 'loghouse_query/parsers'
 require 'loghouse_query/storable'
 require 'loghouse_query/pagination'
 require 'loghouse_query/clickhouse'
+require 'loghouse_query/permissions'
 require 'log_entry'
 
 class LoghouseQuery
@@ -9,6 +10,7 @@ class LoghouseQuery
   include Storable
   include Pagination
   include Clickhouse
+  include Permissions
 
   LOGS_TABLE          = ENV.fetch('CLICKHOUSE_LOGS_TABLE')          { 'logs' }
   TIMESTAMP_ATTRIBUTE = ENV.fetch('CLICKHOUSE_TIMESTAMP_ATTRIBUTE') { 'timestamp' }

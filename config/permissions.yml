@@ -1,0 +1,8 @@
+# Available namespaces
+user:
+  - test%
+  - stage%
+  - staging%
+  - review%
+admin:
+  - "%"

@@ -9,6 +9,4 @@ gem 'parslet'
 gem 'activesupport'
 gem 'json'
 
-gem 'will_paginate'
-
 gem 'pry', group: :development

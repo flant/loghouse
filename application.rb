@@ -1,12 +1,13 @@
 require_relative 'config/boot'
 
 module Loghouse
-  TIME_ZONE = 'Europe/Moscow'
+  include CurrentUser
+
+  TIME_ZONE = ENV.fetch('TIME_ZONE') { 'Europe/Moscow' }
 
   # rubocop:disable Metrics/ClassLength
   class Application < Sinatra::Base
     configure do
-      register WillPaginate::Sinatra
       use Rack::MethodOverride
 
       enable :logging
@@ -14,6 +15,7 @@ module Loghouse
 
     before do
       Time.zone = TIME_ZONE
+      Loghouse.current_user = self.class.development? ? 'admin' : 'user' # TODO from header
     end
 
     get '/' do
