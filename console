@@ -4,39 +4,40 @@ def reload!
   Time.zone = Loghouse::TIME_ZONE
 end
 
-def insert
-  names = %w[
-    timestamp nsec
-    string_fields.names string_fields.values
-    number_fields.names number_fields.values
-    boolean_fields.names boolean_fields.values
-    null_fields.names
-  ]
+def create_logs(force = false)
+  if ::Clickhouse.connection.exists_table(LoghouseQuery::LOGS_TABLE)
+    return unless force
 
-  s = CSV.generate do |csv|
-    csv << names
-    csv << [
-      Time.now.utc.strftime('%Y-%m-%d %H:%M:%S'),
-      rand(10_000),
-      %w[a b c].to_s.gsub(/"/, "'"), %w[1 2 3].shuffle.to_s.gsub(/"/, "'"),
-      %w[d e f].to_s.gsub(/"/, "'"), %w[4 5 6].shuffle.map(&:to_i),
-      %w[g].to_s.gsub(/"/, "'"), [1],
-      ['x'].to_s.gsub(/"/, "'"),
-    ]
+    ::Clickhouse.connection.drop_table(LoghouseQuery::LOGS_TABLE)
   end
 
-  Clickhouse.connection.insert_rows(LoghouseQuery::LOGS_TABLE, csv: s)
+  Clickhouse::connection.execute <<~EOS
+    CREATE TABLE #{LoghouseQuery::LOGS_TABLE}
+    (
+        `#{LoghouseQuery::TIMESTAMP_ATTRIBUTE}` DateTime,
+        `#{LoghouseQuery::NSEC_ATTRIBUTE}` UInt32,
+        `string_fields.names` Array(String),
+        `string_fields.values` Array(String),
+        `number_fields.names` Array(String),
+        `number_fields.values` Array(Float64),
+        `boolean_fields.names` Array(String),
+        `boolean_fields.values` Array(Float64),
+        `null_fields.names` Array(String),
+        `date` Date MATERIALIZED toDate(timestamp)
+    ) ENGINE = MergeTree(date, (#{LoghouseQuery::TIMESTAMP_ATTRIBUTE}, #{LoghouseQuery::NSEC_ATTRIBUTE}), 32768)
+  EOS
 end
 
 def insert_fake_data
-  res = Clickhouse.connection.select_rows(from: LoghouseQuery::LOGS_TABLE, limit: 500)
   s = CSV.generate do |csv|
-    csv << res.names
-    res.each do |r|
+    csv << [LoghouseQuery::TIMESTAMP_ATTRIBUTE, LoghouseQuery::NSEC_ATTRIBUTE, 'string_fields.names', 'string_fields.values',
+            'number_fields.names', 'number_fields.values', 'boolean_fields.names', 'boolean_fields.values', 'null_fields.names']
+
+    CSV.foreach('fixtures/fake_data.tsv', col_sep: "\t") do |r|
       o = []
-      o << (Time.zone.now - rand(100_000).to_i.seconds).utc.strftime('%Y-%m-%d %H:%M:%S')
+      o << (Time.zone.now - rand(1_000).to_i.seconds).utc.strftime('%Y-%m-%d %H:%M:%S')
       o << rand(10**6).to_i
-      r[2..10].each{|x| o << (x || []).to_s.gsub(/'/, "").gsub(/"/, "'") }
+      o += r
       csv << o
     end
   end

@@ -1,26 +1,31 @@
 class LoghouseQuery
   module Clickhouse
     class Expression
-      attr_reader :key, :value, :operator
+      attr_reader :value, :operator
       def initialize(expression, operator = nil)
-        @any_key  = expression[:any_key]
-        @key      = expression[:key]
-        @value    = expression[:str_value].to_s.presence || expression[:num_value].to_f
-        @operator = if expression[:not_null]
-                      'not_null'
-                    elsif expression[:is_null]
-                      'is_null'
-                    elsif expression[:is_true]
-                      'is_true'
-                    elsif expression[:is_false]
-                      'is_false'
-                    else
-                      expression[:e_op]
-                    end
+        @any_key    = expression[:any_key]
+        @label_key  = expression[:label_key]
+        @custom_key = expression[:custom_key]
+        @value      = expression[:str_value].to_s.presence || expression[:num_value].to_f
+        @operator   = if expression[:not_null]
+                        'not_null'
+                      elsif expression[:is_null]
+                        'is_null'
+                      elsif expression[:is_true]
+                        'is_true'
+                      elsif expression[:is_false]
+                        'is_false'
+                      else
+                        expression[:e_op]
+                      end
       end
 
       def any_key?
         @any_key.present?
+      end
+
+      def key
+        @label_key.present? ? "label.#{@label_key}" : @custom_key
       end
 
       def to_s

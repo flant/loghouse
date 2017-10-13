@@ -3,7 +3,8 @@ class LoghouseQueryP < Parslet::Parser
 
   QUERY_OPERATORS      = %w[and or]
   EXPRESSION_OPERATORS = %w[>= <= =~ != = > < ]
-  ANY_RESERVED_KEY     = "~"
+  ANY_RESERVED_KEY     = "*"
+  LABEL_RESERVED_KEY   = "~"
 
   rule(:query_operator) do
     q_op = nil
@@ -48,7 +49,11 @@ class LoghouseQueryP < Parslet::Parser
     str("'") >> match['^\''].repeat.as(:str_value) >> str("'")
   }
 
-  rule(:key) { stri(ANY_RESERVED_KEY).as(:any_key) | (match['a-zA-Z'] >> match['a-zA-Z0-9_\-\.'].repeat(0)).as(:key) }
+  rule(:key) {
+    stri(ANY_RESERVED_KEY).as(:any_key) |
+    stri(LABEL_RESERVED_KEY) >> (match['a-zA-Z'] >> match['a-zA-Z0-9_\-\.'].repeat(0)).as(:label_key) |
+    (match['a-zA-Z'] >> match['a-zA-Z0-9_\-\.'].repeat(0)).as(:custom_key)
+  }
 
   rule(:expression) do
     (

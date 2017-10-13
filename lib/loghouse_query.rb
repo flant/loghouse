@@ -10,7 +10,7 @@ class LoghouseQuery
   include Pagination
   include Clickhouse
 
-  LOGS_TABLE          = ENV.fetch('CLICKHOUSE_LOGS_TABLE')          { 'logs6' }
+  LOGS_TABLE          = ENV.fetch('CLICKHOUSE_LOGS_TABLE')          { 'logs' }
   TIMESTAMP_ATTRIBUTE = ENV.fetch('CLICKHOUSE_TIMESTAMP_ATTRIBUTE') { 'timestamp' }
   NSEC_ATTRIBUTE      = ENV.fetch('CLICKHOUSE_NSEC_ATTRIBUTE')      { 'nsec' }
 
