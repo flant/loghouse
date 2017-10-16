@@ -1,5 +1,11 @@
 <span class="logs-result__entry-timestamp"><%= entry.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") %></span>
 
+<% LoghouseQuery::KUBERNETES_ATTRIBUTES.keys.each do |k| %>
+  <span data-key="<%= k %>">
+    <span class="logs-result__entry-kube-key"><%= k %>:</span> <span class="logs-result__entry-value"><%= entry.send(k) %></span>
+  </span>
+<% end %>
+
 <% entry.strings.each do |k, v| %>
   <span data-key="<%= k %>">
     <span class="logs-result__entry-key"><%= k %>:</span> <span class="logs-result__entry-value"><%= v %></span>

@@ -24,6 +24,10 @@ class LoghouseQuery
         @any_key.present?
       end
 
+      def kubernetes_key?
+        LoghouseQuery::KUBERNETES_ATTRIBUTES.keys.include?(key.to_sym)
+      end
+
       def key
         @label_key.present? ? "label.#{@label_key}" : @custom_key
       end
@@ -73,6 +77,8 @@ class LoghouseQuery
 
         if any_key?
           "arrayExists(x -> match(x, '#{val}'), string_fields.values)"
+        elsif kubernetes_key?
+          "match(#{key}, #{val})"
         else
           "has(string_fields.names, '#{key}') AND "\
           "match(string_fields.values[indexOf(string_fields.names, '#{key}')], '#{val}')"
@@ -83,6 +89,8 @@ class LoghouseQuery
         if value.include?('%') || value.include?('_')
           if any_key?
             "arrayExists(x -> #{operator == '=' ? 'like' : 'notLike'}(x, '#{value}'), string_fields.values)"
+          elsif kubernetes_key?
+            "#{operator == '=' ? 'like' : 'notLike'}(#{key}, '#{value}')"
           else
             "has(string_fields.names, '#{key}') AND "\
             "#{operator == '=' ? 'like' : 'notLike'}(string_fields.values[indexOf(string_fields.names, '#{key}')], '#{value}')"
@@ -90,6 +98,8 @@ class LoghouseQuery
         else
           if any_key?
             "arrayExists(x -> x #{operator} '#{value}', string_fields.values)"
+          elsif kubernetes_key?
+            "#{key} #{operator} '#{value}'"
           else
             "has(string_fields.names, '#{key}') AND "\
             "string_fields.values[indexOf(string_fields.names, '#{key}')] #{operator} '#{value}'"
@@ -101,6 +111,8 @@ class LoghouseQuery
         if any_key?
           "arrayExists(x -> x #{operator} '#{value}', string_fields.values) OR "\
           "arrayExists(x -> x #{operator} #{value}, number_fields.values)"
+        elsif kubernetes_key?
+          "#{key} #{operator} '#{value}'"
         else
           <<~EOS
             CASE

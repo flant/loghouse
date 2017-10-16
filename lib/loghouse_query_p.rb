@@ -49,8 +49,11 @@ class LoghouseQueryP < Parslet::Parser
     str("'") >> match['^\''].repeat.as(:str_value) >> str("'")
   }
 
+  rule(:any_key) {
+    stri(ANY_RESERVED_KEY).as(:any_key)
+  }
+
   rule(:key) {
-    stri(ANY_RESERVED_KEY).as(:any_key) |
     stri(LABEL_RESERVED_KEY) >> (match['a-zA-Z'] >> match['a-zA-Z0-9_\-\.'].repeat(0)).as(:label_key) |
     (match['a-zA-Z'] >> match['a-zA-Z0-9_\-\.'].repeat(0)).as(:custom_key)
   }
@@ -59,7 +62,7 @@ class LoghouseQueryP < Parslet::Parser
     (
       (key >> expression_null) |
       (key >> expression_boolean) |
-      (key >> expression_operator >> value)
+      ((key | any_key) >> expression_operator >> value)
     ).as(:expression)
   end
 

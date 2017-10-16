@@ -11,27 +11,31 @@ def create_logs(force = false)
     ::Clickhouse.connection.drop_table(LoghouseQuery::LOGS_TABLE)
   end
 
-  Clickhouse::connection.execute <<~EOS
+
+  sql = <<~EOS
     CREATE TABLE #{LoghouseQuery::LOGS_TABLE}
     (
-        `#{LoghouseQuery::TIMESTAMP_ATTRIBUTE}` DateTime,
-        `#{LoghouseQuery::NSEC_ATTRIBUTE}` UInt32,
-        `string_fields.names` Array(String),
-        `string_fields.values` Array(String),
-        `number_fields.names` Array(String),
-        `number_fields.values` Array(Float64),
-        `boolean_fields.names` Array(String),
-        `boolean_fields.values` Array(Float64),
-        `null_fields.names` Array(String),
-        `date` Date MATERIALIZED toDate(timestamp)
+      `date` Date MATERIALIZED toDate(#{LoghouseQuery::TIMESTAMP_ATTRIBUTE}),
+      `#{LoghouseQuery::TIMESTAMP_ATTRIBUTE}` DateTime,
+      `#{LoghouseQuery::NSEC_ATTRIBUTE}` UInt32,
+#{LoghouseQuery::KUBERNETES_ATTRIBUTES.map { |att, type| "      `#{att}` #{type}" }.join(",\n") },
+      `string_fields.names` Array(String),
+      `string_fields.values` Array(String),
+      `number_fields.names` Array(String),
+      `number_fields.values` Array(Float64),
+      `boolean_fields.names` Array(String),
+      `boolean_fields.values` Array(Float64),
+      `null_fields.names` Array(String)
     ) ENGINE = MergeTree(date, (#{LoghouseQuery::TIMESTAMP_ATTRIBUTE}, #{LoghouseQuery::NSEC_ATTRIBUTE}), 32768)
   EOS
+  Clickhouse::connection.execute sql
 end
 
 def insert_fake_data
   s = CSV.generate do |csv|
-    csv << [LoghouseQuery::TIMESTAMP_ATTRIBUTE, LoghouseQuery::NSEC_ATTRIBUTE, 'string_fields.names', 'string_fields.values',
-            'number_fields.names', 'number_fields.values', 'boolean_fields.names', 'boolean_fields.values', 'null_fields.names']
+    csv << [LoghouseQuery::TIMESTAMP_ATTRIBUTE, LoghouseQuery::NSEC_ATTRIBUTE, *LoghouseQuery::KUBERNETES_ATTRIBUTES.keys,
+            'string_fields.names', 'string_fields.values','number_fields.names', 'number_fields.values',
+            'boolean_fields.names', 'boolean_fields.values', 'null_fields.names']
 
     CSV.foreach('fixtures/fake_data.tsv', col_sep: "\t") do |r|
       o = []

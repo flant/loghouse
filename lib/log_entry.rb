@@ -4,10 +4,16 @@ class LogEntry
   end
 
   attr_reader :timestamp, :strings, :numbers, :booleans, :nulls
+  LoghouseQuery::KUBERNETES_ATTRIBUTES.keys.each { |k| attr_reader k }
+
   def initialize(row, names)
     @names          = names
     @row            = row
     @timestamp      = row[names.index('timestamp')].change(nsec: row[names.index('nsec')])
+
+    LoghouseQuery::KUBERNETES_ATTRIBUTES.keys.each do |k|
+      instance_variable_set("@#{k}", row[names.index(k.to_s)])
+    end
 
     @strings  = fields_to_hash('string')
     @numbers  = fields_to_hash('number')  { |v| v.to_i }

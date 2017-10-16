@@ -62,6 +62,15 @@
 
 }
 
+.logs-result__entry-kube-key {
+  background: #262626;
+  color: #998AAC;
+}
+
+.logs-result__entry-kube-value {
+
+}
+
 .logs-result__breakpoint {
   background: #262626;
   color: #CCCCCC;
