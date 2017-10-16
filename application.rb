@@ -13,7 +13,8 @@ module Loghouse
     end
 
     before do
-      Time.zone = TIME_ZONE
+      Time.zone    = TIME_ZONE
+      @tab_queries = LoghouseQuery.all.first(10)
     end
 
     get '/' do
@@ -21,8 +22,8 @@ module Loghouse
     end
 
     get '/query' do
-      @queries = LoghouseQuery.all.first(10)
       @query =  if params[:query_id]
+                  @tab = params[:query_id]
                   LoghouseQuery.find!(params[:query_id])
                 else
                   query_from_params
