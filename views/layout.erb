@@ -26,7 +26,7 @@
         </div>
         <ul class="nav navbar-nav">
           <li <%= 'class="active"' if @tab.blank? %>><a href="/">Default query</a></li>
-          <% @queries.each do |q| %>
+          <% @tab_queries.each do |q| %>
             <li class="<%= 'active' if @tab == q.id %>">
               <a href="/query?query_id=<%= q.id %>">
                 <%= q.attributes[:name] %>
