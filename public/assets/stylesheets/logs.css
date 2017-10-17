@@ -67,6 +67,15 @@
   color: #998AAC;
 }
 
+.logs-result__entry-label-value {
+
+}
+
+.logs-result__entry-label-key {
+  background: #262626;
+  color: #99A122;
+}
+
 .logs-result__entry-kube-value {
 
 }

@@ -9,17 +9,6 @@ class LoghouseQuery
   include Pagination
   include Clickhouse
 
-  LOGS_TABLE            = ENV.fetch('CLICKHOUSE_LOGS_TABLE')          { 'logs' }
-  TIMESTAMP_ATTRIBUTE   = ENV.fetch('CLICKHOUSE_TIMESTAMP_ATTRIBUTE') { 'timestamp' }
-  NSEC_ATTRIBUTE        = ENV.fetch('CLICKHOUSE_NSEC_ATTRIBUTE')      { 'nsec' }
-  KUBERNETES_ATTRIBUTES = {
-    namespace: 'String',
-    host: 'String',
-    pod_name: 'String',
-    container_name: 'String',
-    stream: 'String'
-  }.freeze
-
   DEFAULTS = {
     id:        nil,
     name:      nil,
@@ -45,7 +34,7 @@ class LoghouseQuery
   end
 
   def order_by
-    [attributes[:order_by], "#{TIMESTAMP_ATTRIBUTE} DESC", "#{NSEC_ATTRIBUTE} DESC"].compact.join(', ')
+    [attributes[:order_by], "#{LogsTables::TIMESTAMP_ATTRIBUTE} DESC", "#{LogsTables::NSEC_ATTRIBUTE} DESC"].compact.join(', ')
   end
 
   def result

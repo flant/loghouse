@@ -46,6 +46,7 @@ GEM
     rack (2.0.3)
     rack-protection (2.0.0)
       rack
+    rake (12.1.0)
     sinatra (2.0.0)
       mustermann (~> 1.0)
       rack (~> 2.0)
@@ -69,6 +70,7 @@ DEPENDENCIES
   parslet
   pry
   puma
+  rake
   sinatra
   will_paginate
 
