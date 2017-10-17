@@ -10,12 +10,13 @@ class LoghouseQuery
   include Clickhouse
 
   DEFAULTS = {
-    id:        nil,
-    name:      nil,
-    query:     nil,
-    time_from: 'now-12h',
-    time_to:   'now',
-    position:  nil
+    id:         nil,
+    name:       nil,
+    namespaces: [],
+    query:      nil,
+    time_from:  'now-12h',
+    time_to:    'now',
+    position:   nil
   }.freeze # Trick for all-attributes-hash in correct order in insert
 
   attr_accessor :attributes
@@ -31,6 +32,10 @@ class LoghouseQuery
 
   def id
     attributes[:id]
+  end
+
+  def namespaces
+    attributes[:namespaces]
   end
 
   def order_by

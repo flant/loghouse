@@ -5,7 +5,7 @@ TRUE_VALUES = %w[1 on true]
 
 Time.zone = Loghouse::TIME_ZONE
 
-task :create_logs do
+task :create_logs_tables do
   force = TRUE_VALUES.include?(ENV['FORCE'])
 
   LogsTables.create_merge_table(force: force)

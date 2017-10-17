@@ -12,6 +12,7 @@ require 'active_support/json'
 require 'parslet_extensions'
 require 'logs_tables'
 require 'loghouse_query'
+require 'kubernetes'
 
 require 'clickhouse_time_zone_patch'
 require_relative 'clickhouse'

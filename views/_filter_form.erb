@@ -36,6 +36,13 @@
           </div>
         </div>
         <div class="navbar-form">
+          <div class="form-group">
+            <select name="namespaces[]" id="namespaces-select" class="form-control" multiple="multiple">
+              <% Kubernetes.namespaces.each do |ns| %>
+                <option value="<%= ns %>" <%= 'selected="selected"' if @query.namespaces.include?(ns) %>><%= ns %></option>
+              <% end %>
+            </select>
+          </div>
           <div class="input-group">
             <input type="text" class="form-control" id="query" placeholder="Query..." name='query' size="60" value="<%= h @query.attributes[:query] if @query %>">
             <span class="input-group-btn">

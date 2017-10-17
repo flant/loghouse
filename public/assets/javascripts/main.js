@@ -441,4 +441,11 @@ $(document).ready(function() {
     }, 250);
   });
 
+  $('#namespaces-select').select2({
+    placeholder: 'Select some namespaces',
+    allowClear: true,
+    theme: "bootstrap"
+  });
+  $('#namespaces-select').on('change', submitForm);
+
 });
