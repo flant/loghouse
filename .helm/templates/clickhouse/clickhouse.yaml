@@ -1,0 +1,100 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: clickhouse-server
+  namespace: {{ .Values.namespace }}
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        component: clickhouse
+    spec:
+      initContainers:
+      - name: chown
+        image: alpine:3.6
+        command: ['/bin/sh', '-c', 'chown 105:106 -R /var/lib/clickhouse']
+        volumeMounts:
+{{- if .Values.storageClassName }}
+        - name: {{ .Values.pvc.name }}
+{{- end }}
+{{- if .Values.hostpath }}
+        - name: hostpath
+{{- end }}
+          mountPath: /var/lib/clickhouse
+      containers:
+      - name: clickhouse
+        image: {{ .Values.image.clickhouse }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        ports:
+        - name: http
+          containerPort: 8123
+        - name: native
+          containerPort: 9000
+        env:
+        - name: CLICKHOUSE_SERVER
+          value: {{ .Values.clickhouse.server | quote }}
+        - name: CLICKHOUSE_PORT
+          value: {{ .Values.clickhouse.port | quote }}
+        - name: CLICKHOUSE_USER
+          value: {{ .Values.clickhouse.user | quote }}
+        - name: CLICKHOUSE_PASS
+          value: {{ .Values.clickhouse_pass_original | quote }}
+        - name: CLICKHOUSE_DB
+          value: {{ .Values.clickhouse.db | quote }}
+        - name: K8S_LOGS_TABLE
+          value: {{ .Values.clickhouse.table | quote }}
+        - name: TZ
+          value: {{ .Values.tzdata | quote }}
+        livenessProbe:
+          timeoutSeconds: 1
+          initialDelaySeconds: 60
+          tcpSocket:
+            port: 8123
+        readinessProbe:
+          timeoutSeconds: 1
+          initialDelaySeconds: 5
+          tcpSocket:
+            port: 8123
+        resources:
+          requests:
+            cpu: {{ .Values.clickhouse.resources.requests.cpu }}
+            memory: {{ .Values.clickhouse.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.clickhouse.resources.limits.cpu }}
+            memory: {{ .Values.clickhouse.resources.limits.memory }}
+        volumeMounts:
+{{- if .Values.hostpath }}
+          - name: hostpath
+            mountPath: /var/lib/clickhouse/
+{{- end }}
+{{- if .Values.storageClassName }}
+          - name: {{ .Values.pvc.name }}
+            mountPath: /var/lib/clickhouse/
+{{- end }}
+          - name: config-volume
+            mountPath: /etc/clickhouse-server/
+      volumes:
+{{- if .Values.hostpath }}
+        - name: hostpath
+          hostPath:
+            path: {{ .Values.hostpath }}
+{{- end }}
+{{- if .Values.storageClassName }}
+        - name: {{ .Values.pvc.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.pvc.name }}
+{{- end }}
+        - name: config-volume
+          configMap:
+            name: clickhouse-config
+      tolerations:
+      - operator: "Exists"
+        key: "node-role/logging"
+      nodeSelector:
+        node-role/logging: ""
+

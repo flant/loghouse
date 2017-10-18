@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: clickhouse
+  namespace: {{ .Values.namespace }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+{{- if .Values.https }}
+    kubernetes.io/tls-acme: "true"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    ingress.kubernetes.io/ssl-redirect: "true"
+{{- else }}
+    ingress.kubernetes.io/force-ssl-redirect: "false"
+    ingress.kubernetes.io/ssl-redirect: "false"
+{{- end }}
+spec:
+  rules:
+  - host: {{ .Values.clickhouse_host }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: clickhouse
+          servicePort: http
+{{- if .Values.https }}
+  tls:
+  - hosts:
+    - {{ .Values.clickhouse_host }}
+    secretName: clickhouse
+{{- end }}

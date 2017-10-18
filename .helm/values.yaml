@@ -1,0 +1,50 @@
+namespace: kube-logging
+tzdata: Europe/Moscow
+pvc:
+  name: clickhouse
+  accessMode: ReadWriteOnce
+  size: 50Gi
+  storageClassName: rbd
+image:
+  imagePullPolicy: Always
+  clickhouse: wimbo/clickhouse:latest
+  fluentd: wimbo/fluentd:latest
+  loghouse: wimbo/loghouse:latest
+  tabix: wimbo/tabix:latest
+clickhouse:
+  server: clickhouse
+  port: 9000
+  user: default
+  db: logs
+  table: logs
+  resources:
+    limits:
+      cpu: 4
+      memory: 20Gi
+    requests:
+      cpu: 1
+      memory: 4Gi
+fluentd:
+  resources:
+    limits:
+      cpu: 1
+      memory: 2Gi
+    requests:
+      cpu: 1
+      memory: 1Gi
+loghouse:
+  resources:
+    limits:
+      cpu: 1
+      memory: 1Gi
+    requests:
+      cpu: 1
+      memory: 512Mi
+tabix:
+  resources:
+    limits:
+      memory: 512Mi
+      cpu: 0.5
+    requests:
+      memory: 256Mi
+      cpu: 0.2
