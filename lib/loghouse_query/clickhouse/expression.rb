@@ -96,27 +96,27 @@ class LoghouseQuery
         val = value.to_s
         if val.include?('%') || val.include?('_')
           if any_key?
-            "arrayExists(x -> #{operator == '=' ? 'like' : 'notLike'}(x, '#{val}'), string_fields.vals)"
+            "arrayExists(x -> #{operator == '=' ? 'like' : 'notLike'}(x, '#{val}'), string_fields.values)"
           elsif kubernetes_key?
             "#{operator == '=' ? 'like' : 'notLike'}(#{key}, '#{val}')"
           elsif label_key?
             "has(labels.names, '#{key}') AND "\
-            "#{operator == '=' ? 'like' : 'notLike'}(labels.vals[indexOf(labels.names, '#{key}')], '#{val}')"
+            "#{operator == '=' ? 'like' : 'notLike'}(labels.values[indexOf(labels.names, '#{key}')], '#{val}')"
           else
             "has(string_fields.names, '#{key}') AND "\
-            "#{operator == '=' ? 'like' : 'notLike'}(string_fields.vals[indexOf(string_fields.names, '#{key}')], '#{val}')"
+            "#{operator == '=' ? 'like' : 'notLike'}(string_fields.value[indexOf(string_fields.names, '#{key}')], '#{val}')"
           end
         else
           if any_key?
-            "arrayExists(x -> x #{operator} '#{val}', string_fields.vals)"
+            "arrayExists(x -> x #{operator} '#{val}', string_fields.values)"
           elsif kubernetes_key?
             "#{key} #{operator} '#{val}'"
           elsif label_key?
             "has(labels.names, '#{key}') AND "\
-            "labels.vals[indexOf(labels.names, '#{key}')] #{operator} '#{val}'"
+            "labels.values[indexOf(labels.names, '#{key}')] #{operator} '#{val}'"
           else
             "has(string_fields.names, '#{key}') AND "\
-            "string_fields.vals[indexOf(string_fields.names, '#{key}')] #{operator} '#{val}'"
+            "string_fields.values[indexOf(string_fields.names, '#{key}')] #{operator} '#{val}'"
           end
         end
       end

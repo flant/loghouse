@@ -1,14 +1,14 @@
 <span class="logs-result__entry-timestamp"><%= entry.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") %></span>
 
 <% LogsTables::KUBERNETES_ATTRIBUTES.keys.each do |k| %>
-  <span data-key="<%= k %>">
-    <span class="logs-result__entry-kube-key"><%= k %>:</span> <span class="logs-result__entry-kube-value"><%= entry.send(k) %></span>
+  <span data-key="<%= k %>" class="kube-attribute">
+    <span class="logs-result__entry-kube-key"><%= k %>:</span> <span class="logs-result__entry-value"><%= entry.send(k) %></span>
   </span>
 <% end %>
 
 <% entry.labels.each do |k, v| %>
-  <span data-key="<%= k %>">
-    <span class="logs-result__entry-label-key"><%= k %>:</span> <span class="logs-result__entry-label-value"><%= v %></span>
+  <span data-key="~<%= k %>" class="kube-label">
+    <span class="logs-result__entry-label-key"><%= k %>:</span> <span class="logs-result__entry-value"><%= v %></span>
   </span>
 <% end %>
 

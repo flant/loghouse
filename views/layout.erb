@@ -36,6 +36,11 @@
           <li <%= 'class="active"' if @tab == :queries %>>
             <a href="/queries" data-toggle="tooltip" data-placement="bottom" title="Manage queries"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
           </li>
+          <li class="navbar-right">
+            <a href="https://github.com/flant/loghouse/commit/<%= version %>" target="_blank" class="glyphicon glyphicon-star">
+              <%= version %>
+            </a>
+          </li>
         </ul>
       </div>
     </nav>

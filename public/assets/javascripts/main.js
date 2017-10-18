@@ -166,7 +166,7 @@ function initHideShowWidget() {
   });
   var selected_keys;
   if (URI(location.href).hasQuery('selected_keys', true)) {
-    selected_keys = URI(location.href).search(true)['selected_keys'].split(',');
+    selected_keys = URI(location.href).search(true).selected_keys.split(',');
   } else if (Cookies.get('selected_keys')) {
     selected_keys = JSON.parse(Cookies.get('selected_keys'));
   } else {
@@ -189,7 +189,7 @@ function initHideShowWidget() {
     Cookies.set('keys_option', 'hide');
     updateSelectedKeysUri();
   } else if (URI(location.href).hasQuery('keys_option', true)) {
-    window.keys_option = URI(location.href).search(true)['keys_option'];
+    window.keys_option = URI(location.href).search(true).keys_option;
   } else if (Cookies.get('keys_option')) {
     window.keys_option = Cookies.get('keys_option');
   } else {
@@ -238,7 +238,7 @@ function updateAvailableKeysStyles() {
   }
   for (var i = 0; i < window.available_keys.length; i++) {
     key = window.available_keys[i];
-    key_css_friendly = key.replace('.', '_');
+    key_css_friendly = key.replace('.', '_').replace('~', 'LABEL');
     addCSSRule(window.keys_style.sheet, 'body.hide_' + key_css_friendly + ' #result span[data-key="' + key + '"]', 'display: none', 0);
   }
 }
@@ -255,7 +255,7 @@ function updateSelectedKeysClasses() {
   }
   for (var i = 0; i < window.hidden_keys.length; i++) {
     key = window.hidden_keys[i];
-    key_css_friendly = key.replace('.', '_');
+    key_css_friendly = key.replace('.', '_').replace('~', 'LABEL');
     body.addClass('hide_' + key_css_friendly);
   }
 }
@@ -448,4 +448,23 @@ $(document).ready(function() {
   });
   $('#namespaces-select').on('change', submitForm);
 
+
+  $(document).on('click', '.kube-attribute, .kube-label', function() {
+    key        = $(this).data('key');
+    value      = $(this).find('span.logs-result__entry-value').text();
+    expression = key + ' = "' + value + '"';
+
+    window.keys_option = 'hide';
+    hidden_keys = window.hsk_select.val().concat([key]);
+    window.hsk_select.val(hidden_keys).trigger('select2:select');
+
+    if (key == 'namespace') {
+      $('#namespaces-select').val(value).trigger('change');
+    } else if ($('#query').val().length > 0) {
+      query_val = $('#query').val() + ' and ' + expression;
+      $('#query').val(query_val).trigger('change');
+    }  else {
+        $('#query').val(expression).trigger('change');
+    }
+  });
 });

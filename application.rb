@@ -131,6 +131,10 @@ module Loghouse
       def follow?
         params[:follow] == 'on'
       end
+
+      def version
+        @version ||= ENV.fetch('GIT_REV') { `git rev-parse HEAD` }.to_s[0..7]
+      end
     end
 
     private

@@ -24,6 +24,14 @@
   }
 }
 
+span.kube-attribute, span.kube-label {
+  cursor: pointer;
+}
+
+span.kube-attribute:hover, span.kube-label:hover {
+  text-decoration: underline;
+}
+
 .logs-result__container::before, .logs-result__container::after {
   content: 'Loading...';
   color: #000;
