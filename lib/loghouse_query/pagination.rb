@@ -29,10 +29,10 @@ class LoghouseQuery
 
       [
         [
-          [TIMESTAMP_ATTRIBUTE, to_clickhouse_time(timestamp)].join(' = '),
-          [NSEC_ATTRIBUTE, nsec].join(" #{comparation} ")
+          [LogsTables::TIMESTAMP_ATTRIBUTE, to_clickhouse_time(timestamp)].join(' = '),
+          [LogsTables::NSEC_ATTRIBUTE, nsec].join(" #{comparation} ")
         ].join(' AND '),
-        [TIMESTAMP_ATTRIBUTE, to_clickhouse_time(timestamp)].join(" #{comparation} "),
+        [LogsTables::TIMESTAMP_ATTRIBUTE, to_clickhouse_time(timestamp)].join(" #{comparation} "),
       ].join(' OR ')
     end
   end

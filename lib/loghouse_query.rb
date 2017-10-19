@@ -12,18 +12,15 @@ class LoghouseQuery
   include Clickhouse
   include Permissions
 
-  LOGS_TABLE          = ENV.fetch('CLICKHOUSE_LOGS_TABLE')          { 'logs' }
-  TIMESTAMP_ATTRIBUTE = ENV.fetch('CLICKHOUSE_TIMESTAMP_ATTRIBUTE') { 'timestamp' }
-  NSEC_ATTRIBUTE      = ENV.fetch('CLICKHOUSE_NSEC_ATTRIBUTE')      { 'nsec' }
-
   DEFAULTS = {
-    id:        nil,
-    name:      nil,
-    query:     nil,
-    time_from: 'now-12h',
-    time_to:   'now',
-    position:  nil
-  } # Trick for all-attributes-hash in correct order in insert
+    id:         nil,
+    name:       nil,
+    namespaces: [],
+    query:      nil,
+    time_from:  'now-12h',
+    time_to:    'now',
+    position:   nil
+  }.freeze # Trick for all-attributes-hash in correct order in insert
 
   attr_accessor :attributes
 
@@ -40,8 +37,12 @@ class LoghouseQuery
     attributes[:id]
   end
 
+  def namespaces
+    attributes[:namespaces]
+  end
+
   def order_by
-    [attributes[:order_by], "#{TIMESTAMP_ATTRIBUTE} DESC", "#{NSEC_ATTRIBUTE} DESC"].compact.join(', ')
+    [attributes[:order_by], "#{LogsTables::TIMESTAMP_ATTRIBUTE} DESC", "#{LogsTables::NSEC_ATTRIBUTE} DESC"].compact.join(', ')
   end
 
   def result
@@ -54,3 +55,5 @@ class LoghouseQuery
     super
   end
 end
+
+require 'log_entry'

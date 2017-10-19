@@ -9,4 +9,6 @@ gem 'parslet'
 gem 'activesupport'
 gem 'json'
 
+gem 'kubeclient'
+
 gem 'pry', group: :development

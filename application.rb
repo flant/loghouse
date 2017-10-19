@@ -14,8 +14,9 @@ module Loghouse
     end
 
     before do
-      Time.zone = TIME_ZONE
+      Time.zone             = TIME_ZONE
       Loghouse.current_user = self.class.development? ? 'admin' : 'user' # TODO from header
+      @tab_queries          = LoghouseQuery.all.first(10)
     end
 
     get '/' do
@@ -23,8 +24,8 @@ module Loghouse
     end
 
     get '/query' do
-      @queries = LoghouseQuery.all.first(10)
       @query =  if params[:query_id]
+                  @tab = params[:query_id]
                   LoghouseQuery.find!(params[:query_id])
                 else
                   query_from_params
@@ -132,12 +133,16 @@ module Loghouse
       def follow?
         params[:follow] == 'on'
       end
+
+      def version
+        @version ||= ENV.fetch('GIT_REV') { `git rev-parse HEAD` }.to_s[0..7]
+      end
     end
 
     private
 
     def query_from_params
-      LoghouseQuery.new(name: params[:name], query: params[:query].to_s,
+      LoghouseQuery.new(name: params[:name], query: params[:query].to_s, namespaces: params[:namespaces],
                         time_from: params[:time_from], time_to: params[:time_to])
     end
   end

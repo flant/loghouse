@@ -1,7 +1,11 @@
+/* common */
+
 body {
   min-width: 1100px;
   padding-top: 70px;
 }
+
+/* error */
 
 .error-container_fixed {
   position: fixed;
@@ -10,10 +14,36 @@ body {
   z-index: 2000;
 }
 
+/* sortable */
+
 .sortable-handle {
   cursor: move;
 }
 
+/* select2 */
+
 .select2-results__option[aria-selected=true] {
   display: none;
+}
+
+/* navbar */
+
+.navbar-form .input-group .input-group-btn {
+  width: 1%;
+}
+
+.navbar .nav.navbar-nav {
+  float: none;
+}
+
+.navbar-double {
+  min-height: 90px;
+}
+
+.navbar .row {
+  margin-bottom: 5px;
+}
+
+.navbar .row + .row {
+  margin-bottom: 0px;
 }

@@ -24,12 +24,25 @@
         <div class="navbar-header">
           <a class="navbar-brand" href="/">Loghouse</a>
         </div>
-        <div id="navbar" class="collapse navbar-collapse">
-          <ul class="nav navbar-nav">
-            <li <%= 'class="active"' if @tab.blank? %>><a href="/">Monitor</a></li>
-            <li <%= 'class="active"' if @tab == :queries %>><a href="/queries">Manage queries</a></li>
-          </ul>
-        </div>
+        <ul class="nav navbar-nav">
+          <li <%= 'class="active"' if @tab.blank? %>><a href="/">Default query</a></li>
+          <% @tab_queries.each do |q| %>
+            <li class="<%= 'active' if @tab == q.id %>">
+              <a href="/query?query_id=<%= q.id %>">
+                <%= q.attributes[:name] %>
+              </a>
+            </li>
+          <% end %>
+          <li <%= 'class="active"' if @tab == :queries %>>
+            <a href="/queries" data-toggle="tooltip" data-placement="bottom" title="Manage queries"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
+          </li>
+          <li class="navbar-right">
+            <a href="https://github.com/flant/loghouse/commit/<%= version %>" target="_blank">
+              <span class="glyphicon glyphicon-link"></span>
+              ver. <%= version %>
+            </a>
+          </li>
+        </ul>
       </div>
     </nav>
 

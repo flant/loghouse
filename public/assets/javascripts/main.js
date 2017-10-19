@@ -166,7 +166,7 @@ function initHideShowWidget() {
   });
   var selected_keys;
   if (URI(location.href).hasQuery('selected_keys', true)) {
-    selected_keys = URI(location.href).search(true)['selected_keys'].split(',');
+    selected_keys = URI(location.href).search(true).selected_keys.split(',');
   } else if (Cookies.get('selected_keys')) {
     selected_keys = JSON.parse(Cookies.get('selected_keys'));
   } else {
@@ -189,7 +189,7 @@ function initHideShowWidget() {
     Cookies.set('keys_option', 'hide');
     updateSelectedKeysUri();
   } else if (URI(location.href).hasQuery('keys_option', true)) {
-    window.keys_option = URI(location.href).search(true)['keys_option'];
+    window.keys_option = URI(location.href).search(true).keys_option;
   } else if (Cookies.get('keys_option')) {
     window.keys_option = Cookies.get('keys_option');
   } else {
@@ -238,7 +238,7 @@ function updateAvailableKeysStyles() {
   }
   for (var i = 0; i < window.available_keys.length; i++) {
     key = window.available_keys[i];
-    key_css_friendly = key.replace('.', '_');
+    key_css_friendly = key.replace('.', '_').replace('~', 'LABEL');
     addCSSRule(window.keys_style.sheet, 'body.hide_' + key_css_friendly + ' #result span[data-key="' + key + '"]', 'display: none', 0);
   }
 }
@@ -255,7 +255,7 @@ function updateSelectedKeysClasses() {
   }
   for (var i = 0; i < window.hidden_keys.length; i++) {
     key = window.hidden_keys[i];
-    key_css_friendly = key.replace('.', '_');
+    key_css_friendly = key.replace('.', '_').replace('~', 'LABEL');
     body.addClass('hide_' + key_css_friendly);
   }
 }
@@ -273,6 +273,15 @@ $(document).ready(function() {
 
   // Lib inits
   $('[data-toggle="tooltip"]').tooltip();
+
+  $('.select2').select2({
+    placeholder: function(){
+      $(this).data('placeholder');
+    },
+    width: '100%',
+    allowClear: true,
+    theme: "bootstrap"
+  });
 
   // Save query
   $('#save-query').on('click', function() {
@@ -419,12 +428,50 @@ $(document).ready(function() {
   submitForm = function () {
     $('#filter-form').submit();
   };
-
   $(document).on('change', '#query', submitForm);
+  $('#namespaces-select').on('change', submitForm);
 
   // Init show hide keys
   if($('#hide-show-keys-select').length) {
-    initHideShow();  
+    initHideShow();
   }
 
+  // Fix for navbar overflow
+  // TODO: Refactor using pure css flexbox
+  function fixResultsPosition() {
+    $('.logs-result__container').css('top', $('#topNavBar').height());
+    $('.logs-result__container').css('bottom', $('#bottomNavBar').height());
+  }
+  fixResultsPosition();
+
+  var resizeTimer;
+  $(window).on('resize', function(e) {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      fixResultsPosition();
+    }, 250);
+  });
+
+
+  $(document).on('click', '.kube-attribute, .kube-label', function() {
+    key        = $(this).data('key');
+    value      = $(this).find('span.logs-result__entry-value').text();
+    expression = key + ' = "' + value + '"';
+
+    if (window.keys_option == 'show') {
+      new_keys = window.hsk_select.val().filter(function(item){return item !== key});
+    } else {
+      new_keys = window.hsk_select.val().concat([key]);
+    }
+    window.hsk_select.val(new_keys).trigger('select2:select');
+
+    if (key == 'namespace') {
+      $('#namespaces-select').val(value).trigger('change');
+    } else if ($('#query').val().length > 0) {
+      query_val = $('#query').val() + ' and ' + expression;
+      $('#query').val(query_val).trigger('change');
+    }  else {
+        $('#query').val(expression).trigger('change');
+    }
+  });
 });
