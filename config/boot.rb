@@ -10,13 +10,14 @@ require 'json'
 require 'active_support/core_ext'
 require 'active_support/json'
 
+require 'kubernetes'
+require 'user'
+
 require 'parslet_extensions'
 require 'logs_tables'
 require 'loghouse_query'
-require 'kubernetes'
 
 require 'clickhouse_time_zone_patch'
 require_relative 'clickhouse'
 
-require 'current_user'
 require 'datepicker_presets'

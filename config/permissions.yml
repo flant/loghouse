@@ -1,8 +1,7 @@
 # Available namespaces
 user:
-  - test%
-  - stage%
-  - staging%
-  - review%
+  - "test.*"
+  - "stag(e|ing).*"
+  - "review.*"
 admin:
-  - "%"
+  - ".*"

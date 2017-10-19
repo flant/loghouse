@@ -13,8 +13,10 @@ module Kubernetes
   end
 
   def namespaces
-    # TODO
-    # client.get_namespaces.map { |ns| ns.metadata.name }
-    %w[production staging review-123]
+    if Loghouse::Application.development?
+      %w[production staging review-123]
+    else
+      client.get_namespaces.map { |ns| ns.metadata.name }
+    end
   end
 end

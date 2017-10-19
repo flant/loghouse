@@ -5,7 +5,7 @@
 <div class="form-group">
   <label for="name" class="control-label">Namespaces</label>
   <select name="namespaces[]" id="namespaces-select" class="form-control" multiple="multiple">
-    <% Kubernetes.namespaces.each do |ns| %>
+    <% User.current.available_namespaces.each do |ns| %>
       <option value="<%= ns %>" <%= 'selected="selected"' if @query.namespaces.include?(ns) %>><%= ns %></option>
     <% end %>
   </select>

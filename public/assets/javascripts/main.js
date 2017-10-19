@@ -455,7 +455,7 @@ $(document).ready(function() {
     var value      = $(this).find('span.logs-result__entry-value').text();
     var expression = key + ' = "' + value + '"';
 
-    new_keys = window.sk_select.val().filter(function(item){return item !== key});
+    new_keys = window.sk_select.val().filter(function(item){ return item !== key; });
     window.sk_select.val(new_keys).trigger('select2:select');
 
     if (key == 'namespace') {
@@ -463,8 +463,8 @@ $(document).ready(function() {
     } else if ($('#query').val().length > 0) {
       query_val = $('#query').val() + ' and ' + expression;
       $('#query').val(query_val).trigger('change');
-    }  else {
-        $('#query').val(expression).trigger('change');
+    } else {
+      $('#query').val(expression).trigger('change');
     }
   });
 });

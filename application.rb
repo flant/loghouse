@@ -1,8 +1,6 @@
 require_relative 'config/boot'
 
 module Loghouse
-  include CurrentUser
-
   TIME_ZONE = ENV.fetch('TIME_ZONE') { 'Europe/Moscow' }
 
   # rubocop:disable Metrics/ClassLength
@@ -14,9 +12,9 @@ module Loghouse
     end
 
     before do
-      Time.zone             = TIME_ZONE
-      Loghouse.current_user = self.class.development? ? 'admin' : 'user' # TODO from header
-      @tab_queries          = LoghouseQuery.all.first(10)
+      Time.zone    = TIME_ZONE
+      User.current = self.class.development? ? 'admin' : 'user' # TODO from header
+      @tab_queries = LoghouseQuery.all.first(10)
     end
 
     get '/' do
