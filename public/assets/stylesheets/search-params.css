@@ -13,7 +13,7 @@
 
 .search-params-popover.search-params-popover_active {
   display: block;
-  bottom: 49px;
+  bottom: 75px;
   opacity: 1;
-  left: 20px;
+  right: 20px;
 }

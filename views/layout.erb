@@ -19,7 +19,7 @@
     <link href="<%= url('assets/stylesheets/main.css') %>" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top" id="topNavBar">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
           <a class="navbar-brand" href="/">Loghouse</a>
@@ -37,8 +37,9 @@
             <a href="/queries" data-toggle="tooltip" data-placement="bottom" title="Manage queries"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
           </li>
           <li class="navbar-right">
-            <a href="https://github.com/flant/loghouse/commit/<%= version %>" target="_blank" class="glyphicon glyphicon-star">
-              <%= version %>
+            <a href="https://github.com/flant/loghouse/commit/<%= version %>" target="_blank">
+              <span class="glyphicon glyphicon-link"></span>
+              ver. <%= version %>
             </a>
           </li>
         </ul>

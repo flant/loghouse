@@ -1,81 +1,87 @@
-<% if @to_clickhouse %>
-  <div id="toClickhouse" class="search-params-popover">
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <pre><%= h @to_clickhouse %></pre>
-      </div>
-    </div>
-  </div>
-<% end %>
-
-<div id="hideShowKeys" class="search-params-popover">
-  <div class="panel panel-default">
-    <div class="panel-body">
-      <div class="form-group">
-        <select name="hide_show_keys" id="hide-show-keys-select" class="form-control" size="50"></select>
-      </div>
-      <div class="form-group">
-        <div class="btn-group btn-group-xs btn-group-justified" role="group">
-          <a class="btn btn-default hide-show-keys-btn" data-option="hide">Hide them</a>
-          <a class="btn btn-default hide-show-keys-btn" data-option="show">Show only them</a>
+<nav class="navbar navbar-double navbar-inverse navbar-fixed-bottom" class="bottomNavBar">
+  <form id="filter-form" action="/query" method="get">
+    <!-- search params popovers -->
+    <% if @to_clickhouse %>
+      <div id="toClickhouse" class="search-params-popover">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <pre><%= h @to_clickhouse %></pre>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-
-<nav class="navbar navbar-inverse navbar-fixed-bottom">
-  <div class="row">
-    <div class="col-xs-8">
-      <form id="filter-form" action="/query" method="get">
-        <div id="superDatePicker" class="search-params-popover">
-          <div class="panel panel-default">
-            <div class="panel-body">
-              <%= erb :_super_date_picker %>
+    <% end %>
+    <div id="hideShowKeys" class="search-params-popover">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="form-group">
+            <select name="hide_show_keys" id="hide-show-keys-select" class="form-control" size="50"></select>
+          </div>
+          <div class="form-group">
+            <div class="btn-group btn-group-xs btn-group-justified" role="group">
+              <a class="btn btn-default hide-show-keys-btn" data-option="hide">Hide them</a>
+              <a class="btn btn-default hide-show-keys-btn" data-option="show">Show only them</a>
             </div>
           </div>
         </div>
-        <div class="navbar-form">
-          <div class="form-group">
-            <select name="namespaces[]" id="namespaces-select" class="form-control" multiple="multiple">
-              <% Kubernetes.namespaces.each do |ns| %>
-                <option value="<%= ns %>" <%= 'selected="selected"' if @query.namespaces.include?(ns) %>><%= ns %></option>
-              <% end %>
-            </select>
-          </div>
-          <div class="input-group">
+      </div>
+    </div>
+    <div id="superDatePicker" class="search-params-popover">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <%= erb :_super_date_picker %>
+        </div>
+      </div>
+    </div>
+    <!-- /search params popovers -->
+    <div class="navbar-form">
+      <div class="row">
+        <div class="col-xs-9">
+          <div class="input-group" style="width:100%">
             <input type="text" class="form-control" id="query" placeholder="Query..." name='query' size="60" value="<%= h @query.attributes[:query] if @query %>">
             <span class="input-group-btn">
               <button type="submit" class="btn btn-default btn-transparent">Send</button>
             </span>
           </div>
+        </div>
+        <div class="col-xs-1">
           <div class="form-group" data-toggle="tooltip" title="Save query">
             <a role="button" class="btn btn-link btn-link-alt<% if !@query %> disabled<% end %>" <% if @query %> id="save-query"<% end %>><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></a>
+          </div>
+        </div>
+        <div class="col-xs-2" align="right">
+          <div class="form-group" data-toggle="tooltip" title="Play">
+            <a role="button" class="btn btn-link btn-link-alt" id="playBtn"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
+          </div>
+          <div class="form-group" data-toggle="tooltip" title="Pause">
+            <a role="button" class="btn btn-link btn-link-alt disabled" id="pauseBtn"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span></a>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-5">
+          <select name="namespaces[]" id="namespaces-select" class="form-control select2" multiple="multiple" data-placeholder="Select some namespaces">
+            <% Kubernetes.namespaces.each do |ns| %>
+              <option value="<%= ns %>" <%= 'selected="selected"' if @query.namespaces.include?(ns) %>><%= ns %></option>
+            <% end %>
+          </select>
+        </div>
+        <div class="col-xs-4">
+            <a class="btn btn-default btn-transparent btn-block search-params-btn" id="superDatePickerBtn" role="button" data-target="#superDatePicker" data-toggle="tooltip" data-default-title="" data-original-title="Set period"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> <span class="super-date-picker__period-title"></span></a>
+        </div>
+        <div class="col-xs-1">
+          <div class="form-group" data-toggle="tooltip" title="Hide/Show keys">
+            <a class="btn btn-link btn-link-alt hide-show-keys-toggle search-params-btn disabled" role="button" data-target="#hideShowKeys"><span class="glyphicon glyphicon-th" aria-hidden="true"></span></a>
+          </div>
+        </div>
+        <div class="col-xs-2" align="right">
+          <div class="form-group" data-toggle="tooltip" title="Add breakpoint">
+            <a role="button" class="btn btn-link btn-link-alt" id="breakpointBtn"><span class="glyphicon glyphicon-eject" aria-hidden="true"></span></a>
           </div>
           <div class="form-group" data-toggle="tooltip" title="Show clickhouse info">
             <a class="btn btn-link btn-link-alt <% if @to_clickhouse %>search-params-btn<% else %>disabled<% end %>" role="button" data-target="#toClickhouse"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
           </div>
-          <div class="form-group" data-toggle="tooltip" title="Hide/Show keys">
-            <a class="btn btn-link btn-link-alt hide-show-keys-toggle search-params-btn disabled" role="button" data-target="#hideShowKeys"><span class="glyphicon glyphicon-th" aria-hidden="true"></span></a>
-          </div>
-          <div class="form-group">
-            <a class="btn btn-link btn-link-alt search-params-btn" id="superDatePickerBtn" role="button" data-target="#superDatePicker" data-toggle="tooltip" data-default-title="" data-original-title="Set period"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> <span class="super-date-picker__period-title"></span></a>
-          </div>
-        </div>
-      </form>
-    </div>
-    <div class="col-xs-4" align="right">
-      <div class="navbar-form">
-        <div class="form-group" data-toggle="tooltip" title="Add breakpoint">
-          <a role="button" class="btn btn-link btn-link-alt" id="breakpointBtn"><span class="glyphicon glyphicon-eject" aria-hidden="true"></span></a>
-        </div>
-        <div class="form-group" data-toggle="tooltip" title="Play">
-          <a role="button" class="btn btn-link btn-link-alt" id="playBtn"><span class="glyphicon glyphicon-play" aria-hidden="true"></span></a>
-        </div>
-        <div class="form-group" data-toggle="tooltip" title="Pause">
-          <a role="button" class="btn btn-link btn-link-alt disabled" id="pauseBtn"><span class="glyphicon glyphicon-pause" aria-hidden="true"></span></a>
         </div>
       </div>
     </div>
-  </div>
+  </form>
 </nav>

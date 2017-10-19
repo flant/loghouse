@@ -274,6 +274,15 @@ $(document).ready(function() {
   // Lib inits
   $('[data-toggle="tooltip"]').tooltip();
 
+  $('.select2').select2({
+    placeholder: function(){
+      $(this).data('placeholder');
+    },
+    width: '100%',
+    allowClear: true,
+    theme: "bootstrap"
+  });
+
   // Save query
   $('#save-query').on('click', function() {
     window.location.href = "/queries/new?" + $('#filter-form').serialize();
@@ -419,8 +428,8 @@ $(document).ready(function() {
   submitForm = function () {
     $('#filter-form').submit();
   };
-
   $(document).on('change', '#query', submitForm);
+  $('#namespaces-select').on('change', submitForm);
 
   // Init show hide keys
   if($('#hide-show-keys-select').length) {
@@ -428,8 +437,10 @@ $(document).ready(function() {
   }
 
   // Fix for navbar overflow
+  // TODO: Refactor using pure css flexbox
   function fixResultsPosition() {
     $('.logs-result__container').css('top', $('#topNavBar').height());
+    $('.logs-result__container').css('bottom', $('#bottomNavBar').height());
   }
   fixResultsPosition();
 
@@ -441,22 +452,18 @@ $(document).ready(function() {
     }, 250);
   });
 
-  $('#namespaces-select').select2({
-    placeholder: 'Select some namespaces',
-    allowClear: true,
-    theme: "bootstrap"
-  });
-  $('#namespaces-select').on('change', submitForm);
-
 
   $(document).on('click', '.kube-attribute, .kube-label', function() {
     key        = $(this).data('key');
     value      = $(this).find('span.logs-result__entry-value').text();
     expression = key + ' = "' + value + '"';
 
-    window.keys_option = 'hide';
-    hidden_keys = window.hsk_select.val().concat([key]);
-    window.hsk_select.val(hidden_keys).trigger('select2:select');
+    if (window.keys_option == 'show') {
+      new_keys = window.hsk_select.val().filter(function(item){return item !== key});
+    } else {
+      new_keys = window.hsk_select.val().concat([key]);
+    }
+    window.hsk_select.val(new_keys).trigger('select2:select');
 
     if (key == 'namespace') {
       $('#namespaces-select').val(value).trigger('change');
