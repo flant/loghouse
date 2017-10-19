@@ -64,7 +64,7 @@
       </div>
       <div class="row">
         <div class="col-xs-5">
-          <select name="namespaces[]" id="namespaces-select" class="form-control select2" multiple="multiple" data-placeholder="Select some namespaces">
+          <select name="namespaces[]" id="namespaces-select" class="form-control select2" multiple="multiple" data-placeholder="Select some namespaces" size="1">
             <% Kubernetes.namespaces.each do |ns| %>
               <option value="<%= ns %>" <%= 'selected="selected"' if @query.namespaces.include?(ns) %>><%= ns %></option>
             <% end %>

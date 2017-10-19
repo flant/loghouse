@@ -451,9 +451,9 @@ $(document).ready(function() {
 
 
   $(document).on('click', '.kube-attribute, .kube-label', function() {
-    key        = $(this).data('key');
-    value      = $(this).find('span.logs-result__entry-value').text();
-    expression = key + ' = "' + value + '"';
+    var key        = $(this).data('key');
+    var value      = $(this).find('span.logs-result__entry-value').text();
+    var expression = key + ' = "' + value + '"';
 
     new_keys = window.sk_select.val().filter(function(item){return item !== key});
     window.sk_select.val(new_keys).trigger('select2:select');
