@@ -9,6 +9,6 @@ gem 'parslet'
 gem 'activesupport'
 gem 'json'
 
-gem 'will_paginate'
+gem 'kubeclient'
 
 gem 'pry', group: :development

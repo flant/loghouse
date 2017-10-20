@@ -18,6 +18,7 @@ class LoghouseQuery
         ::Clickhouse.connection.create_table(QUERIES_TABLE) do |t|
           t.fixed_string :id, 36
           t.string       :name
+          t.array        :namespaces, 'String'
           t.string       :query
           t.string       :time_from
           t.string       :time_to
@@ -68,7 +69,7 @@ class LoghouseQuery
       protected
 
       def build_from_row(row)
-        new id: row[0], name: row[1], query: row[2], time_from: row[3], time_to: row[4], position: row[5]
+        new id: row[0], name: row[1], namespaces: row[2], query: row[3], time_from: row[4], time_to: row[5], position: row[6]
       end
     end
 
@@ -94,7 +95,8 @@ class LoghouseQuery
 
       return false unless self.class.find(id).blank?
 
-      attributes[:position] ||= self.class.count
+      attributes[:position]   ||= self.class.count
+      attributes[:namespaces] = attributes[:namespaces].to_s.gsub(/"/, "'") # KOSTYL for bad working with arrays in gem
 
       ::Clickhouse.connection.insert_rows QUERIES_TABLE do |rows|
         rows << attributes

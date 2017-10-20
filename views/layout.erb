@@ -19,7 +19,7 @@
     <link href="<%= url('assets/stylesheets/main.css') %>" rel="stylesheet" type="text/css" />
   </head>
   <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top" id="topNavBar">
+    <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
           <a class="navbar-brand" href="/">Loghouse</a>
@@ -36,6 +36,17 @@
           <li <%= 'class="active"' if @tab == :queries %>>
             <a href="/queries" data-toggle="tooltip" data-placement="bottom" title="Manage queries"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
           </li>
+          <li class="navbar-right">
+            <a href="https://github.com/flant/loghouse/commit/<%= version %>" target="_blank">
+              <span class="glyphicon glyphicon-link"></span>
+              ver. <%= version %>
+            </a>
+          </li>
+          <li class="navbar-right">
+            <a href="javascript:void(0)">
+              Welcome back, <%= User.current %>
+            </a>
+          </li>
         </ul>
       </div>
     </nav>
@@ -48,7 +59,6 @@
     <script src="<%= url('vendor/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js') %>" charset="utf-8"></script>
     <script src="<%= url('vendor/html.sortable.min.js') %>" charset="utf-8"></script>
     <script src="<%= url('vendor/select2/js/select2.full.min.js') %>" charset="utf-8"></script>
-    <script src="<%= url('vendor/js.cookie-2.1.4.min.js') %>" charset="utf-8"></script>
     <script src="<%= url('vendor/uri.js') %>" charset="utf-8"></script>
 
     <script src="<%= url('assets/javascripts/search-params.js') %>" charset="utf-8"></script>
