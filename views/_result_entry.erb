@@ -1,33 +1,33 @@
-<span class="logs-result__entry-timestamp"><%= entry.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") %></span>
+<span class="logs-result__entry-timestamp"><%=h entry.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") %></span>
 
 <% LogsTables::KUBERNETES_ATTRIBUTES.keys.each do |k| %>
-  <span data-key="<%= k %>" class="kube-attribute"><span class="logs-result__entry-key logs-result__entry-key_kube"><%= k %>:</span> <span class="logs-result__entry-value"><%= entry.send(k) %></span></span>
+  <span data-key="<%=h k %>" class="kube-attribute"><span class="logs-result__entry-key logs-result__entry-key_kube"><%=h k %>:</span> <span class="logs-result__entry-value"><%=h entry.send(k) %></span></span>
 <% end %>
 
 <% entry.labels.each do |k, v| %>
-  <span data-key="~<%= k %>" class="kube-label"><span class="logs-result__entry-key logs-result__entry-key_label"><%= k %>:</span> <span class="logs-result__entry-value"><%= v %></span></span>
+  <span data-key="~<%=h k %>" class="kube-label"><span class="logs-result__entry-key logs-result__entry-key_label"><%=h k %>:</span> <span class="logs-result__entry-value"><%=h v %></span></span>
 <% end %>
 
 <% entry.strings.each do |k, v| %>
-  <span data-key="<%= k %>">
-    <span class="logs-result__entry-key"><%= k %>:</span> <span class="logs-result__entry-value"><%= v %></span>
+  <span data-key="<%=h k %>">
+    <span class="logs-result__entry-key"><%=h k %>:</span> <span class="logs-result__entry-value"><%=h v %></span>
   </span>
 <% end %>
 
 <% entry.numbers.each do |k, v| %>
-  <span data-key="<%= k %>">
-    <span class="logs-result__entry-key"><%= k %>:</span> <span class="logs-result__entry-value"><%= v %></span>
+  <span data-key="<%=h k %>">
+    <span class="logs-result__entry-key"><%=h k %>:</span> <span class="logs-result__entry-value"><%=h v %></span>
   </span>
 <% end %>
 
 <% entry.booleans.each do |k, v| %>
-  <span data-key="<%= k %>">
-    <span class="logs-result__entry-key"><%= k %>:</span> <span class="logs-result__entry-value"><%= v ? 'true' : 'false' %></span>
+  <span data-key="<%=h k %>">
+    <span class="logs-result__entry-key"><%=h k %>:</span> <span class="logs-result__entry-value"><%=h v ? 'true' : 'false' %></span>
   </span>
 <% end %>
 
 <% entry.nulls.each do |k| %>
-  <span data-key="<%= k %>">
-    <span class="logs-result__entry-key"><%= k %>:</span> <span class="logs-result__entry-value">NULL</span>
+  <span data-key="<%=h k %>">
+    <span class="logs-result__entry-key"><%=h k %>:</span> <span class="logs-result__entry-value">NULL</span>
   </span>
 <% end %>

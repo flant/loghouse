@@ -7,6 +7,7 @@ module Loghouse
   class Application < Sinatra::Base
     configure do
       use Rack::MethodOverride
+      register Sinatra::RespondWith
 
       enable :logging
     end
@@ -15,13 +16,18 @@ module Loghouse
       Time.zone    = TIME_ZONE
       User.current = self.class.development? ? 'admin' : user_from_header
       @tab_queries = LoghouseQuery.all.first(10)
+
+      if request.path_info.match(/.csv$/)
+        request.accept.unshift('text/csv')
+        request.path_info = request.path_info.gsub(/.csv$/,'')
+      end
     end
 
     get '/' do
       redirect '/query'
     end
 
-    get '/query' do
+    get '/query', provides: [:html, :csv] do
       @query =  if params[:query_id]
                   @tab = params[:query_id]
                   LoghouseQuery.find!(params[:query_id])
@@ -41,7 +47,10 @@ module Loghouse
       if request.xhr?
         erb :_result, layout: false
       else
-        erb :index
+        respond_to do |f|
+          f.html { erb :index }
+          f.csv { @query.paginate(per_page: (params[:per_page] || 2000)).csv_result(params[:shown_keys]) } # TODO how many?
+        end
       end
     end
 
