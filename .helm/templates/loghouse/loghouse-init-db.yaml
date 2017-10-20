@@ -20,7 +20,7 @@ spec:
       - name: init
         image: wimbo/fluentd
         imagePullPolicy: Always
-        command: ['/bin/bash', '-l', '-c', 'clickhouse-client --host=clickhouse --port=9000 --user=${CLICKHOUSE_USERNAME} --password=${CLICKHOUSE_PASSWORD} --query="CREATE DATABBASE ${CLICKHOUSE_DATABASE};"']
+        command: ['/bin/bash', '-l', '-c', 'clickhouse-client --host=${CLICKHOUSE_URL} --port=9000 --user=${CLICKHOUSE_USERNAME} --password=${CLICKHOUSE_PASSWORD} --query="CREATE DATABASE ${CLICKHOUSE_DATABASE};"']
         env:
         - name: KUBERNETES_DEPLOYED
           value: {{ now | quote }}
