@@ -91,7 +91,7 @@ type sha256sum >/dev/null 2>&1 || { echo >&2 "I require sha256sum but it's not i
 SRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 mkdir -p "$TMP_DIR"
 cd "$TMP_DIR"
-git clone --depth 1 -b ${BRANCH} https://github.com/qw1mb0/loghouse.git
+git clone --depth 1 -b ${BRANCH} https://github.com/flant/loghouse.git
 #cp -r ${SRC_DIR} ${TMP_DIR} 
 cd "$WORKDIR"
 

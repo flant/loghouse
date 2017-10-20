@@ -25,7 +25,7 @@ cd tabix.ui/ && \
 echo "Building tabix complete!" 
 
 echo "Building loghouse..."
-cd ../../ && \
+cd ../.. && \
   docker build -t loghouse . && \
   docker tag loghouse wimbo/loghouse && \
   docker push wimbo/loghouse && \
