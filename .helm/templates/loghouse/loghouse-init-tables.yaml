@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Chart.Name }}-init
+  name: {{ .Chart.Name }}-init-tables
   annotations:
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/weight": "5"
@@ -9,7 +9,7 @@ spec:
   activeDeadlineSeconds: 60
   template:
     metadata:
-      name: {{ .Chart.Name }}-init
+      name: {{ .Chart.Name }}-init-tables
     spec:
       restartPolicy: OnFailure
       initContainers:

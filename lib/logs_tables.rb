@@ -4,6 +4,7 @@ module LogsTables
   TIMESTAMP_ATTRIBUTE   = ENV.fetch('CLICKHOUSE_TIMESTAMP_ATTRIBUTE') { 'timestamp' }
   NSEC_ATTRIBUTE        = ENV.fetch('CLICKHOUSE_NSEC_ATTRIBUTE')      { 'nsec' }
   KUBERNETES_ATTRIBUTES = {
+    source: 'String',
     namespace: 'String',
     host: 'String',
     pod_name: 'String',

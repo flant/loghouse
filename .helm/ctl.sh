@@ -139,12 +139,8 @@ function install {
     HELM_ARGS="${HELM_ARGS} --set rbd_key=${STORAGECLASS_USER_SECRET_VALUE}"
   fi
   echo "HELM_ARGS: ${HELM_ARGS}"
-  helm install --dry-run --namespace "${NAMESPACE}" ${HELM_ARGS} .helm/ --dry-run
   echo helm install --namespace "${NAMESPACE}"  ${HELM_ARGS} ${WORKDIR}/.helm/ --wait
   helm install --namespace "${NAMESPACE}" ${HELM_ARGS} ${WORKDIR}/.helm/ --wait
-  #sleep 25
-  #echo kubectl --namespace "${NAMESPACE}" exec $(kubectl --namespace "$NAMESPACE" get pod | grep clickhouse-server | awk '{print $1}') /usr/local/bin/init.sh
-  #kubectl --namespace "${NAMESPACE}" exec $(kubectl --namespace "$NAMESPACE" get pod | grep clickhouse-server | awk '{print $1}') /usr/local/bin/init.sh
   echo '##################################'
   echo 'Basic auth for loghouse and tabix'
   echo "Login: admin"
