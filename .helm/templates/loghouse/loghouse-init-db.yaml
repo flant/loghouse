@@ -1,15 +1,15 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Chart.Name }}-init
+  name: {{ .Chart.Name }}-init-db
   annotations:
     "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/weight": "10"
+    "helm.sh/weight": "5"
 spec:
-  activeDeadlineSeconds: 60
+  activeDeadlineSeconds: 30
   template:
     metadata:
-      name: {{ .Chart.Name }}-init
+      name: {{ .Chart.Name }}-init-db
     spec:
       restartPolicy: OnFailure
       initContainers:
@@ -18,14 +18,14 @@ spec:
         command: [ '/bin/sh', '-c', 'while ! getent ahostsv4 clickhouse; do sleep 1; done' ]
       containers:
       - name: init
-        image: wimbo/loghouse
+        image: wimbo/fluentd
         imagePullPolicy: Always
-        command: ['/bin/bash', '-l', '-c', 'rake create_logs_tables']
+        command: ['/bin/bash', '-l', '-c', 'clickhouse-client --host=${CLICKHOUSE_URL} --port=9000 --user=${CLICKHOUSE_USERNAME} --password=${CLICKHOUSE_PASSWORD} --query="CREATE DATABASE ${CLICKHOUSE_DATABASE};"']
         env:
         - name: KUBERNETES_DEPLOYED
           value: {{ now | quote }}
         - name: CLICKHOUSE_URL
-          value: "clickhouse:8123"
+          value: "clickhouse"
         - name: CLICKHOUSE_USERNAME
           value: {{ .Values.clickhouse.user | quote }}
         - name: CLICKHOUSE_PASSWORD
