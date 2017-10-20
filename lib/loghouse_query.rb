@@ -3,6 +3,7 @@ require 'loghouse_query/storable'
 require 'loghouse_query/pagination'
 require 'loghouse_query/clickhouse'
 require 'loghouse_query/permissions'
+require 'loghouse_query/csv'
 require 'log_entry'
 
 class LoghouseQuery
@@ -11,6 +12,7 @@ class LoghouseQuery
   include Pagination
   include Clickhouse
   include Permissions
+  include CSV
 
   DEFAULTS = {
     id:         nil,

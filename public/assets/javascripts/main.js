@@ -165,8 +165,8 @@ function initHideShowWidget() {
     data: window.available_keys
   });
   var shown_keys;
-  if (URI(location.href).hasQuery('shown_keys', true)) {
-    shown_keys = URI(location.href).search(true).shown_keys;
+  if (URI(location.href).hasQuery('shown_keys[]', true)) {
+    shown_keys = URI(location.href).search(true)['shown_keys[]'];
   } else {
     shown_keys = window.available_keys;
   }
@@ -259,9 +259,9 @@ function updateSelectedKeysClasses() {
 
 function updateSelectedKeysUri() {
   var uri = URI(location.href);
-  uri.removeSearch('shown_keys');
+  uri.removeSearch('shown_keys[]');
   $.each(window.sk_select.val(), function(index, value) {
-    uri.addSearch('shown_keys', value);
+    uri.addSearch('shown_keys[]', value);
   });
   history.pushState({}, 'Loghouse', uri);
 }
@@ -449,7 +449,6 @@ $(document).ready(function() {
     }, 250);
   });
 
-
   $(document).on('click', '.kube-attribute, .kube-label', function() {
     var key        = $(this).data('key');
     var value      = $(this).find('span.logs-result__entry-value').text();
@@ -466,5 +465,9 @@ $(document).ready(function() {
     } else {
       $('#query').val(expression).trigger('change');
     }
+  });
+
+  $('#save-as-csv').on('click', function() {
+    window.location = '/query.csv?' + $('#filter-form').serialize();
   });
 });
