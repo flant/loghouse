@@ -25,7 +25,7 @@ spec:
         - name: KUBERNETES_DEPLOYED
           value: {{ now | quote }}
         - name: CLICKHOUSE_URL
-          value: "clickhouse"
+          value: "clickhouse:8123"
         - name: CLICKHOUSE_USERNAME
           value: {{ .Values.clickhouse.user | quote }}
         - name: CLICKHOUSE_PASSWORD
