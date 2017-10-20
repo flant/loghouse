@@ -38,6 +38,7 @@
                 <th></th>
                 <th></th>
                 <th>Name</th>
+                <th>Namespaces</th>
                 <th>Query</th>
                 <th>From</th>
                 <th>To</th>
@@ -59,6 +60,11 @@
                   <a href="/queries/<%= q.id %>/edit">
                     <%= h q.attributes[:name] %>
                   </a>
+                </td>
+                <td>
+                  <% q.namespaces.each do |ns| %>
+                    <span class="badge"> <%= ns %></span>
+                  <% end %>
                 </td>
                 <td>
                   <i><%= h q.attributes[:query] %></i>

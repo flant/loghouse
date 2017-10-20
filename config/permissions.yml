@@ -1,0 +1,7 @@
+# Available namespaces
+user:
+  - "test.*"
+  - "stag(e|ing).*"
+  - "review.*"
+admin:
+  - ".*"

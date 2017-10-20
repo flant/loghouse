@@ -10,7 +10,7 @@
 .logs-result__container {
   position: fixed;
   top: 50px;
-  bottom: 50px;
+  bottom: 90px;
   padding: 0 10px;
   overflow: auto;
   display: flex;
@@ -22,6 +22,15 @@
   50% {
     opacity: 0.0;
   }
+}
+
+.kube-attribute:hover,
+.kube-label:hover,
+.kube-attribute:hover .logs-result__entry-key,
+.kube-label:hover .logs-result__entry-key {
+  cursor: pointer;
+  background: #fff;
+  color: #000;
 }
 
 .logs-result__container::before, .logs-result__container::after {
@@ -58,8 +67,12 @@
   color: #258CCD;
 }
 
-.logs-result__entry-value {
+.logs-result__entry-key_kube {
+  color: #998AAC;
+}
 
+.logs-result__entry-key_label {
+  color: #99A122;
 }
 
 .logs-result__breakpoint {

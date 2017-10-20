@@ -156,55 +156,57 @@ function initHideShow() {
 
 function initHideShowWidget() {
   // init search params widget
-  window.hsk_select = $('#hide-show-keys-select');
-  window.hsk_select.select2({
+  window.sk_select = $('#show-keys-select');
+  window.sk_select.select2({
     placeholder: 'Select some keys',
     multiple: true,
     allowClear: true,
     theme: "bootstrap",
     data: window.available_keys
   });
-  var selected_keys;
-  if (URI(location.href).hasQuery('selected_keys', true)) {
-    selected_keys = URI(location.href).search(true)['selected_keys'].split(',');
-  } else if (Cookies.get('selected_keys')) {
-    selected_keys = JSON.parse(Cookies.get('selected_keys'));
+  var shown_keys;
+  if (URI(location.href).hasQuery('shown_keys', true)) {
+    shown_keys = URI(location.href).search(true).shown_keys;
   } else {
-    selected_keys = [];
+    shown_keys = window.available_keys;
   }
-  window.hsk_select.val(selected_keys).trigger('change');
-  window.hsk_select.on("select2:select", function(e) {
-    Cookies.set('selected_keys', JSON.stringify(window.hsk_select.val()));
+  window.sk_select.val(shown_keys).trigger('change');
+  window.sk_select.on("select2:select", function(e) {
+    var hidden_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.sk_select.val()) == -1; });
+    window.hk_select.val(hidden_keys).trigger('change');
     updateSelectedKeysClasses();
     updateSelectedKeysUri();
   });
-  window.hsk_select.on("select2:unselect", function(e) {
-    Cookies.set('selected_keys', JSON.stringify(window.hsk_select.val()));
+  window.sk_select.on("select2:unselect", function(e) {
+    var hidden_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.sk_select.val()) == -1; });
+    window.hk_select.val(hidden_keys).trigger('change');
     updateSelectedKeysClasses();
     updateSelectedKeysUri();
   });
 
-  if (window.hsk_select.val().length == 0) {
-    window.keys_option = 'hide';
-    Cookies.set('keys_option', 'hide');
+  window.hk_select = $('#hide-keys-select');
+  window.hk_select.select2({
+    placeholder: 'Select some keys',
+    multiple: true,
+    allowClear: true,
+    theme: "bootstrap",
+    data: window.available_keys
+  });
+  var hidden_keys;
+  hidden_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.sk_select.val()) == -1; });
+  window.hk_select.val(hidden_keys).trigger('change');
+
+  window.hk_select.on("select2:select", function(e) {
+    var shown_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.hk_select.val()) == -1; });
+    window.sk_select.val(shown_keys).trigger('change');
+    updateSelectedKeysClasses();
     updateSelectedKeysUri();
-  } else if (URI(location.href).hasQuery('keys_option', true)) {
-    window.keys_option = URI(location.href).search(true)['keys_option'];
-  } else if (Cookies.get('keys_option')) {
-    window.keys_option = Cookies.get('keys_option');
-  } else {
-    window.keys_option = 'hide';
-  }
-  $('.hide-show-keys-btn[data-option=' + window.keys_option + ']').addClass('active');
-  $('.hide-show-keys-btn').each(function() {
-    $(this).on('click', function() {
-      $(this).parent().find('.hide-show-keys-btn').removeClass('active');
-      $(this).addClass('active');
-      window.keys_option = $(this).data('option');
-      Cookies.set('keys_option', window.keys_option);
-      updateSelectedKeysClasses();
-      updateSelectedKeysUri();
-    });
+  });
+  window.hk_select.on("select2:unselect", function(e) {
+    var shown_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.hk_select.val()) == -1; });
+    window.sk_select.val(shown_keys).trigger('change');
+    updateSelectedKeysClasses();
+    updateSelectedKeysUri();
   });
 }
 
@@ -220,8 +222,7 @@ function updateAvailableKeys() {
     $('.hide-show-keys-toggle').removeClass('disabled');
   }  else {
     window.available_keys = [];
-    window.hsk_select && window.hsk_select.val([]);
-    Cookies.set('selected_keys', JSON.stringify([]));
+    window.sk_select && window.sk_select.val([]);
     $('.hide-show-keys-toggle').addClass('disabled');
   }
 }
@@ -238,7 +239,7 @@ function updateAvailableKeysStyles() {
   }
   for (var i = 0; i < window.available_keys.length; i++) {
     key = window.available_keys[i];
-    key_css_friendly = key.replace('.', '_');
+    key_css_friendly = key.replace('.', '_').replace('~', 'LABEL');
     addCSSRule(window.keys_style.sheet, 'body.hide_' + key_css_friendly + ' #result span[data-key="' + key + '"]', 'display: none', 0);
   }
 }
@@ -248,24 +249,20 @@ function updateSelectedKeysClasses() {
   body.removeClass(function (index, className) {
     return (className.match (/\bhide_\S+/g) || []).join(' ');
   });
-  if (window.keys_option == 'hide') {
-    window.hidden_keys = window.hsk_select.val();
-  } else {
-    window.hidden_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.hsk_select.val()) == -1; });
-  }
+  window.hidden_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.sk_select.val()) == -1; });
   for (var i = 0; i < window.hidden_keys.length; i++) {
     key = window.hidden_keys[i];
-    key_css_friendly = key.replace('.', '_');
+    key_css_friendly = key.replace('.', '_').replace('~', 'LABEL');
     body.addClass('hide_' + key_css_friendly);
   }
 }
 
 function updateSelectedKeysUri() {
   var uri = URI(location.href);
-  uri.removeSearch('selected_keys');
-  uri.removeSearch('keys_option');
-  uri.addSearch('selected_keys', window.hsk_select.val().join(','));
-  uri.addSearch('keys_option', window.keys_option);
+  uri.removeSearch('shown_keys');
+  $.each(window.sk_select.val(), function(index, value) {
+    uri.addSearch('shown_keys', value);
+  });
   history.pushState({}, 'Loghouse', uri);
 }
 
@@ -273,6 +270,15 @@ $(document).ready(function() {
 
   // Lib inits
   $('[data-toggle="tooltip"]').tooltip();
+
+  $('.select2').select2({
+    placeholder: function(){
+      $(this).data('placeholder');
+    },
+    width: '100%',
+    allowClear: true,
+    theme: "bootstrap"
+  });
 
   // Save query
   $('#save-query').on('click', function() {
@@ -419,17 +425,19 @@ $(document).ready(function() {
   submitForm = function () {
     $('#filter-form').submit();
   };
-
   $(document).on('change', '#query', submitForm);
+  $('#namespaces-select').on('change', submitForm);
 
   // Init show hide keys
-  if($('#hide-show-keys-select').length) {
+  if($('#show-keys-select').length) {
     initHideShow();
   }
 
   // Fix for navbar overflow
+  // TODO: Refactor using pure css flexbox
   function fixResultsPosition() {
     $('.logs-result__container').css('top', $('#topNavBar').height());
+    $('.logs-result__container').css('bottom', $('#bottomNavBar').height());
   }
   fixResultsPosition();
 
@@ -441,4 +449,22 @@ $(document).ready(function() {
     }, 250);
   });
 
+
+  $(document).on('click', '.kube-attribute, .kube-label', function() {
+    var key        = $(this).data('key');
+    var value      = $(this).find('span.logs-result__entry-value').text();
+    var expression = key + ' = "' + value + '"';
+
+    new_keys = window.sk_select.val().filter(function(item){ return item !== key; });
+    window.sk_select.val(new_keys).trigger('select2:select');
+
+    if (key == 'namespace') {
+      $('#namespaces-select').val(value).trigger('change');
+    } else if ($('#query').val().length > 0) {
+      query_val = $('#query').val() + ' and ' + expression;
+      $('#query').val(query_val).trigger('change');
+    } else {
+      $('#query').val(expression).trigger('change');
+    }
+  });
 });

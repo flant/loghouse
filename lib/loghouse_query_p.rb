@@ -1,10 +1,12 @@
 class LoghouseQueryP < Parslet::Parser
   include ParsletExtensions
 
-  QUERY_OPERATORS      = %w[and or]
-  EXPRESSION_OPERATORS = %w[>= <= =~ != = > < ]
-  ANY_RESERVED_KEY     = "*"
-  LABEL_RESERVED_KEY   = "~"
+  QUERY_OPERATORS             = %w[and or]
+  EXPRESSION_ALL_OPERATORS    = %w[!= =]
+  EXPRESSION_NUMBER_OPERATORS = %w[>= <= > < ]
+  EXPRESSION_STRING_OPERATORS = %w[=~]
+  ANY_RESERVED_KEY            = "*"
+  LABEL_RESERVED_KEY          = "~"
 
   rule(:query_operator) do
     q_op = nil
@@ -19,9 +21,9 @@ class LoghouseQueryP < Parslet::Parser
     spaced(q_op.as(:q_op))
   end
 
-  rule(:expression_operator) do
+  rule(:expression_string_operator) do
     e_op = nil
-    EXPRESSION_OPERATORS.each do |op|
+    (EXPRESSION_STRING_OPERATORS + EXPRESSION_ALL_OPERATORS).each do |op|
       if e_op.nil?
         e_op = str(op)
       else
@@ -30,6 +32,24 @@ class LoghouseQueryP < Parslet::Parser
     end
 
     spaced(e_op.as(:e_op))
+  end
+
+  rule(:expression_number_operator) do
+    e_op = nil
+    (EXPRESSION_NUMBER_OPERATORS + EXPRESSION_ALL_OPERATORS).each do |op|
+      if e_op.nil?
+        e_op = str(op)
+      else
+        e_op |= str(op)
+      end
+    end
+
+    spaced(e_op.as(:e_op))
+  end
+
+  rule(:expression_operator) do
+    expression_string_operator |
+    expression_number_operator
   end
 
   rule(:expression_null) do
@@ -49,9 +69,15 @@ class LoghouseQueryP < Parslet::Parser
     str("'") >> match['^\''].repeat.as(:str_value) >> str("'")
   }
 
+  rule(:any_key) {
+    stri(ANY_RESERVED_KEY).as(:any_key)
+  }
+
+  rule(:label_key) {
+    stri(LABEL_RESERVED_KEY) >> (match['a-zA-Z'] >> match['a-zA-Z0-9_\-\.'].repeat(0)).as(:label_key)
+  }
+
   rule(:key) {
-    stri(ANY_RESERVED_KEY).as(:any_key) |
-    stri(LABEL_RESERVED_KEY) >> (match['a-zA-Z'] >> match['a-zA-Z0-9_\-\.'].repeat(0)).as(:label_key) |
     (match['a-zA-Z'] >> match['a-zA-Z0-9_\-\.'].repeat(0)).as(:custom_key)
   }
 
@@ -59,7 +85,8 @@ class LoghouseQueryP < Parslet::Parser
     (
       (key >> expression_null) |
       (key >> expression_boolean) |
-      (key >> expression_operator >> value)
+      ((key | any_key) >> expression_operator >> value) |
+      (label_key >> expression_string_operator >> value)
     ).as(:expression)
   end
 

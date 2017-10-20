@@ -8,7 +8,7 @@ class LoghouseQuery
     def to_clickhouse
       params = {
         select: '*',
-        from: LOGS_TABLE,
+        from: LogsTables::LOGS_TABLE,
         order: order_by,
         limit: limit
       }
@@ -27,14 +27,21 @@ class LoghouseQuery
       "toDateTime('#{time.utc.strftime('%Y-%m-%d %H:%M:%S')}')"
     end
 
+    def to_clickhouse_namespaces
+      return if namespaces.blank?
+
+      namespaces.map { |ns| "namespace = '#{ns}'" }.join(' OR ')
+    end
+
     def to_clickhouse_where
       where_parts = []
       where_parts << Query.new(parsed_query[:query]).to_s if parsed_query
 
-      where_parts << "#{TIMESTAMP_ATTRIBUTE} >= #{to_clickhouse_time parsed_time_from}" if parsed_time_from
-      where_parts << "#{TIMESTAMP_ATTRIBUTE} <= #{to_clickhouse_time parsed_time_to}" if parsed_time_to
+      where_parts << "#{LogsTables::TIMESTAMP_ATTRIBUTE} >= #{to_clickhouse_time parsed_time_from}" if parsed_time_from
+      where_parts << "#{LogsTables::TIMESTAMP_ATTRIBUTE} <= #{to_clickhouse_time parsed_time_to}" if parsed_time_to
 
       where_parts << to_clickhouse_pagination_where
+      where_parts << to_clickhouse_namespaces
       where_parts.compact!
 
       return if where_parts.blank?

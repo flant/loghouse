@@ -1,12 +1,11 @@
 require_relative 'config/boot'
 
 module Loghouse
-  TIME_ZONE = 'Europe/Moscow'
+  TIME_ZONE = ENV.fetch('TIME_ZONE') { 'Europe/Moscow' }
 
   # rubocop:disable Metrics/ClassLength
   class Application < Sinatra::Base
     configure do
-      register WillPaginate::Sinatra
       use Rack::MethodOverride
 
       enable :logging
@@ -14,6 +13,7 @@ module Loghouse
 
     before do
       Time.zone    = TIME_ZONE
+      User.current = self.class.development? ? 'admin' : user_from_header
       @tab_queries = LoghouseQuery.all.first(10)
     end
 
@@ -131,13 +131,25 @@ module Loghouse
       def follow?
         params[:follow] == 'on'
       end
+
+      def version
+        @version ||= ENV.fetch('GIT_REV') { `git rev-parse HEAD` }.to_s[0..7]
+      end
     end
 
     private
 
     def query_from_params
-      LoghouseQuery.new(name: params[:name], query: params[:query].to_s,
+      LoghouseQuery.new(name: params[:name], query: params[:query].to_s, namespaces: params[:namespaces],
                         time_from: params[:time_from], time_to: params[:time_to])
+    end
+
+    def user_from_header
+      auth_header = env['HTTP_AUTHORIZATION']
+
+      raise 'Unauthenticated' if auth_header.blank?
+
+      Base64.decode64(auth_header.gsub(/Basic /, '')).split(':').first
     end
   end
 end
