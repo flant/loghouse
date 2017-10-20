@@ -1,0 +1,70 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: loghouse
+  namespace: {{ .Values.namespace }}
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        component: loghouse
+    spec:
+      containers:
+      - name: loghouse
+        image: {{ .Values.image.loghouse }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        command: ["bundle", "exec", "puma"]
+        ports:
+        - name: http
+          containerPort: 9292
+        env:
+        - name: KUBERNETES_DEPLOYED
+          value: {{ now | quote }}
+        - name: CLICKHOUSE_URL
+{{- if .Values.https }}
+          value: "https://{{ .Values.clickhouse_host }}"
+{{- else }}
+          value: "http://{{ .Values.clickhouse_host }}"
+{{- end }}
+        - name: CLICKHOUSE_USERNAME
+          value: {{ .Values.clickhouse.user | quote }}
+        - name: CLICKHOUSE_PASSWORD
+          value: {{ .Values.clickhouse_pass_original | quote }}
+        - name: CLICKHOUSE_DATABASE
+          value: {{ .Values.clickhouse.db | quote }}
+        - name: CLICKHOUSE_LOGS_TABLE
+          value: {{ .Values.clickhouse.table | quote }}
+        - name: TZ
+          value: {{ .Values.tzdata | quote }}
+        volumeMounts:
+        - name: user-config
+          mountPath: /config
+        livenessProbe:
+          tcpSocket:
+            port: 9292
+        readinessProbe:
+          tcpSocket:
+            port: 9292
+        resources:
+          requests:
+            memory: {{ .Values.loghouse.resources.requests.memory }}
+            cpu: {{ .Values.loghouse.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.loghouse.resources.limits.memory }}
+            cpu: {{ .Values.loghouse.resources.limits.cpu }}
+      volumes:
+      - name: user-config
+        configMap:
+          name: loghouse-user-config
+      tolerations:
+      - operator: "Exists"
+        key: "node-role/logging"
+      nodeSelector:
+        node-role/logging: ""
+
+

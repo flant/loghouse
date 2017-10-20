@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: tabix
+  namespace: {{ .Values.namespace }}
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        component: tabix
+    spec:
+      containers:
+      - name: tabix
+        image: {{ .Values.image.tabix }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        ports:
+        - name: http
+          containerPort: 80
+        livenessProbe:
+          timeoutSeconds: 1
+          initialDelaySeconds: 60
+          tcpSocket:
+            port: 80
+        readinessProbe:
+          timeoutSeconds: 1
+          initialDelaySeconds: 5
+          tcpSocket:
+            port: 80
+        resources:
+          requests:
+            cpu: {{ .Values.tabix.resources.requests.cpu }}
+            memory: {{ .Values.tabix.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.tabix.resources.limits.cpu }}
+            memory: {{ .Values.tabix.resources.limits.memory }}
+      tolerations:
+      - operator: "Exists"
+        key: "node-role/logging"
+      nodeSelector:
+        node-role/logging: ""
