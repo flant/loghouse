@@ -4,7 +4,7 @@ metadata:
   name: {{ .Chart.Name }}-init
   annotations:
     "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/weight": "1"
+    "helm.sh/weight": "10"
 spec:
   activeDeadlineSeconds: 30
   template:
