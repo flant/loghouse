@@ -26,11 +26,7 @@ spec:
         - name: KUBERNETES_DEPLOYED
           value: {{ now | quote }}
         - name: CLICKHOUSE_URL
-{{- if .Values.https }}
-          value: "https://{{ .Values.clickhouse_host }}"
-{{- else }}
-          value: "http://{{ .Values.clickhouse_host }}"
-{{- end }}
+          value: "clickhouse"
         - name: CLICKHOUSE_USERNAME
           value: {{ .Values.clickhouse.user | quote }}
         - name: CLICKHOUSE_PASSWORD
@@ -41,6 +37,8 @@ spec:
           value: {{ .Values.clickhouse.table | quote }}
         - name: TZ
           value: {{ .Values.tzdata | quote }}
+        - name: PERIMISSONS_FILE_PATH
+          value: "/config/user.conf"
         volumeMounts:
         - name: user-config
           mountPath: /config

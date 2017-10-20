@@ -8,4 +8,5 @@ metadata:
     addonmanager.kubernetes.io/mode: Reconcile
 data:
   user.conf: |-
-    admin:.*
+    admin:
+      - ".*"
