@@ -1,3 +1,4 @@
+{{- if .Values.var }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -36,3 +37,4 @@ spec:
           value: {{ .Values.clickhouse.table | quote }}
         - name: TZ
           value: {{ .Values.tzdata | quote }}
+{{- end }}
