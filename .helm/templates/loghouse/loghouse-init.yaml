@@ -4,7 +4,7 @@ metadata:
   name: {{ .Chart.Name }}-init
   annotations:
     "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/weight": "10"
+    "helm.sh/weight": "5"
 spec:
   activeDeadlineSeconds: 60
   template:
@@ -17,25 +17,6 @@ spec:
         image: alpine:3.6
         command: [ '/bin/sh', '-c', 'while ! getent ahostsv4 clickhouse; do sleep 1; done' ]
       containers:
-      - name: init-db
-        image: wimbo/fluentd
-        imagePullPolicy: Always
-        command: ['/bin/bash', '-l', '-c', 'clickhouse-client --host=${CLICKHOUSE_URL} --port=9000 --user=${CLICKHOUSE_USERNAME} --password=${CLICKHOUSE_PASSWORD} --query="CREATE DATABASE ${CLICKHOUSE_DATABASE};"']
-        env:
-        - name: KUBERNETES_DEPLOYED
-          value: {{ now | quote }}
-        - name: CLICKHOUSE_URL
-          value: "clickhouse"
-        - name: CLICKHOUSE_USERNAME
-          value: {{ .Values.clickhouse.user | quote }}
-        - name: CLICKHOUSE_PASSWORD
-          value: {{ .Values.clickhouse_pass_original | quote }}
-        - name: CLICKHOUSE_DATABASE
-          value: {{ .Values.clickhouse.db | quote }}
-        - name: CLICKHOUSE_LOGS_TABLE
-          value: {{ .Values.clickhouse.table | quote }}
-        - name: TZ
-          value: {{ .Values.tzdata | quote }}
       - name: init-tables
         image: wimbo/loghouse
         imagePullPolicy: Always
