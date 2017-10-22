@@ -1,0 +1,37 @@
+apiVersion: batch/v2alpha1
+kind: CronJob
+metadata:
+  name: {{ .Chart.Name }}-tables
+spec:
+  schedule: "59 23 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          initContainers:
+          - name: wait-clickhouse
+            image: alpine:3.6
+            command: ['/bin/sh', '-c', 'while ! getent ahostsv4 clickhouse; do sleep 1; done']
+          containers:
+            - name: cron
+              image: wimbo/loghouse
+              imagePullPolicy: Always
+              command: ['/bin/bash', '-l', '-c', 'rake create_logs_tables']
+              env:
+              - name: KUBERNETES_DEPLOYED
+                value: {{ now | quote }}
+              - name: CLICKHOUSE_URL
+                value: "clickhouse:8123"
+              - name: CLICKHOUSE_USERNAME
+                value: {{ .Values.clickhouse.user | quote }}
+              - name: CLICKHOUSE_PASSWORD
+                value: {{ .Values.clickhouse_pass_original | quote }}
+              - name: CLICKHOUSE_DATABASE
+                value: {{ .Values.clickhouse.db | quote }}
+              - name: CLICKHOUSE_LOGS_TABLE
+                value: {{ .Values.clickhouse.table | quote }}
+              - name: TZ
+                value: {{ .Values.tzdata | quote }}
