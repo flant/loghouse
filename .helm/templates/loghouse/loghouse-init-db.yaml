@@ -6,7 +6,7 @@ metadata:
     "helm.sh/hook": post-install
     "helm.sh/weight": "-5"
 spec:
-  activeDeadlineSeconds: 30
+  activeDeadlineSeconds: 60
   template:
     metadata:
       name: {{ .Chart.Name }}-init-db
