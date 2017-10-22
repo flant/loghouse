@@ -11,6 +11,7 @@ spec:
     spec:
       template:
         spec:
+          restartPolicy: OnFailure
           initContainers:
           - name: wait-clickhouse
             image: alpine:3.6
