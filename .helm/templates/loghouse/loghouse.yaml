@@ -53,6 +53,8 @@ spec:
           value: {{ .Values.tzdata | quote }}
         - name: PERIMISSONS_FILE_PATH
           value: "/config/user.conf"
+        - name: RACK_ENV
+          value: "production"
         volumeMounts:
         - name: user-config
           mountPath: /config

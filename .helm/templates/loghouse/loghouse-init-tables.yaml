@@ -36,3 +36,5 @@ spec:
           value: {{ .Values.clickhouse.table | quote }}
         - name: TZ
           value: {{ .Values.tzdata | quote }}
+        - name: RACK_ENV
+          value: "production"
