@@ -15,12 +15,26 @@ spec:
         component: loghouse
     spec:
       containers:
-      - name: loghouse
-        image: {{ .Values.image.loghouse }}
+      - name: frontend
+        image: {{ .Values.image.loghouse_front }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        command: ["/usr/sbin/nginx"]
+        ports:
+        - name: http
+          containerPort: 80
+        env:
+        - name: KUBERNETES_DEPLOYED
+          value: {{ now | quote }}
+        volumeMounts:
+        - name: basic-auth
+          mountPath: "/nginx/passwd"
+          readOnly: true
+      - name: backend
+        image: {{ .Values.image.loghouse_back }}
         imagePullPolicy: {{ .Values.image.imagePullPolicy }}
         command: ["bundle", "exec", "puma"]
         ports:
-        - name: http
+        - name: http2
           containerPort: 9292
         env:
         - name: KUBERNETES_DEPLOYED
@@ -39,6 +53,8 @@ spec:
           value: {{ .Values.tzdata | quote }}
         - name: PERIMISSONS_FILE_PATH
           value: "/config/user.conf"
+        - name: RACK_ENV
+          value: "production"
         volumeMounts:
         - name: user-config
           mountPath: /config
@@ -59,6 +75,9 @@ spec:
       - name: user-config
         configMap:
           name: loghouse-user-config
+      - name: basic-auth
+        secret:
+          secretName: basic-auth
       tolerations:
       - operator: "Exists"
         key: "node-role/logging"
