@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: {{ .Values.image.loghouse-front }}
+        image: {{ .Values.image.loghouse_front }}
         imagePullPolicy: {{ .Values.image.imagePullPolicy }}
         command: ["/usr/sbin/nginx"]
         ports:
@@ -30,7 +30,7 @@ spec:
           mountPath: "/nginx/passwd"
           readOnly: true
       - name: backend
-        image: {{ .Values.image.loghouse-back }}
+        image: {{ .Values.image.loghouse_back }}
         imagePullPolicy: {{ .Values.image.imagePullPolicy }}
         command: ["bundle", "exec", "puma"]
         ports:
