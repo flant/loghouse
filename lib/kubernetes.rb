@@ -6,8 +6,15 @@ module Kubernetes
       auth_options = {
         bearer_token_file: '/var/run/secrets/kubernetes.io/serviceaccount/token'
       }
+
+      ssl_options = {
+        ca_file: '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt',
+        verify_ssl: OpenSSL::SSL::VERIFY_PEER
+      }
+
       Kubeclient::Client.new(
-        "https://#{ENV['KUBERNETES_SERVICE_HOST']}:#{ENV['KUBERNETES_SERVICE_PORT']}/api/", 'v1', auth_options: auth_options
+        "https://#{ENV['KUBERNETES_SERVICE_HOST']}:#{ENV['KUBERNETES_SERVICE_PORT']}/api/", 'v1', auth_options: auth_options,
+                                                                                                  ssl_options: ssl_options
       )
     end
   end
