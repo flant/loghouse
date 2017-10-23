@@ -9,7 +9,8 @@ image:
   imagePullPolicy: Always
   clickhouse: wimbo/clickhouse:latest
   fluentd: wimbo/fluentd:latest
-  loghouse: wimbo/loghouse:latest
+  loghouse-front: wimbo/loghouse_front:latest
+  loghouse-back: wimbo/loghouse:latest
   tabix: wimbo/tabix:latest
 clickhouse:
   server: clickhouse

@@ -31,3 +31,11 @@ cd ../.. && \
   docker push wimbo/loghouse && \
   cd - && \
 echo "Building loghouse complete!"
+
+echo "Building loghouse frontend..."
+cd ../../frontend && \
+  docker build -t loghouse_frontend . && \
+  docker tag loghouse_frontend wimbo/loghouse_front && \
+  docker push wimbo/loghouse_front && \
+  cd - && \
+echo "Building loghouse frontend complete!"

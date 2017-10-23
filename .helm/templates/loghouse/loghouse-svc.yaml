@@ -9,6 +9,6 @@ spec:
     component: loghouse
   ports:
   - name: http
-    port: 9292
-    targetPort: 9292
+    port: 80
+    targetPort: 80
     protocol: TCP
