@@ -123,7 +123,7 @@ function install {
   else
     # set storage for clickhouse
     HELM_ARGS="${HELM_ARGS} --set pvc.size=${STORAGE_SIZE}"
-    HELM_ARGS="${HELM_ARGS} --set pvc.storagClassName=${STORAGE_CLASS_NAME}"
+    HELM_ARGS="${HELM_ARGS} --set pvc.storageClassName=${STORAGE_CLASS_NAME}"
   fi
   # set clickhouse password
   HELM_ARGS="${HELM_ARGS} --set clickhouse_pass_sha256=${CLICKHOUSE_PASS_SHA256}"
