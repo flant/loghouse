@@ -1,11 +1,11 @@
-{{- if .Values.storageClassName }}
+{{- if .Values.pvc.storageClassName }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Values.pvc.name }}
   namespace: {{ .Values.namespace }}
-  annotatioons:
+  annotations:
     volume.beta.kubernetes.io/mount-options: "discard"
 spec:
   accessModes:

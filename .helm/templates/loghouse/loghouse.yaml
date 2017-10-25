@@ -14,6 +14,7 @@ spec:
       labels:
         component: loghouse
     spec:
+      serviceAccountName: loghouse
       containers:
       - name: frontend
         image: {{ .Values.image.loghouse_front }}
