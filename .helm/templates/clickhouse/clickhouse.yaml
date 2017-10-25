@@ -19,7 +19,7 @@ spec:
         image: alpine:3.6
         command: ['/bin/sh', '-c', 'chown 105:106 -R /var/lib/clickhouse']
         volumeMounts:
-{{- if .Values.storageClassName }}
+{{- if .Values.pvc.storageClassName }}
         - name: {{ .Values.pvc.name }}
 {{- end }}
 {{- if .Values.hostpath }}

@@ -4,7 +4,6 @@ pvc:
   name: clickhouse
   accessMode: ReadWriteOnce
   size: 50Gi
-  storageClassName: rbd
 image:
   imagePullPolicy: Always
   clickhouse: wimbo/clickhouse:latest
