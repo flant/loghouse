@@ -72,7 +72,7 @@ spec:
           - name: hostpath
             mountPath: /var/lib/clickhouse/
 {{- end }}
-{{- if .Values.storageClassName }}
+{{- if .Values.pvc.storageClassName }}
           - name: {{ .Values.pvc.name }}
             mountPath: /var/lib/clickhouse/
 {{- end }}
@@ -84,7 +84,7 @@ spec:
           hostPath:
             path: {{ .Values.hostpath }}
 {{- end }}
-{{- if .Values.storageClassName }}
+{{- if .Values.pvc.storageClassName }}
         - name: {{ .Values.pvc.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.pvc.name }}
