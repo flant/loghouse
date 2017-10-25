@@ -245,6 +245,8 @@ elif [ "$MODE" == "delete" ]
 then
   kubectl delete clusterrole fluentd || true
   kubectl delete clusterrolebindings fluentd || true
+  kubectl delete clusterrole loghouse || true
+  kubectl delete clusterrolebindings loghouse || true
   kubectl delete ns "$NAMESPACE" || true
 fi
 
