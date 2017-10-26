@@ -16,14 +16,14 @@
           <div class="row">
             <div class="col-xs-6">
               <div class="form-group">
-                <label for="shown_keys">Shown keys:</label>
-                <select name="shown_keys" id="show-keys-select" class="form-control" size="50"></select>
+                <label for="show-keys-select">Shown keys:</label>
+                <select name="shown_keys[]" id="show-keys-select" class="form-control" size="50"></select>
               </div>
             </div>
             <div class="col-xs-6">
               <div class="form-group">
-                <label for="hidden_keys">Hidden keys:</label>
-                <select name="hidden_keys" id="hide-keys-select" class="form-control" size="50"></select>
+                <label for="hide-keys-select">Hidden keys:</label>
+                <select name="hidden_keys[]" id="hide-keys-select" class="form-control" size="50"></select>
               </div>
             </div>
           </div>
@@ -44,6 +44,7 @@
           <div class="input-group" style="width:100%">
             <input type="text" class="form-control" id="query" placeholder="Query..." name='query' size="60" value="<%= h @query.attributes[:query] if @query %>">
             <span class="input-group-btn">
+              <input type="hidden" name="per_page" value="<%= params[:per_page] %>"/>
               <button type="submit" class="btn btn-default btn-transparent">Send</button>
             </span>
           </div>
@@ -51,6 +52,9 @@
         <div class="col-xs-1">
           <div class="form-group" data-toggle="tooltip" title="Save query">
             <a role="button" class="btn btn-link btn-link-alt<% if !@query %> disabled<% end %>" <% if @query %> id="save-query"<% end %>><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></a>
+          </div>
+          <div class="form-group" data-toggle="tooltip" title="Save result as CSV">
+            <a role="button" class="btn btn-link btn-link-alt" <% if @query %> id="save-as-csv"<% end %>><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
           </div>
         </div>
         <div class="col-xs-2" align="right">
