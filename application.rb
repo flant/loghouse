@@ -36,7 +36,6 @@ module Loghouse
                 end
 
       begin
-        @query.paginate(newer_than: params[:newer_than], older_than: params[:older_than], per_page: params[:per_page])
         @to_clickhouse = @query.to_clickhouse
       rescue LoghouseQuery::BadFormat => e
         @error = "Bad query format: #{e}"
@@ -44,13 +43,18 @@ module Loghouse
         @error = "Bad time format: #{e}"
       end
 
-      if request.xhr?
-        erb :_result, layout: false
-      else
-        respond_to do |f|
-          f.html { erb :index }
-          f.csv { @query.paginate(per_page: (params[:per_page] || 2000)).csv_result(params[:shown_keys]) } # TODO how many?
+      respond_to do |f|
+        f.html do
+          @query.paginate(newer_than: params[:newer_than], older_than: params[:older_than], per_page: params[:per_page])
+
+          if request.xhr?
+            erb :_result, layout: false
+          else
+            erb :index
+          end
         end
+
+        f.csv { @query.csv_result(params[:shown_keys]) }
       end
     end
 

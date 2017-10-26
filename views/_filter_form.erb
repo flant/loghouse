@@ -44,6 +44,7 @@
           <div class="input-group" style="width:100%">
             <input type="text" class="form-control" id="query" placeholder="Query..." name='query' size="60" value="<%= h @query.attributes[:query] if @query %>">
             <span class="input-group-btn">
+              <input type="hidden" name="per_page" value="<%= params[:per_page] %>"/>
               <button type="submit" class="btn btn-default btn-transparent">Send</button>
             </span>
           </div>

@@ -1,16 +1,16 @@
 class LoghouseQuery
   module Pagination
+    DEFAULT_PER_PAGE = 250
     attr_reader :per_page, :older_than, :newer_than
 
-    def per_page
-      @per_page || 50
-    end
     alias :limit :per_page
 
     def paginate(newer_than: nil, older_than: nil, per_page: nil)
-      @newer_than = newer_than if newer_than.present?
-      @older_than = older_than if older_than.present? && !@newer_than
-      @per_page = per_page.to_i if per_page.present?
+      @newer_than  = newer_than if newer_than.present?
+      @older_than  = older_than if older_than.present? && !@newer_than
+      @per_page    = per_page.to_i if per_page.present?
+
+      @per_page ||= DEFAULT_PER_PAGE
       self
     end
 
