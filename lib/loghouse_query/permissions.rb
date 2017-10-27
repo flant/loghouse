@@ -9,7 +9,7 @@ class LoghouseQuery
       Clickhouse::Query.new(parser.parse(permissions_query)[:query]).to_s
     end
 
-    def to_clickhouse_where
+    def to_clickhouse_where(from = nil, to = nil)
       "(#{[super, to_clickhouse_permissions].join(') AND (')})"
     end
   end

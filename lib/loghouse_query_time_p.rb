@@ -41,6 +41,6 @@ class LoghouseQueryTimeP < Parslet::Parser
       time = Time.zone.parse(str)
       raise LoghouseQuery::BadTimeFormat.new("#{str}: #{e}") if time.blank?
     end
-    time
+    time.utc
   end
 end

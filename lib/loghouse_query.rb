@@ -24,7 +24,7 @@ class LoghouseQuery
     position:   nil
   }.freeze # Trick for all-attributes-hash in correct order in insert
 
-  attr_accessor :attributes
+  attr_accessor :attributes, :persisted
 
   def initialize(attrs = {})
     attrs.symbolize_keys!
@@ -47,14 +47,14 @@ class LoghouseQuery
     [attributes[:order_by], "#{LogsTables::TIMESTAMP_ATTRIBUTE} DESC", "#{LogsTables::NSEC_ATTRIBUTE} DESC"].compact.join(', ')
   end
 
-  def result
-    @result ||= LogEntry.from_result_set ::Clickhouse.connection.select_rows(to_clickhouse)
+  def validate_query!
+    parsed_query # sort of validation: will fail if query is not correct
   end
 
   def validate!
-    to_clickhouse # sort of validation: will fail if queries is not correct
-
     super
+
+    validate_query!
   end
 end
 

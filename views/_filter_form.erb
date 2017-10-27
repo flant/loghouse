@@ -1,15 +1,6 @@
 <nav class="navbar navbar-double navbar-inverse navbar-fixed-bottom" class="bottomNavBar">
   <form id="filter-form" action="/query" method="get">
     <!-- search params popovers -->
-    <% if @to_clickhouse %>
-      <div id="toClickhouse" class="search-params-popover">
-        <div class="panel panel-default">
-          <div class="panel-body">
-            <pre><%= h @to_clickhouse %></pre>
-          </div>
-        </div>
-      </div>
-    <% end %>
     <div id="hideShowKeys" class="search-params-popover">
       <div class="panel panel-default">
         <div class="panel-body">
@@ -51,7 +42,7 @@
         </div>
         <div class="col-xs-1">
           <div class="form-group" data-toggle="tooltip" title="Save query">
-            <a role="button" class="btn btn-link btn-link-alt<% if !@query %> disabled<% end %>" <% if @query %> id="save-query"<% end %>><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></a>
+            <a role="button" class="btn btn-link btn-link-alt<% if @query.persisted %> disabled<% end %>" <% if !@query.persisted %> id="save-query"<% end %>><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></a>
           </div>
           <div class="form-group" data-toggle="tooltip" title="Save result as CSV">
             <a role="button" class="btn btn-link btn-link-alt" <% if @query %> id="save-as-csv"<% end %>><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
@@ -85,9 +76,6 @@
         <div class="col-xs-2" align="right">
           <div class="form-group" data-toggle="tooltip" title="Add breakpoint">
             <a role="button" class="btn btn-link btn-link-alt" id="breakpointBtn"><span class="glyphicon glyphicon-eject" aria-hidden="true"></span></a>
-          </div>
-          <div class="form-group" data-toggle="tooltip" title="Show clickhouse info">
-            <a class="btn btn-link btn-link-alt <% if @to_clickhouse %>search-params-btn<% else %>disabled<% end %>" role="button" data-target="#toClickhouse"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>
           </div>
         </div>
       </div>

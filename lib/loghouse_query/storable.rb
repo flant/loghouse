@@ -69,7 +69,9 @@ class LoghouseQuery
       protected
 
       def build_from_row(row)
-        new id: row[0], name: row[1], namespaces: row[2], query: row[3], time_from: row[4], time_to: row[5], position: row[6]
+        lq = new id: row[0], name: row[1], namespaces: row[2], query: row[3], time_from: row[4], time_to: row[5], position: row[6]
+        lq.persisted = true
+        lq
       end
     end
 
