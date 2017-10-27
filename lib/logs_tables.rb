@@ -1,8 +1,12 @@
 module LogsTables
-  DATABASE              = ENV.fetch('CLICKHOUSE_DATABASE')            { 'logs' }
-  LOGS_TABLE            = ENV.fetch('CLICKHOUSE_LOGS_TABLE')          { 'logs' }
-  TIMESTAMP_ATTRIBUTE   = ENV.fetch('CLICKHOUSE_TIMESTAMP_ATTRIBUTE') { 'timestamp' }
-  NSEC_ATTRIBUTE        = ENV.fetch('CLICKHOUSE_NSEC_ATTRIBUTE')      { 'nsec' }
+  DATABASE            = ENV.fetch('CLICKHOUSE_DATABASE')            { 'logs' }
+  TABLE_NAME          = ENV.fetch('CLICKHOUSE_LOGS_TABLE')          { 'logs' }
+  TIMESTAMP_ATTRIBUTE = ENV.fetch('CLICKHOUSE_TIMESTAMP_ATTRIBUTE') { 'timestamp' }
+  NSEC_ATTRIBUTE      = ENV.fetch('CLICKHOUSE_NSEC_ATTRIBUTE')      { 'nsec' }
+  PARTITION_PERIOD    = ENV.fetch('LOGS_TABLES_PARTITION_PERIOD')   { '24' }.to_i
+
+  raise "24 must be divisible by PARTITION_PERIOD" unless (24 % PARTITION_PERIOD).zero?
+
   KUBERNETES_ATTRIBUTES = {
     source: 'String',
     namespace: 'String',
@@ -14,26 +18,55 @@ module LogsTables
 
   module_function
 
-  def create_date_table(date = Date.today, force: false)
+  def create_partition_table(time = Tima.zone.now, force: false)
     engine = "MergeTree(date, (#{TIMESTAMP_ATTRIBUTE}, #{NSEC_ATTRIBUTE}), 32768)"
-    table_name = date_table_name(date)
+    table_name = partition_table_name(time)
 
     create_table table_name, engine, force: force
   end
 
   def create_merge_table(force: false)
-    engine = "Merge(#{DATABASE}, '^#{LOGS_TABLE}')"
-    table_name = LOGS_TABLE
+    engine = "Merge(#{DATABASE}, '^#{TABLE_NAME}')"
+    table_name = TABLE_NAME
 
     create_table table_name, engine, force: force
+  end
+
+  def partition_table_name(time = Time.now.utc)
+    time = round_time_to_partition(time)
+
+    "#{TABLE_NAME}#{time.strftime(PARTITION_PERIOD < 24 ? '%Y%m%d%H' : '%Y%m%d')}" # a little dirty
+  end
+
+  def round_time_to_partition(time)
+    Time.at(time.to_i / PARTITION_PERIOD.hours * PARTITION_PERIOD.hours).utc
+  end
+
+  def next_time_partition(time)
+    round_time_to_partition(time) + PARTITION_PERIOD.hours
+  end
+
+  def split_range_to_tables(time_from, time_to)
+    table_ranges = {}
+    time = round_time_to_partition time_from
+
+    while time <= time_to do
+      next_partition = next_time_partition(time)
+
+      to = [time_to, next_partition].min
+      from = [time_from, time].max
+
+      table_ranges[partition_table_name(time)] = [from, to]
+
+      time = next_partition
+    end
+
+    table_ranges
   end
 
   private
 
   module_function
-  def date_table_name(date = Date.today)
-    "#{LOGS_TABLE}#{date.strftime('%Y%m%d')}"
-  end
 
   def create_table(table_name, engine, force: false)
     log "Creating table #{table_name}"

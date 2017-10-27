@@ -36,7 +36,7 @@ module Loghouse
                 end
 
       begin
-        @to_clickhouse = @query.to_clickhouse
+        @query.validate_query!
       rescue LoghouseQuery::BadFormat => e
         @error = "Bad query format: #{e}"
       rescue LoghouseQuery::BadTimeFormat => e

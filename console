@@ -2,6 +2,7 @@
 def reload!
   load './application.rb'
   Time.zone = Loghouse::TIME_ZONE
+  User.current = 'admin'
 end
 
 reload!
