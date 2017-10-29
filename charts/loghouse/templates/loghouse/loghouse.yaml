@@ -1,0 +1,102 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: loghouse
+  namespace: {{ .Values.namespace }}
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        component: loghouse
+    spec:
+      serviceAccountName: loghouse
+      containers:
+      - name: frontend
+        image: nginx:alpine
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        command: ["/usr/sbin/nginx"]
+        ports:
+        - name: http
+          containerPort: 80
+        env:
+        - name: KUBERNETES_DEPLOYED
+          value: {{ now | quote }}
+        volumeMounts:
+        - name: basic-auth
+          mountPath: "/nginx/passwd"
+          readOnly: true
+        - name: nginx-conf
+          mountPath: /etc/nginx/nginx.conf
+          subPath: nginx.conf
+      - name: backend
+        image: {{ .Values.image.loghouse }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        command: ["bundle", "exec", "puma"]
+        ports:
+        - name: http2
+          containerPort: 9292
+        env:
+        - name: KUBERNETES_DEPLOYED
+          value: {{ now | quote }}
+        - name: CLICKHOUSE_URL
+          value: "clickhouse:8123"
+        - name: CLICKHOUSE_USERNAME
+          value: {{ .Values.clickhouse.user | quote }}
+        - name: CLICKHOUSE_PASSWORD
+          value: {{ .Values.clickhouse_pass_original | quote }}
+        - name: CLICKHOUSE_DATABASE
+          value: {{ .Values.clickhouse.db | quote }}
+        - name: CLICKHOUSE_LOGS_TABLE
+          value: {{ .Values.clickhouse.table | quote }}
+        - name: LOGS_TABLES_PARTITION_PERIOD
+          value: {{ .Values.partition_period | quote }}
+        - name: PERIMISSONS_FILE_PATH
+          value: "/config/user.conf"
+        - name: RACK_ENV
+          value: "production"
+        volumeMounts:
+        - name: user-config
+          mountPath: /config
+        livenessProbe:
+          tcpSocket:
+            port: 9292
+        readinessProbe:
+          tcpSocket:
+            port: 9292
+        resources:
+          requests:
+            memory: {{ .Values.loghouse.resources.requests.memory }}
+            cpu: {{ .Values.loghouse.resources.requests.cpu }}
+          limits:
+            memory: {{ .Values.loghouse.resources.limits.memory }}
+            cpu: {{ .Values.loghouse.resources.limits.cpu }}
+      volumes:
+      - name: user-config
+        configMap:
+          name: loghouse-user-config
+      - name: basic-auth
+        secret:
+          secretName: basic-auth
+      - name: nginx-conf
+        configMap:
+          name: loghouse-nginx-conf
+{{- if .Values.tolerations.enable }}
+      tolerations:
+      - operator: {{ .Values.tolerations.operator | quote }}
+        key: {{ .Values.tolerations.key | quote }}
+{{- if .Values.tolerations.value }}
+        value: {{ .Values.tolerations.value | quote }}
+{{- end }}
+{{- if .Values.tolerations.effect }}
+        effect: {{ .Values.tolerations.effect | quote }}
+{{- end }}
+{{- end }}
+{{- if .Values.nodeSelector.enable }}
+      nodeSelector:
+        {{ .Values.nodeSelector.key }}: {{ .Values.nodeSelector.value }}
+{{- end }}

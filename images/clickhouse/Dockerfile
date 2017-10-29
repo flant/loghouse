@@ -21,7 +21,6 @@ RUN mkdir /nonexistent && \
 USER clickhouse
 EXPOSE 9000 8123 9009
 VOLUME /var/lib/clickhouse
-ADD init.sh /usr/local/bin/
 ENV CLICKHOUSE_CONFIG /etc/clickhouse-server/config.xml
 
 ENTRYPOINT exec /usr/bin/clickhouse-server --config=${CLICKHOUSE_CONFIG}

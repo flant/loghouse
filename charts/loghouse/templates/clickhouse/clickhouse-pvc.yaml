@@ -1,0 +1,17 @@
+{{- if .Values.pvc.storageClassName }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.pvc.name }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    volume.beta.kubernetes.io/mount-options: "discard"
+spec:
+  accessModes:
+    - {{ .Values.pvc.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.size }}
+  storageClassName: {{ .Values.pvc.storageClassName }}
+{{- end }}

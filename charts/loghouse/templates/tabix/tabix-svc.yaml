@@ -1,0 +1,16 @@
+{{- if and .Values.ingress.enable .Values.enable_tabix }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tabix
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    component: tabix
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+    protocol: TCP
+{{- end }}

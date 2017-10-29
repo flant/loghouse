@@ -1,0 +1,57 @@
+{{- if .Values.enable_tabix }}
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: tabix
+  namespace: {{ .Values.namespace }}
+spec:
+  revisionHistoryLimit: 1
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        component: tabix
+    spec:
+      containers:
+      - name: tabix
+        image: {{ .Values.image.tabix }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        ports:
+        - name: http
+          containerPort: 80
+        livenessProbe:
+          timeoutSeconds: 1
+          initialDelaySeconds: 60
+          tcpSocket:
+            port: 80
+        readinessProbe:
+          timeoutSeconds: 1
+          initialDelaySeconds: 5
+          tcpSocket:
+            port: 80
+        resources:
+          requests:
+            cpu: {{ .Values.tabix.resources.requests.cpu }}
+            memory: {{ .Values.tabix.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.tabix.resources.limits.cpu }}
+            memory: {{ .Values.tabix.resources.limits.memory }}
+{{- if .Values.tolerations.enable }}
+      tolerations:
+      - operator: {{ .Values.tolerations.operator | quote }}
+        key: {{ .Values.tolerations.key | quote }}
+{{- if .Values.tolerations.value }}
+        value: {{ .Values.tolerations.value | quote }}
+{{- end }}
+{{- if .Values.tolerations.effect }}
+        effect: {{ .Values.tolerations.effect | quote }}
+{{- end }}
+{{- end }}
+{{- if .Values.nodeSelector.enable }}
+      nodeSelector:
+        {{ .Values.nodeSelector.key }}: {{ .Values.nodeSelector.value }}
+{{- end }}
+{{- end }}

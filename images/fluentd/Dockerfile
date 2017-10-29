@@ -1,24 +1,3 @@
-# Copyright 2017 The Kubernetes Authors.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# This Dockerfile will build an image that is configured
-# to run Fluentd with an Elasticsearch plug-in and the
-# provided configuration file.
-# The image acts as an executable for the binary /usr/sbin/td-agent.
-# Note that fluentd is run with root permssion to allow access to
-# log files with root only access under /var/log/containers/*
-
 FROM ubuntu:16.04
 COPY clean-apt /usr/bin
 COPY clean-install /usr/bin
@@ -54,7 +33,6 @@ RUN BUILD_DEPS="make gcc g++ libc6-dev ruby-dev" \
 # Copy the Fluentd configuration file for logging Docker container logs.
 COPY fluent.conf /etc/fluent/fluent.conf
 COPY insert_ch.sh /usr/local/bin/insert_ch.sh
-COPY insert_system_ch.sh /usr/local/bin/insert_system_ch.sh
 COPY run.sh /run.sh
 RUN chmod +x /usr/local/bin/insert_ch.sh
 

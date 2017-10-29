@@ -1,0 +1,17 @@
+name: loghouse
+version: 0.0.1
+description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
+             logs for Kubernetes cluster.
+keywords:
+- fluentd
+- clickhouse
+- tabix
+- loghouse
+- kubernetes
+maintainers:
+- name: Dmitry Stolyarov
+  email: dmitry.stolyarov@flant.com
+- name: Andrey Sidorov
+  email: andrey.sidorov@flant.com
+- name: Sergey Gnuskov
+  email: sergey.gnuskov@flant.com

@@ -1,0 +1,35 @@
+{{- if and .Values.ingress.enable .Values.enable_tabix }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: tabix
+  namespace: {{ .Values.namespace }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    ingress.kubernetes.io/auth-type: basic
+    ingress.kubernetes.io/auth-secret: basic-auth
+    ingress.kubernetes.io/auth-realm: "Authrentication Required"
+{{- if .Values.ingress.enable_https }}
+    kubernetes.io/tls-acme: "true"
+    ingress.kubernetes.io/force-ssl-redirect: "true"
+    ingress.kubernetes.io/ssl-redirect: "true"
+{{- else }}
+    ingress.kubernetes.io/force-ssl-redirect: "false"
+    ingress.kubernetes.io/ssl-redirect: "false"
+{{- end }}
+spec:
+  rules:
+  - host: {{ .Values.ingress.tabix_host }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: tabix
+          servicePort: http
+{{- if .Values.ingress.enable_https }}
+  tls:
+  - hosts:
+    - {{ .Values.ingress.tabix_host }}
+    secretName: tabix
+{{- end }}
+{{- end }}

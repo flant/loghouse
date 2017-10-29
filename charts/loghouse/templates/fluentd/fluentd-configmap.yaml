@@ -1,0 +1,154 @@
+---
+kind: ConfigMap
+apiVersion: v1
+data:
+  containers.input.conf: |-
+    # Example:
+    # {"log":"[info:2016-02-16T16:04:05.930-08:00] Some log text here\n","stream":"stdout","time":"2016-02-17T00:04:05.931087621Z"}
+    <source>
+      type tail
+      path /var/log/containers/*.log
+      pos_file /var/log/containers.log.pos
+      time_format %Y-%m-%dT%H:%M:%S.%NZ
+      tag kubernetes.*
+      format json
+      keep_time_key true
+      read_from_head true
+    </source>
+  system.input.conf: |-
+    # Logs from systemd-journal for interesting services.
+    <source>
+      type systemd
+      filters [{ "_SYSTEMD_UNIT": "docker.service" }]
+      pos_file /var/log/gcp-journald-docker.pos
+      read_from_head true
+      tag docker
+    </source>
+
+    <source>
+      type systemd
+      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
+      pos_file /var/log/gcp-journald-kubelet.pos
+      read_from_head true
+      tag kubelet
+    </source>
+
+  forward.input.conf: |-
+    # Takes the messages sent over TCP
+    <source>
+      type forward
+    </source>
+  monitoring.conf: |-
+    # Prometheus Exporter Plugin
+    # input plugin that exports metrics
+    <source>
+      @type prometheus
+    </source>
+
+    <source>
+      @type monitor_agent
+    </source>
+
+    # input plugin that collects metrics from MonitorAgent
+    <source>
+      @type prometheus_monitor
+      <labels>
+        host ${hostname}
+      </labels>
+    </source>
+
+    # input plugin that collects metrics for output plugin
+    <source>
+      @type prometheus_output_monitor
+      <labels>
+        host ${hostname}
+      </labels>
+    </source>
+
+    # input plugin that collects metrics for in_tail plugin
+    <source>
+      @type prometheus_tail_monitor
+      <labels>
+        host ${hostname}
+      </labels>
+    </source>
+  output.conf: |-
+    # Enriches records with Kubernetes metadata
+    <filter kubernetes.**>
+      type kubernetes_metadata
+      merge_json_log false
+    </filter>
+
+    <filter kubernetes.**>
+      @type record_modifier
+      <record>
+        _json_log_             ${ log = record["log"].strip; if log[0].eql?('{') && log[-1].eql?('}'); begin; JSON.parse(log); rescue JSON::ParserError; end; end }
+        timestamp              ${time}
+        nsec                   ${record["time"].split('.').last.to_i}
+        # static fields
+        source                 "kubernetes"
+        namespace              ${record["kubernetes"]["namespace_name"]}
+        host                   ${record["kubernetes"]["host"]}
+        pod_name               ${record["kubernetes"]["pod_name"]}
+        container_name         ${record["kubernetes"]["container_name"]}
+        stream                 ${record["stream"]}
+        # dynamic fields
+        labels.names           ${record["kubernetes"]["labels"].keys.map{|k| "label." + k}}
+        labels.values          ${record["kubernetes"]["labels"].values}
+        string_fields.names    ${record["_json_log_"] ? record["_json_log_"].select{|_, v| !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.keys : ["log"]}
+        string_fields.values   ${record["_json_log_"] ? record["_json_log_"].select{|_, v| !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.values.map(&:to_s) : [record["log"]]}
+
+        number_fields.names    ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.is_a?(Numeric)}.keys : []}
+        number_fields.values   ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.is_a?(Numeric)}.values : []}
+
+        boolean_fields.names   ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.is_a?(TrueClass) || v.is_a?(FalseClass)}.keys : []}
+        boolean_fields.values  ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.is_a?(TrueClass) || v.is_a?(FalseClass)}.values.map{|v| v ? 1 : 0} : []}
+
+        null_fields.names      ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.nil?}.keys : []}
+      </record>
+      remove_keys kubernetes, docker, master_url, time, stream, log, _json_log_
+     </filter>
+
+    <filter docker.**>
+      @type record_modifier
+      <record>
+        timestamp              ${time}
+        source                 "docker"
+        host                   ${record["_HOSTNAME"]}
+        stream                 ${record["_TRANSPORT"]}
+        string_fields.names    ${["log"]}
+        string_fields.values   ${[record["MESSAGE"]]}
+      </record>
+      remove_keys _TRANSPORT, PRIORITY, SYSLOG_FACILITY, _UID, _GID, _CAP_EFFECTIVE, _SYSTEMD_SLICE, _BOOT_ID, _MACHINE_ID, _HOSTNAME, SYSLOG_IDENTIFIER, _PID, _COMM, _EXE, _CMDLINE, _SYSTEMD_CGROUP, _SYSTEMD_UNIT, MESSAGE
+    </filter>
+
+    <filter kubelet.**>
+      @type record_modifier
+      <record>
+        timestamp              ${time}
+        source                 "kubelet"
+        host                   ${record["_HOSTNAME"]}
+        stream                 ${record["_TRANSPORT"]}
+        string_fields.names    ${["log"]}
+        string_fields.values   ${[record["MESSAGE"]]}
+      </record>
+      remove_keys _TRANSPORT, PRIORITY, SYSLOG_FACILITY, _UID, _GID, _CAP_EFFECTIVE, _SYSTEMD_SLICE, _BOOT_ID, _MACHINE_ID, _HOSTNAME, SYSLOG_IDENTIFIER, _PID, _COMM, _EXE, _CMDLINE, _SYSTEMD_CGROUP, _SYSTEMD_UNIT, MESSAGE
+    </filter>
+ 
+    <match **>
+      @type exec
+      command bash /usr/local/bin/insert_ch.sh
+      format json
+      buffer_type memory
+      buffer_chunk_limit 32m
+      buffer_queue_limit 32
+      flush_interval 1s
+      num_threads 4
+    </match>
+
+metadata:
+  name: fluentd-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+
