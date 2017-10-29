@@ -18,8 +18,8 @@ spec:
             command: ['/bin/sh', '-c', 'while ! getent ahostsv4 clickhouse; do sleep 1; done']
           containers:
             - name: cron
-              image: wimbo/loghouse
-              imagePullPolicy: Always
+              image: flant/loghouse-dashboard:{{ default .Chart.Version .Values.version }}
+              imagePullPolicy: {{ .Values.imagePullPolicy }}
               command: ['/bin/bash', '-l', '-c', 'rake create_logs_tables']
               env:
               - name: KUBERNETES_DEPLOYED

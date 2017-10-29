@@ -19,8 +19,8 @@ spec:
       serviceAccountName: fluentd
       containers:
       - name: fluentd
-        image: {{ .Values.image.fluentd }}
-        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        image: flant/loghouse-fluentd:{{ default .Chart.Version .Values.version }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
         env:
         - name: FLUENTD_ARGS
           value: --no-supervisor -q
@@ -47,6 +47,7 @@ spec:
 {{- if .Values.docker_path }}
         - name: dockerpath
           mountPath: {{ .Values.docker_path }}
+          readOnly: true
 {{- end }}
         - name: varlog
           mountPath: /var/log
@@ -72,6 +73,10 @@ spec:
         operator: "Exists"
       - key: "dedicated"
         operator: "Exists"
+{{- if .Values.install_master }}
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+{{- end }}
       volumes:
       - name: varlog
         hostPath:

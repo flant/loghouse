@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
       - name: tabix
-        image: {{ .Values.image.tabix }}
-        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        image: flant/loghouse-tabix:{{ default .Chart.Version .Values.version }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
         ports:
         - name: http
           containerPort: 80
@@ -39,7 +39,7 @@ spec:
           limits:
             cpu: {{ .Values.tabix.resources.limits.cpu }}
             memory: {{ .Values.tabix.resources.limits.memory }}
-{{- if .Values.tolerations.enable }}
+{{- if .Values.tolerations }}
       tolerations:
       - operator: {{ .Values.tolerations.operator | quote }}
         key: {{ .Values.tolerations.key | quote }}
@@ -50,7 +50,7 @@ spec:
         effect: {{ .Values.tolerations.effect | quote }}
 {{- end }}
 {{- end }}
-{{- if .Values.nodeSelector.enable }}
+{{- if .Values.nodeSelector }}
       nodeSelector:
         {{ .Values.nodeSelector.key }}: {{ .Values.nodeSelector.value }}
 {{- end }}

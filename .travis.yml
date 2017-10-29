@@ -1,0 +1,4 @@
+script:
+  - chmod +x .travis/deploy.sh
+after_success:
+  - ./travis/deploy.sh

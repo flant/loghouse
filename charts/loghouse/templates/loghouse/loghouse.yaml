@@ -18,7 +18,6 @@ spec:
       containers:
       - name: frontend
         image: nginx:alpine
-        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
         command: ["/usr/sbin/nginx"]
         ports:
         - name: http
@@ -34,8 +33,8 @@ spec:
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
       - name: backend
-        image: {{ .Values.image.loghouse }}
-        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        image: flant/loghouse-dashboard:{{ default .Chart.Version .Values.version }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
         command: ["bundle", "exec", "puma"]
         ports:
         - name: http2
@@ -85,7 +84,7 @@ spec:
       - name: nginx-conf
         configMap:
           name: loghouse-nginx-conf
-{{- if .Values.tolerations.enable }}
+{{- if .Values.tolerations }}
       tolerations:
       - operator: {{ .Values.tolerations.operator | quote }}
         key: {{ .Values.tolerations.key | quote }}
@@ -96,7 +95,7 @@ spec:
         effect: {{ .Values.tolerations.effect | quote }}
 {{- end }}
 {{- end }}
-{{- if .Values.nodeSelector.enable }}
+{{- if .Values.nodeSelector }}
       nodeSelector:
         {{ .Values.nodeSelector.key }}: {{ .Values.nodeSelector.value }}
 {{- end }}

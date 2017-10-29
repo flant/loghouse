@@ -2,11 +2,12 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ .Chart.Name }}-init-db
+  namespace: {{ .Values.namespace }}
   annotations:
     "helm.sh/hook": post-install
     "helm.sh/weight": "-5"
 spec:
-  activeDeadlineSeconds: 60
+  activeDeadlineSeconds: 120
   template:
     metadata:
       name: {{ .Chart.Name }}-init-db
@@ -18,8 +19,8 @@ spec:
         command: [ '/bin/sh', '-c', 'while ! getent ahostsv4 clickhouse; do sleep 1; done' ]
       containers:
       - name: init
-        image: wimbo/fluentd
-        imagePullPolicy: Always
+        image: flant/loghouse-fluentd:{{ default .Chart.Version .Values.version }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
         command: ['/bin/bash', '-l', '-c', 'clickhouse-client --host=${CLICKHOUSE_URL} --port=9000 --user=${CLICKHOUSE_USERNAME} --password=${CLICKHOUSE_PASSWORD} --query="CREATE DATABASE ${CLICKHOUSE_DATABASE};"']
         env:
         - name: KUBERNETES_DEPLOYED

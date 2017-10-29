@@ -28,8 +28,8 @@ spec:
           mountPath: /var/lib/clickhouse
       containers:
       - name: clickhouse
-        image: {{ .Values.image.clickhouse }}
-        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        image: flant/loghouse-clickhouse:{{ default .Chart.Version .Values.version }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
         ports:
         - name: http
           containerPort: 8123
@@ -90,7 +90,7 @@ spec:
         - name: config-volume
           configMap:
             name: clickhouse-config
-{{- if .Values.tolerations.enable }}
+{{- if .Values.tolerations }}
       tolerations:
       - operator: {{ .Values.tolerations.operator | quote }}
         key: {{ .Values.tolerations.key | quote }}
@@ -101,7 +101,7 @@ spec:
         effect: {{ .Values.tolerations.effect | quote }}
 {{- end }}
 {{- end }}
-{{- if .Values.nodeSelector.enable }}
+{{- if .Values.nodeSelector }}
       nodeSelector:
         {{ .Values.nodeSelector.key }}: {{ .Values.nodeSelector.value }}
 {{- end }}

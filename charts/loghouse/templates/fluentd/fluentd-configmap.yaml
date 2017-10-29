@@ -106,7 +106,7 @@ data:
 
         null_fields.names      ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.nil?}.keys : []}
       </record>
-      remove_keys kubernetes, docker, master_url, time, stream, log, _json_log_
+      remove_keys kubernetes, docker, master_url, time, log, _json_log_
      </filter>
 
     <filter docker.**>
@@ -140,8 +140,9 @@ data:
       command bash /usr/local/bin/insert_ch.sh
       format json
       buffer_type memory
-      buffer_chunk_limit 32m
+      buffer_chunk_limit 64m
       buffer_queue_limit 32
+      flush_at_shutdown true
       flush_interval 1s
       num_threads 4
     </match>

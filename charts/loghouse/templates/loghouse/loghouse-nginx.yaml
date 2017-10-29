@@ -31,7 +31,7 @@ data:
         listen 80;
 
         location / {
-          auth_bastic "Authrentication Required";
+          auth_basic "Authrentication Required";
           auth_basic_user_file /nginx/passwd/auth;
           proxy_redirect      off;
           proxy_set_header    Host          $http_host;

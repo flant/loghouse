@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ .Chart.Name }}-init-tables
+  namespace: {{ .Values.namespace }}
   annotations:
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/weight": "5"
@@ -18,8 +19,8 @@ spec:
         command: [ '/bin/sh', '-c', 'while ! getent ahostsv4 clickhouse; do sleep 1; done' ]
       containers:
       - name: init-tables
-        image: wimbo/loghouse
-        imagePullPolicy: Always
+        image: flant/loghouse-dashboard:{{ default .Chart.Version .Values.version }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
         command: ['/bin/bash', '-l', '-c', 'rake create_logs_tables']
         env:
         - name: KUBERNETES_DEPLOYED
