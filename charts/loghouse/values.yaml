@@ -6,7 +6,7 @@ namespace: loghouse
 # Example:
 # command: echo "PASSWORD" | htpasswd -ni admin | base64 -w0
 # result: YWRtaW46JGFwcjEkMzdxSEwvTVIkcEFvdzEzZDUwMkd5VFc2VDNlQmJiMAoK
-auth: YWRtaW46JGFwcjEkMzdxSEwvTVIkcEFvdzEzZDUwMkd5VFc2VDNlQmJiMAoK
+auth: YWRtaW46JGFwcjEkelhESkU5YTkkRkU0OFdnZlBMZlJJQjk0bVhXZVprMAoK
 
 # Password for default user in clickhouse
 clickhouse_pass_original: password
@@ -33,12 +33,13 @@ enable_tabix: false
 
 storage:
   # You can use some storageClass or hostpath for clickhouse data storage
-  #hostpath: /data
-  pvc:
-    name: clickhouse
-    accessMode: ReadWriteOnce
-    size: 20Gi
-    storageClassName: slow
+  # hostpath: /data
+  # OR:
+  # pvc:
+  #   name: clickhouse
+  #   accessMode: ReadWriteOnce
+  #   size: 20Gi
+  #   storageClassName: slow
 
 # Custom partitioning, using LOGS_TABLES_PARTITION_PERIOD variable, in hours.
 # 24 must be divisible by this value for now, so tables always can start with 00 hours (it's skipped for 24). Default is 24, as it was.
@@ -71,9 +72,6 @@ clickhouse:
   user: default
   db: logs
   table: logs
-
-# Resources requests and limits for all pods
-clickhouse:
   resources:
     limits:
       cpu: 4

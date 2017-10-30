@@ -1,4 +1,26 @@
+language: generic
+
+install:
+  # Installing helm
+  - wget -q https://storage.googleapis.com/kubernetes-helm/helm-v2.6.2-linux-amd64.tar.gz
+  - tar xzfv helm-v2.6.2-linux-amd64.tar.gz
+  - PATH=`pwd`/linux-amd64/:$PATH
+  - helm init --client-only
+
 script:
-  - chmod +x .travis/deploy.sh
+  - if [ ! -z "$TRAVIS_TAG" ]; then VERSION="--version $TRAVIS_TAG"; fi
+  - git remote set-branches --add origin gh-pages
+  - git fetch origin gh-pages
+  - mkdir new_charts/
+  - helm package charts/loghouse -d new_charts/ $VERSION
+  - git checkout gh-pages
+  - export CHART=$(ls -1 new_charts/)
+  - mv new_charts/${CHART} charts/${CHART}
+  - rm -rf new_charts/
+  - helm repo index charts/
+  - git add charts/
+  - git commit --message "Add new version ${TRAVIS_TAG}"
+  - git remote add origin-pages https://${GITHUB_TOKEN}@github.com/flant/loghouse.git
+  - git push --quiet --set-upstream origin-pages gh-pages
 after_success:
-  - ./travis/deploy.sh
+  - true

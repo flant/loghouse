@@ -93,7 +93,7 @@ data:
         container_name         ${record["kubernetes"]["container_name"]}
         stream                 ${record["stream"]}
         # dynamic fields
-        labels.names           ${record["kubernetes"]["labels"].keys.map{|k| "label." + k}}
+        labels.names           ${record["kubernetes"]["labels"].keys}
         labels.values          ${record["kubernetes"]["labels"].values}
         string_fields.names    ${record["_json_log_"] ? record["_json_log_"].select{|_, v| !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.keys : ["log"]}
         string_fields.values   ${record["_json_log_"] ? record["_json_log_"].select{|_, v| !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.values.map(&:to_s) : [record["log"]]}

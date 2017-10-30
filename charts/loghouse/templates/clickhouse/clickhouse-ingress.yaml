@@ -1,4 +1,4 @@
-{{- if .Values.ingress.enable }}
+{{- if (and .Values.ingress.enable .Values.enable_tabix) }}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
