@@ -6,7 +6,7 @@ class LoghouseQuery
         @any_key    = expression[:any_key]
         @label_key  = expression[:label_key]
         @custom_key = expression[:custom_key]
-        @value      = expression[:str_value].to_s.presence || expression[:num_value].to_f
+        @value      = expression[:str_value].to_s.presence || expression[:num_value]
         @operator   = if expression[:not_null]
                         'not_null'
                       elsif expression[:is_null]
@@ -68,10 +68,10 @@ class LoghouseQuery
 
       def number_comparison
         if any_key?
-          "arrayExists(x -> x #{operator} #{value.to_f}, number_fields.values)"
+          "arrayExists(x -> x #{operator} #{value}, number_fields.values)"
         else
           "has(number_fields.names, '#{key}') AND "\
-          "number_fields.values[indexOf(number_fields.names, '#{key}')] #{operator} #{value.to_f}"
+          "number_fields.values[indexOf(number_fields.names, '#{key}')] #{operator} #{value}"
         end
       end
 
