@@ -78,7 +78,7 @@ class LoghouseQueryP < Parslet::Parser
   }
 
   rule(:key) {
-    (match['a-zA-Z'] >> match['a-zA-Z0-9_\-\.'].repeat(0)).as(:custom_key)
+    (match['a-zA-Z@'] >> match['a-zA-Z0-9_\-\.'].repeat(0)).as(:custom_key)
   }
 
   rule(:expression) do

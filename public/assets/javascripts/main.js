@@ -239,7 +239,7 @@ function updateAvailableKeysStyles() {
   }
   for (var i = 0; i < window.available_keys.length; i++) {
     key = window.available_keys[i];
-    key_css_friendly = key.replace('.', '_').replace('~', 'LABEL');
+    key_css_friendly = key.replace('.', '_').replace('~', 'LABEL').replace('@', 'AT'); // TODO: make this better
     addCSSRule(window.keys_style.sheet, 'body.hide_' + key_css_friendly + ' #result span[data-key="' + key + '"]', 'display: none', 0);
   }
 }
@@ -252,7 +252,7 @@ function updateSelectedKeysClasses() {
   window.hidden_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.sk_select.val()) == -1; });
   for (var i = 0; i < window.hidden_keys.length; i++) {
     key = window.hidden_keys[i];
-    key_css_friendly = key.replace('.', '_').replace('~', 'LABEL');
+    key_css_friendly = key.replace('.', '_').replace('~', 'LABEL').replace('@', 'AT'); // TODO: make this better
     body.addClass('hide_' + key_css_friendly);
   }
 }
