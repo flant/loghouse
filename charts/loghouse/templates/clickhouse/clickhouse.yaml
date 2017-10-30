@@ -19,7 +19,7 @@ spec:
         image: alpine:3.6
         command: ['/bin/sh', '-c', 'chown 105:106 -R /var/lib/clickhouse']
         volumeMounts:
-{{- if .Values.storage.pvc.storageClassName }}
+{{- if .Values.storage.pvc }}
         - name: {{ .Values.storage.pvc.name }}
 {{- end }}
 {{- if .Values.storage.hostpath }}
@@ -50,14 +50,14 @@ spec:
           value: {{ .Values.clickhouse.table | quote }}
         livenessProbe:
           timeoutSeconds: 1
-          initialDelaySeconds: 60
+          initialDelaySeconds: 30
           tcpSocket:
-            port: 8123
+            port: 9000
         readinessProbe:
           timeoutSeconds: 1
           initialDelaySeconds: 5
           tcpSocket:
-            port: 8123
+            port: 9000
         resources:
           requests:
             cpu: {{ .Values.clickhouse.resources.requests.cpu }}
@@ -70,7 +70,7 @@ spec:
           - name: hostpath
             mountPath: /var/lib/clickhouse/
 {{- end }}
-{{- if .Values.storage.pvc.storageClassName }}
+{{- if .Values.storage.pvc }}
           - name: {{ .Values.storage.pvc.name }}
             mountPath: /var/lib/clickhouse/
 {{- end }}
@@ -82,7 +82,7 @@ spec:
           hostPath:
             path: {{ .Values.storage.hostpath }}
 {{- end }}
-{{- if .Values.storage.pvc.storageClassName }}
+{{- if .Values.storage.pvc }}
         - name: {{ .Values.storage.pvc.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.storage.pvc.name }}
