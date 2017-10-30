@@ -54,7 +54,7 @@ spec:
           value: {{ .Values.clickhouse.table | quote }}
         - name: LOGS_TABLES_PARTITION_PERIOD
           value: {{ .Values.partition_period | quote }}
-        - name: PERIMISSONS_FILE_PATH
+        - name: PERMISSONS_FILE_PATH
           value: "/config/user.conf"
         - name: RACK_ENV
           value: "production"

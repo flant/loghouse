@@ -1,5 +1,5 @@
 class User
-  PERMISSONS_FILE_PATH = ENV.fetch('PERIMISSONS_FILE_PATH') { 'config/permissions.yml' }
+  PERMISSONS_FILE_PATH = ENV.fetch('PERMISSONS_FILE_PATH') { 'config/permissions.yml' }
 
   class << self
     def current
