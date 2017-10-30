@@ -1,4 +1,4 @@
-window.available_keys = [];
+window.available_keys = {};
 window.hidden_keys = [];
 
 function commonTimestamp() {
@@ -162,23 +162,23 @@ function initHideShowWidget() {
     multiple: true,
     allowClear: true,
     theme: "bootstrap",
-    data: window.available_keys
+    data: Object.keys(window.available_keys)
   });
   var shown_keys;
   if (URI(location.href).hasQuery('shown_keys[]', true)) {
     shown_keys = URI(location.href).search(true)['shown_keys[]'];
   } else {
-    shown_keys = window.available_keys;
+    shown_keys = Object.keys(window.available_keys);
   }
   window.sk_select.val(shown_keys).trigger('change');
   window.sk_select.on("select2:select", function(e) {
-    var hidden_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.sk_select.val()) == -1; });
+    var hidden_keys = $.grep(Object.keys(window.available_keys), function(n,i) { return $.inArray(n, window.sk_select.val()) == -1; });
     window.hk_select.val(hidden_keys).trigger('change');
     updateSelectedKeysClasses();
     updateSelectedKeysUri();
   });
   window.sk_select.on("select2:unselect", function(e) {
-    var hidden_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.sk_select.val()) == -1; });
+    var hidden_keys = $.grep(Object.keys(window.available_keys), function(n,i) { return $.inArray(n, window.sk_select.val()) == -1; });
     window.hk_select.val(hidden_keys).trigger('change');
     updateSelectedKeysClasses();
     updateSelectedKeysUri();
@@ -190,20 +190,20 @@ function initHideShowWidget() {
     multiple: true,
     allowClear: true,
     theme: "bootstrap",
-    data: window.available_keys
+    data: Object.keys(window.available_keys)
   });
   var hidden_keys;
-  hidden_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.sk_select.val()) == -1; });
+  hidden_keys = $.grep(Object.keys(window.available_keys), function(n,i) { return $.inArray(n, window.sk_select.val()) == -1; });
   window.hk_select.val(hidden_keys).trigger('change');
 
   window.hk_select.on("select2:select", function(e) {
-    var shown_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.hk_select.val()) == -1; });
+    var shown_keys = $.grep(Object.keys(window.available_keys), function(n,i) { return $.inArray(n, window.hk_select.val()) == -1; });
     window.sk_select.val(shown_keys).trigger('change');
     updateSelectedKeysClasses();
     updateSelectedKeysUri();
   });
   window.hk_select.on("select2:unselect", function(e) {
-    var shown_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.hk_select.val()) == -1; });
+    var shown_keys = $.grep(Object.keys(window.available_keys), function(n,i) { return $.inArray(n, window.hk_select.val()) == -1; });
     window.sk_select.val(shown_keys).trigger('change');
     updateSelectedKeysClasses();
     updateSelectedKeysUri();
@@ -214,15 +214,18 @@ function updateAvailableKeys() {
   var el = $('#result');
   el.find('span[data-key]').each(function() {
     var key = $(this).data('key');
-    if (window.available_keys.indexOf(key) < 0)
-      window.available_keys.push(key);
+    var hash = $(this).data('key-hash');
+    if (window.available_keys[key] == undefined)
+      window.available_keys[key] = hash;
   });
-  if (window.available_keys.length != 0) {
-    window.available_keys.sort();
+  if (Object.keys(window.available_keys).length != 0) {
     $('.hide-show-keys-toggle').removeClass('disabled');
   }  else {
-    window.available_keys = [];
-    window.sk_select && window.sk_select.val([]);
+    window.available_keys = {};
+
+    if (window.sk_select)
+      window.sk_select.val([]);
+
     $('.hide-show-keys-toggle').addClass('disabled');
   }
 }
@@ -237,11 +240,9 @@ function updateAvailableKeysStyles() {
   while (window.keys_style.sheet.cssRules.length > 0) {
     window.keys_style.sheet.deleteRule(0);
   }
-  for (var i = 0; i < window.available_keys.length; i++) {
-    key = window.available_keys[i];
-    key_css_friendly = key.replace('.', '_').replace('~', 'LABEL').replace('@', 'AT'); // TODO: make this better
-    addCSSRule(window.keys_style.sheet, 'body.hide_' + key_css_friendly + ' #result span[data-key="' + key + '"]', 'display: none', 0);
-  }
+  $.each(window.available_keys, function(key, hash) {
+    addCSSRule(window.keys_style.sheet, 'body.hide_' + hash + ' #result span[data-key-hash="' + hash + '"]', 'display: none', 0);
+  });
 }
 
 function updateSelectedKeysClasses() {
@@ -249,11 +250,11 @@ function updateSelectedKeysClasses() {
   body.removeClass(function (index, className) {
     return (className.match (/\bhide_\S+/g) || []).join(' ');
   });
-  window.hidden_keys = $.grep(window.available_keys, function(n,i) { return $.inArray(n, window.sk_select.val()) == -1; });
+  window.hidden_keys = $.grep(Object.keys(window.available_keys), function(n,i) { return $.inArray(n, window.sk_select.val()) == -1; });
   for (var i = 0; i < window.hidden_keys.length; i++) {
     key = window.hidden_keys[i];
-    key_css_friendly = key.replace('.', '_').replace('~', 'LABEL').replace('@', 'AT'); // TODO: make this better
-    body.addClass('hide_' + key_css_friendly);
+    hash = window.available_keys[key];
+    body.addClass('hide_' + hash);
   }
 }
 
