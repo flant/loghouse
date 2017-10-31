@@ -1,49 +1,7 @@
 apiVersion: v1
 entries:
   loghouse:
-  - created: 2017-10-31T21:59:17.694997575Z
-    description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
-      logs for Kubernetes cluster.
-    digest: 53fb1ac409492d0a5a7a957f95fa6307b32ff85a48e0d794cabb05d709c6a733
-    keywords:
-    - fluentd
-    - clickhouse
-    - tabix
-    - loghouse
-    - kubernetes
-    maintainers:
-    - email: dmitry.stolyarov@flant.com
-      name: Dmitry Stolyarov
-    - email: andrey.sidorov@flant.com
-      name: Andrey Sidorov
-    - email: sergey.gnuskov@flant.com
-      name: Sergey Gnuskov
-    name: loghouse
-    urls:
-    - loghouse-0.0.3.tgz
-    version: 0.0.3
-  - created: 2017-10-31T21:59:17.694179091Z
-    description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
-      logs for Kubernetes cluster.
-    digest: 1c19575df4ff9c709ed6613ae737c1e014f6f9cf8d0cc2785125364cb2265b34
-    keywords:
-    - fluentd
-    - clickhouse
-    - tabix
-    - loghouse
-    - kubernetes
-    maintainers:
-    - email: dmitry.stolyarov@flant.com
-      name: Dmitry Stolyarov
-    - email: andrey.sidorov@flant.com
-      name: Andrey Sidorov
-    - email: sergey.gnuskov@flant.com
-      name: Sergey Gnuskov
-    name: loghouse
-    urls:
-    - loghouse-0.0.2.tgz
-    version: 0.0.2
-  - created: 2017-10-31T21:59:17.693407925Z
+  - created: 2017-11-01T01:12:43.831407345+03:00
     description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
       logs for Kubernetes cluster.
     digest: 7f530b665fb38b4736f8d3facf6e088a5391eedc169822afb765f431cfacd642
@@ -64,4 +22,4 @@ entries:
     urls:
     - loghouse-0.0.1.tgz
     version: 0.0.1
-generated: 2017-10-31T21:59:17.692343482Z
+generated: 2017-11-01T01:12:43.830593533+03:00
