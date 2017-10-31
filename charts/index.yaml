@@ -1,7 +1,7 @@
 apiVersion: v1
 entries:
   loghouse:
-  - created: 2017-10-31T21:42:02.048674629Z
+  - created: 2017-10-31T21:57:55.474019085Z
     description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
       logs for Kubernetes cluster.
     digest: 53fb1ac409492d0a5a7a957f95fa6307b32ff85a48e0d794cabb05d709c6a733
@@ -22,7 +22,7 @@ entries:
     urls:
     - loghouse-0.0.3.tgz
     version: 0.0.3
-  - created: 2017-10-31T21:42:02.047333175Z
+  - created: 2017-10-31T21:57:55.472628825Z
     description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
       logs for Kubernetes cluster.
     digest: 7f530b665fb38b4736f8d3facf6e088a5391eedc169822afb765f431cfacd642
@@ -43,4 +43,4 @@ entries:
     urls:
     - loghouse-0.0.1.tgz
     version: 0.0.1
-generated: 2017-10-31T21:42:02.045816847Z
+generated: 2017-10-31T21:57:55.471102631Z
