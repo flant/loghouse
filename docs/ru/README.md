@@ -2,9 +2,9 @@
 
 Официальный статус — **альфа-версия**, но мы (Флант) используем в production с сентября 2017 года.
 
-Демонстрация работы интерфейса loghouse-dashboard в действии (~7 Мб):
+Демонстрация работы интерфейса loghouse-dashboard в действии (~3 Мб):
 
-<video width="100%" controls><source src="https://cdn.rawgit.com/flant/loghouse/master/docs/web-ui-animated.mp4" type="video/mp4"></video>
+![loghouse web UI](https://cdn.rawgit.com/flant/loghouse/master/docs/web-ui-animated.gif)
 
 # Возможности
 

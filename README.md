@@ -2,9 +2,9 @@ Ready to use log management solution for Kubernetes. Efficiently store big amoun
 
 Status is **alpha**. However we (Flant) use it in our production Kubernetes deployments since September, 2017.
 
-Loghouse-dashboard UI demo in action (~7 Mb):
+Loghouse-dashboard UI demo in action (~3 Mb):
 
-<video width="100%" controls><source src="https://cdn.rawgit.com/flant/loghouse/master/docs/web-ui-animated.mp4" type="video/mp4"></video>
+![loghouse web UI](https://cdn.rawgit.com/flant/loghouse/master/docs/web-ui-animated.gif)
 
 # Features
 
