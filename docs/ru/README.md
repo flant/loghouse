@@ -4,7 +4,7 @@
 
 Демонстрация работы интерфейса loghouse-dashboard в действии (~7 Мб):
 
-![loghouse web UI](https://cdn.rawgit.com/flant/loghouse/master/docs/web-ui-animated.mp4)
+<video width="100%" controls><source src="https://cdn.rawgit.com/flant/loghouse/master/docs/web-ui-animated.mp4" type="video/mp4"></video>
 
 # Возможности
 
