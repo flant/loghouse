@@ -1,83 +1,55 @@
-# loghouse
+Ready to use log management solution for Kubernetes. Efficiently store myriad of your logs (in [ClickHouse](https://github.com/yandex/ClickHouse) database), process them using a simple query language and monitor them online through web interface. Easy and quick to deploy in an already functioning Kubernetes cluster.
 
-Веб-интерфейс просмотра логов для  
-https://github.com/qw1mb0/kubernetes-fcht
+Status is **alpha**. However we (Flant) use it in our production Kubernetes deployments since September, 2017.
 
-## Возможности
+# Features
 
-### Язык запросов
+* Collecting and storing logs from all Kubernetes pods efficiently:
+ * [Fluentd](https://www.fluentd.org/) processes upto 10,000 log entries per second consuming 300 MB of RAM (installed at each K8s node).
+ * ClickHouse makes disk space usage minimal. Examples of logs stored in our production deployments: 3.7 million entries require 1.2 GB, 300m — 13 GB, 5,35 billion — 54 GB.
+* Simple query language. Easy to select entries by exact keys values or regular expressions, multiple conditions are supported with AND/OR. *Learn more in [docs](docs/en/query-language.md).*
+* Selecting entries based on additional containers' data available in Kubernetes API (pod's and container's names, host, namespace, labels, etc).
+* Quickly & straightforward deployable to Kubernetes via Dockerfile and Helm charts.
+* Web interface made cosy and powerful:
+ * Papertrail-like user experience.
+ * Customizable time frames: from date to date / from now till given period (last hour, last day, etc).
+ * Infinite scrolling of older log entries.
+ * Save your queries to use in future.
+ * Basic permissions (limiting entries shown for users by specifying Kubernetes namespaces).
+ * Exporting current query's results to CSV (more formats will be supported).
 
-Запрос (`QUERY`) имеет вид `EXPRESSION [QUERY_OPERATOR QUERY]`.
+# Installation
 
-`QUERY_OPERATOR` может быть `AND` или `OR`.
+To install loghouse, you need to have [Helm](https://github.com/kubernetes/helm) in your Kubernetes cluster. The whole process is as simple as these two steps:
 
-Выражение (`EXPRESSION`) имеет вид `KEY EXPRESSION_OPERATOR VALUE`.
+1. Add loghouse charts:
+```# helm repo add loghouse https://flant.github.io/loghouse/charts/```
 
-Ключом может быть любая строка, начинающаяся с символа и содержащая `[a-zA-Z0-9_\-\.]`, либо предопределённое значение `*`, обозначающее любой ключ. Для удобства поиска по меткам (labels) можно начать ключ с `~`, после которого указать имя метки (`~component` эквивалентно `label.component`).
+2. Install a chart:
+```# helm fetch loghouse/loghouse --untar```
+```# vim loghouse/values.yaml```
+```# helm install -n loghouse loghouse```
 
-Есть несколько видов `EXPRESSION_OPERATOR`:
-1. Равенство: `=`, `!=`. Применяется для строковых (`string_fields`) и численных (`number_fields`) значений. При этом если `VALUE` взято в кавычки, то поиск будет только среди строковых значений. Если `VALUE` имеет символы `%` или `_` — сравнение происходит с помощью `LIKE`.
-2. Сравнение: `>`, `<`, `>=`, `<=`. Применяется толко для численных значений.
-3. Регулярка: `=~`. Применяется только для строковых значений, поиск происходит с помощью `MATCH`.
-4. Поиск булевых значений: `is true`, `is false`. Применяется только для булевых (`boolean_fields`) значений.
-5. Поиск NULL значений: `is null`, `is not null`. Проверяется наличие ключа среди NULL-полей (`null_fields`.)
+You can also use special parameters while installing chart:
+```# helm install -n loghouse loghouse --set 'param=value' ...```
 
-P.S. Все встроенные операторы (`is_true`, `is null` и т.д.) являются регистронезависимыми. Операторы могут быть окружены пробелами.
+Web interface (loghouse-dashboard) will be reachable via address specified in values.yaml config as ```loghouse_host```. You'll be prompted by basic authorization generated via htpasswd and configured in ```auth``` parameter of your values.yaml.
 
-#### Примеры
-1.  `host=kube-1 and log.level > 10`
-1.  `* =~ kube-[1-9]`
-1.  `~component = clickhouse`
-1.  `log = %error% or log != %success%`
-1.  `unhealthy is true`
-1.  `status is null`
+# How it works?
 
-### Выбор периода
+![loghouse architecture](https://cdn.rawgit.com/flant/loghouse/master/docs/architecture.svg)
 
-Выбор периода может быть конкретным (с даты по дату) или от текущего момента. В этом случае используется вид "c `now` по `now-12h` (последние 12 часов). Поддерживаются следующие виды:
-1.  `m` — минуты.
-1.  `h` — часы.
-1.  `d` — дни.
-1.  `w` — недели.
-1.  `M` — месяцы.
-1.  `y` — годы.
+A pod with fluentd collecting logs will be installed on each node of your Kubernetes cluster. Technically, it is implemented by means of DaemonSet having tolerations for all possible taints, so it includes all the nodes available. Logs directories from all hosts are mounted to fluentd pods and watched by fluentd. [Kubernetes_metadata](https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter) filter is applied for all the Docker containers' logs to get additional information about containers via Kubernetes API. Another filter, [record_modifier](https://github.com/repeatedly/fluent-plugin-record-modifier), is then used to "prepare" all the data we have. And the last step is passing this data to fluentd output plugin executing [clickhouse-client](https://clickhouse.yandex/docs/en/interfaces/cli.html) CLI tool to insert new entries into ClickHouse DBMS.
 
-Для удобства есть быстрые кнопки (`Last 5 minutes`, `Last 12 hours`, `Last 7 days` и т.д.).
+**Note on logs format**: If log entry is in JSON, it will be formatted according to its values' types, i.e. each field will be stored in corresponding table: string_fields, number_fields, boolean_fields, null_fields or labels (the last one is used for containers labels to make further filtering and lookups easy). ClickHouse built-in functions will be used to process these data types. If log entry isn't in JSON, it will be stored in string_fields table.
 
-Если явно не выбрано значение периода — по умолчанию берётся `Last 12 hours`.
+Currently, ClickHouse DBMS is deployed as a single instance via Deployment which brings this instance to a random K8s node (this behaviour can be changed by using nodeSelector and tolerations to choose a specific node). ClickHouse stores its data in hostPath volume or Persistent Volumes Claim (PVC) created with any storageClass you prefer.
 
-### Бесконечная прокрутка
+Web interface (loghouse-dashboard) is composed of two components:
 
-Изначально на странице выводятся последние 50 записей, от старых (сверху) к новым (снизу), и автоматически проматывается вниз к самым новым. При скролле вверх подгружаются всё более и более старые записи (тоже по 50 штук).
+* frontend — nginx with basic authorization. This authorization is used to limit user's access with logs from given Kubernetes namespaces only.
+* backend — Ruby application displaying logs from ClickHouse.
 
-### Режим follow
+# Roadmap
 
-Если включить режим follow, то каждые 5 секунд будет происходить запрос на наличие новых данных под текущему запросу. Они будут подставляться снизу. Чтобы отделить уже просмотренные записи от новых, можно добавить Breakpoint, нажав на соответствующую кнопку. В этом случае в самый низ логов подставится строка вида `--- Breakpoint at 2017-10-10 12:27:36 ---`, а все новые записи будут появляться под ней.
-
-### Сохранение запросов
-
-Каждый запрос можно сохранить (либо просто добавить новый на странице `Manage queries`) для последующего быстрого доступа к нему. Все сохранённые запросы видны на странице `Manage queries`, там же их можно сортировать (через перетаскивание), чтобы определить порядок, выводимый в всплывающем окне на главной странице по нажатию кнопки `Load queries`. Там выводятся только первые 10 запросов, а при нажатии на один из них он тут же выполняется.
-
-### Скрытие полей
-
-В виджете `Hide/Show keys` можно выбрать поля, которые нужно показывать/прятать.
-
-### Поддержка разделения доступов по namespace
-
-С помощью yaml-кофига вида
-
-```yaml
-# Available namespaces
-user:
-  - "test.*"
-  - "stag(e|ing).*"
-  - "review.*"
-admin:
-  - ".*"
-```
-
-можно настроить, каким пользователям (из Basic Auth авторизации) какие namespace'ы доступны.
-
-### Сохранение результатов в CSV
-
-При нажатии кнопки `Save result as CSV` произойдёт скачивание CSV с результатами для текущего запроса.
+We're going to add another deployment options (having ClickHouse instances on each K8s node or having a ClickHouse cluster), migrate frontend to AngularJS and backend to Golang, add command-line interface (CLI) and much more. More details will be available soon in our [issues](https://github.com/flant/loghouse/issues).
