@@ -2,6 +2,10 @@ Ready to use log management solution for Kubernetes. Efficiently store big amoun
 
 Status is **alpha**. However we (Flant) use it in our production Kubernetes deployments since September, 2017.
 
+Loghouse-dashboard UI demo in action (~7 Mb):
+
+![loghouse web UI](https://cdn.rawgit.com/flant/loghouse/master/docs/web-ui-animated.mp4)
+
 # Features
 
 * Collecting and storing logs from all Kubernetes pods efficiently:
@@ -59,10 +63,6 @@ Web UI is composed of two components:
 
 * **frontend** — nginx with basic authorization. This authorization is used to limit user's access with logs from given Kubernetes namespaces only;
 * **backend** — Ruby application displaying logs from ClickHouse.
-
-Here is a small demonstration of loghouse-dashboard UI in action (animated GIF, ~3 Mb):
-
-![loghouse web UI](https://cdn.rawgit.com/flant/loghouse/master/docs/web-ui-animated.gif)
 
 # Roadmap
 

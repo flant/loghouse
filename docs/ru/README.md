@@ -2,6 +2,10 @@
 
 Официальный статус — **альфа-версия**, но мы (Флант) используем в production с сентября 2017 года.
 
+Демонстрация работы интерфейса loghouse-dashboard в действии (~7 Мб):
+
+![loghouse web UI](https://cdn.rawgit.com/flant/loghouse/master/docs/web-ui-animated.mp4)
+
 # Возможности
 
 * Эффективный сбор и хранение логов в Kubernetes:
@@ -59,10 +63,6 @@
 
 * **frontend** — nginx с базовой авторизацией. На основе данной авторизации можно выдавать права доступа на отображение логов для определенного пользователя, ограниченные конкретными пространствами имен Kubernetes;
 * **backend** — приложение на Ruby, которое выполняет всю работу по выводу логов из ClickHouse.
-
-Небольшая демонстрация работы интерфейса loghouse-dashboard в действии (анимированный GIF, ~3 Мб):
-
-![loghouse web UI](https://cdn.rawgit.com/flant/loghouse/master/docs/web-ui-animated.gif)
 
 # План развития
 
