@@ -1,4 +1,4 @@
-Ready to use log management solution for Kubernetes. Efficiently store big amounts of your logs (in [ClickHouse](https://github.com/yandex/ClickHouse) database), process them using a simple query language and monitor them online through web interface. Easy and quick to deploy in an already functioning Kubernetes cluster.
+Ready to use log management solution for Kubernetes. Efficiently store big amounts of your logs (in [ClickHouse](https://github.com/yandex/ClickHouse) database), process them using a simple query language and monitor them online through web UI. Easy and quick to deploy in an already functioning Kubernetes cluster.
 
 Status is **alpha**. However we (Flant) use it in our production Kubernetes deployments since September, 2017.
 
@@ -10,7 +10,7 @@ Status is **alpha**. However we (Flant) use it in our production Kubernetes depl
 * Simple query language. Easy to select entries by exact keys values or regular expressions, multiple conditions are supported with AND/OR. *Learn more in [docs](docs/en/query-language.md).*
 * Selecting entries based on additional containers' data available in Kubernetes API (pod's and container's names, host, namespace, labels, etc).
 * Quickly & straightforward deployable to Kubernetes via Dockerfiles and Helm chart.
-* Web interface made cosy and powerful:
+* Web UI made cosy and powerful:
   * Papertrail-like user experience.
   * Customizable time frames: from date to date / from now till given period (last hour, last day, etc).
   * Infinite scrolling of older log entries.
@@ -43,7 +43,7 @@ To install loghouse, you need to have [Helm](https://github.com/kubernetes/helm)
 # helm install -n loghouse loghouse/loghouse --set 'param=value' ...
 ```
 
-Web interface (loghouse-dashboard) will be reachable via address specified in values.yaml config as ```loghouse_host```. You'll be prompted by basic authorization generated via htpasswd and configured in ```auth``` parameter of your values.yaml.
+Web UI (loghouse-dashboard) will be reachable via address specified in values.yaml config as ```loghouse_host```. You'll be prompted by basic authorization generated via htpasswd and configured in ```auth``` parameter of your values.yaml.
 
 # Architecture
 
@@ -55,10 +55,14 @@ A pod with fluentd collecting logs will be installed on each node of your Kubern
 
 Currently, ClickHouse DBMS is deployed as a single instance via Deployment which brings this instance to a random K8s node (this behaviour can be changed by using nodeSelector and tolerations to choose a specific node). ClickHouse stores its data in hostPath volume or Persistent Volumes Claim (PVC) created with any storageClass you prefer.
 
-Web interface ([screenshot](http://screenshot.flant.ru/asidorovj/04/81/0481900cca291c45718bd6dbae66c64b98fa0b32.png)) is composed of two components:
+Web UI is composed of two components:
 
 * **frontend** — nginx with basic authorization. This authorization is used to limit user's access with logs from given Kubernetes namespaces only;
 * **backend** — Ruby application displaying logs from ClickHouse.
+
+Here is a small demonstration of loghouse-dashboard UI in action (animated GIF, ~3 Mb):
+
+![loghouse web UI](https://cdn.rawgit.com/flant/loghouse/master/docs/web-ui-animated.gif)
 
 # Roadmap
 
