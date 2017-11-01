@@ -104,7 +104,7 @@ class LoghouseQuery
             "#{operator == '=' ? 'like' : 'notLike'}(labels.values[indexOf(labels.names, '#{key}')], '#{val}')"
           else
             "has(string_fields.names, '#{key}') AND "\
-            "#{operator == '=' ? 'like' : 'notLike'}(string_fields.value[indexOf(string_fields.names, '#{key}')], '#{val}')"
+            "#{operator == '=' ? 'like' : 'notLike'}(string_fields.values[indexOf(string_fields.names, '#{key}')], '#{val}')"
           end
         else
           if any_key?
