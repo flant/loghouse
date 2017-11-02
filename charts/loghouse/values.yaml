@@ -83,7 +83,7 @@ fluentd:
   resources:
     limits:
       cpu: 1
-      memory: 512Gi
+      memory: 512Mi
     requests:
       cpu: 0.5
       memory: 256Mi
