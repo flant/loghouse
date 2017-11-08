@@ -4,5 +4,5 @@ data:
 kind: Secret
 metadata:
   name: basic-auth
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
 type: Opaque

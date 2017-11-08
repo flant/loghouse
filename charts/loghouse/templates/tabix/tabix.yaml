@@ -4,7 +4,7 @@ apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: tabix
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   revisionHistoryLimit: 1
   replicas: 1

@@ -3,7 +3,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: tabix
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   annotations:
     kubernetes.io/ingress.class: "nginx"
     ingress.kubernetes.io/auth-type: basic
@@ -19,17 +19,17 @@ metadata:
 {{- end }}
 spec:
   rules:
-  - host: {{ .Values.ingress.tabix_host }}
+  - host: {{ .Values.ingress.tabix.host }}
     http:
       paths:
-      - path: /
+      - path: {{ .Values.ingress.tabix.path }}
         backend:
           serviceName: tabix
           servicePort: http
 {{- if .Values.ingress.enable_https }}
   tls:
   - hosts:
-    - {{ .Values.ingress.tabix_host }}
-    secretName: tabix
+    - {{ .Values.ingress.tabix.host }}
+    secretName: {{ .Values.tabix.tls_secret_name }}
 {{- end }}
 {{- end }}

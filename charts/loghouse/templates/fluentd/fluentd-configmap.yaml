@@ -134,6 +134,11 @@ data:
       </record>
       remove_keys _TRANSPORT, PRIORITY, SYSLOG_FACILITY, _UID, _GID, _CAP_EFFECTIVE, _SYSTEMD_SLICE, _BOOT_ID, _MACHINE_ID, _HOSTNAME, SYSLOG_IDENTIFIER, _PID, _COMM, _EXE, _CMDLINE, _SYSTEMD_CGROUP, _SYSTEMD_UNIT, MESSAGE
     </filter>
+
+    <filter **>
+      @type record_modifier
+      whitelist_keys timestamp, nsec, source, namespace, host, pod_name, container_name, stream, labels.names, labels.values, string_fields.names, string_fields.values, number_fields.names, number_fields.values, boolean_fields.names, boolean_fields.values, null_fields.names 
+    </filter>
  
     <match **>
       @type exec
@@ -149,7 +154,7 @@ data:
 
 metadata:
   name: fluentd-config
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
 

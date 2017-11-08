@@ -84,6 +84,6 @@ data:
     </yandex>
 metadata:
   name: clickhouse-config
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     addonmanager.kubernetes.io/mode: Reconcile

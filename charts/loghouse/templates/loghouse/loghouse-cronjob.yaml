@@ -1,8 +1,8 @@
-apiVersion: batch/v2alpha1
+apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: {{ .Chart.Name }}-tables
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   schedule: "59 23 * * *"
   concurrencyPolicy: Forbid

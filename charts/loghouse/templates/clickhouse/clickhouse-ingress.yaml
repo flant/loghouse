@@ -3,7 +3,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: clickhouse
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   annotations:
     kubernetes.io/ingress.class: "nginx"
 {{- if .Values.ingress.enable_https }}
@@ -16,17 +16,17 @@ metadata:
 {{- end }}
 spec:
   rules:
-  - host: {{ .Values.ingress.clickhouse_host }}
+  - host: {{ .Values.ingress.clickhouse.host }}
     http:
       paths:
-      - path: /
+      - path: {{ .Values.ingress.clickhouse.path }}
         backend:
           serviceName: clickhouse
           servicePort: http
 {{- if .Values.ingress.enable_https }}
   tls:
   - hosts:
-    - {{ .Values.ingress.clickhouse_host }}
-    secretName: clickhouse
+    - {{ .Values.ingress.clickhouse.host }}
+    secretName: {{ .Values.ingress.clickhouse.tls_secret_name}}se
 {{- end }}
 {{- end }}
