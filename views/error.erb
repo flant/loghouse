@@ -4,18 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>Loghouse</title>
-
     <link href="<%= url('vendor/bootstrap/css/bootstrap.min.css') %>" rel="stylesheet" type="text/css" />
-    <link href="<%= url('vendor/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css') %>" rel="stylesheet" type="text/css" />
-    <link href="<%= url('vendor/select2/css/select2.min.css') %>" rel="stylesheet" type="text/css" />
-    <link href="<%= url('vendor/select2/css/select2-bootstrap.min.css') %>" rel="stylesheet" type="text/css" />
-
     <link href="<%= url('assets/stylesheets/bootstrap-custom.css') %>" rel="stylesheet" type="text/css" />
-    <link href="<%= url('assets/stylesheets/search-params.css') %>" rel="stylesheet" type="text/css" />
-    <link href="<%= url('assets/stylesheets/super-date-picker.css') %>" rel="stylesheet" type="text/css" />
-    <link href="<%= url('assets/stylesheets/logs.css') %>" rel="stylesheet" type="text/css" />
     <link href="<%= url('assets/stylesheets/main.css') %>" rel="stylesheet" type="text/css" />
   </head>
   <body>
@@ -34,23 +25,13 @@
         </ul>
       </div>
     </nav>
-
-    <h1><%= @status %></h1>
-
-    <% if @message %>
-      <%= @message %>
-    <% end %>
-
-
-    <script src="<%= url('vendor/jquery-3.2.1.min.js') %>" charset="utf-8"></script>
-    <script src="<%= url('vendor/moment-with-locales.min.js') %>" charset="utf-8"></script>
-    <script src="<%= url('vendor/bootstrap/js/bootstrap.min.js') %>" charset="utf-8"></script>
-    <script src="<%= url('vendor/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js') %>" charset="utf-8"></script>
-    <script src="<%= url('vendor/html.sortable.min.js') %>" charset="utf-8"></script>
-    <script src="<%= url('vendor/select2/js/select2.full.min.js') %>" charset="utf-8"></script>
-    <script src="<%= url('vendor/uri.js') %>" charset="utf-8"></script>
-
-    <script src="<%= url('assets/javascripts/search-params.js') %>" charset="utf-8"></script>
-    <script src="<%= url('assets/javascripts/main.js') %>" charset="utf-8"></script>
+    <div class="container-fluid">
+      <div class="text-danger">
+        <h1><%= @status %></h1>
+        <% if @message %>
+          <%= @message %>
+        <% end %>
+      </div>
+    </div>
   </body>
 </html>
