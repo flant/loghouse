@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Loghouse</title>
+    <link href="<%= url('vendor/bootstrap/css/bootstrap.min.css') %>" rel="stylesheet" type="text/css" />
+    <link href="<%= url('assets/stylesheets/bootstrap-custom.css') %>" rel="stylesheet" type="text/css" />
+    <link href="<%= url('assets/stylesheets/main.css') %>" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">Loghouse</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li class="navbar-right">
+            <a href="https://github.com/flant/loghouse/commit/<%= version %>" target="_blank">
+              <span class="glyphicon glyphicon-link"></span>
+              ver. <%= version %>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container-fluid">
+      <div class="text-danger">
+        <h1><%= @status %></h1>
+        <% if @message %>
+          <%= @message %>
+        <% end %>
+      </div>
+    </div>
+  </body>
+</html>
