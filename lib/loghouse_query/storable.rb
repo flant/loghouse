@@ -105,8 +105,8 @@ class LoghouseQuery
       end
     end
 
-    def validate!
-      raise NotValid.new('Name cannot be blank!') if attributes[:name].blank?
+    def validate!(options = {})
+      raise NotValid.new('Name cannot be blank!') if options[:name] != false && attributes[:name].blank?
     end
   end
 end

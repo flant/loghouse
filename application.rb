@@ -36,7 +36,7 @@ module Loghouse
                 end
 
       begin
-        @query.validate_query!
+        @query.validate!(name: false)
       rescue LoghouseQuery::BadFormat => e
         @error = "Bad query format: #{e}"
       rescue LoghouseQuery::BadTimeFormat => e
