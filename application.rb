@@ -3,6 +3,8 @@ require_relative 'config/boot'
 module Loghouse
   TIME_ZONE = ENV.fetch('TIME_ZONE') { 'Europe/Moscow' }
 
+  class UnauthenticatedError < StandardError; end
+
   # rubocop:disable Metrics/ClassLength
   class Application < Sinatra::Base
     configure do
@@ -136,6 +138,27 @@ module Loghouse
       ''
     end
 
+    error UnauthenticatedError do |e|
+      @status = 401
+      @message = "Not Authenticated"
+
+      render_error
+    end
+
+    error User::PermissionsNotFound do |e|
+      @status = 403
+      @message = e.message
+
+      render_error
+    end
+
+    error do |e|
+      @status = 500
+      @message = 'Internal Server Error'
+
+      render_error
+    end
+
     helpers do
       def h(text)
         Rack::Utils.escape_html(text)
@@ -160,9 +183,14 @@ module Loghouse
     def user_from_header
       auth_header = env['HTTP_AUTHORIZATION']
 
-      raise 'Unauthenticated' if auth_header.blank?
+      raise UnauthenticatedError if auth_header.blank?
 
       Base64.decode64(auth_header.gsub(/Basic /, '')).split(':').first
+    end
+
+    def render_error
+      status @status
+      erb :error, layout: false
     end
   end
 end
