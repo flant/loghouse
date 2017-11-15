@@ -19,8 +19,9 @@ class LoghouseQuery
     name:       nil,
     namespaces: [],
     query:      nil,
-    time_from:  'now-15m',
-    time_to:    'now',
+    seek_to:    'now',
+    time_from:  nil,
+    time_to:    nil,
     position:   nil
   }.freeze # Trick for all-attributes-hash in correct order in insert
 

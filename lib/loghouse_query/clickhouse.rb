@@ -7,17 +7,14 @@ class LoghouseQuery
 
     def result
       @result ||= begin
-        lim = limit
-        split_range_to_tables.sort_by {|table, fromto| fromto.last }.reverse.map do |table, fromto|
-          next unless lim.positive? && ::Clickhouse.connection.exists_table(table)
-
-          sql = to_clickhouse(table, *fromto, lim)
-
-          res = LogEntry.from_result_set ::Clickhouse.connection.query(sql)
-
-          lim -= res.count
-          res
-        end.compact.flatten
+        if parsed_time_to.present?
+          result_older(parsed_time_to, limit, parsed_time_from)
+        elsif parsed_time_from.present? && parsed_time_to.blank?
+          result_newer(parsed_time_from, limit)
+        elsif parsed_seek_to.present?
+          result_from_seek_to
+        # else WTF
+        end
       end
     end
 
@@ -37,8 +34,54 @@ class LoghouseQuery
 
     protected
 
-    def split_range_to_tables
-      LogsTables.split_range_to_tables(parsed_time_from, parsed_time_to)
+    def result_older(start_time, lim, stop_at = nil)
+      result = []
+      time = start_time
+      while lim.positive? && (stop_at.blank? || time >= stop_at)
+        table = LogsTables.partition_table_name(time)
+        break unless ::Clickhouse.connection.exists_table(table)
+
+        sql = to_clickhouse(table, nil, start_time, lim)
+
+        res = LogEntry.from_result_set ::Clickhouse.connection.query(sql)
+
+        result += res
+        lim -= res.count
+        time = LogsTables.prev_time_partition(time)
+      end
+      result
+    end
+
+    def result_newer(start_time, lim, stop_at = nil)
+      result = []
+      time = start_time
+      while lim.positive? && (stop_at.blank? || time <= stop_at)
+        table = LogsTables.partition_table_name(time)
+        break unless ::Clickhouse.connection.exists_table(table)
+
+        sql = to_clickhouse(table, start_time, nil, lim)
+
+        res = LogEntry.from_result_set ::Clickhouse.connection.query(sql)
+
+        result += res.reverse
+        lim -= res.count
+        time = LogsTables.next_time_partition(time)
+      end
+      result.reverse
+    end
+
+    def result_from_seek_to
+      lim = limit || Pagination::DEFAULT_PER_PAGE
+
+      # search before part
+      before = result_older(parsed_seek_to, lim)
+
+      # search after part
+      after = result_newer(parsed_seek_to, lim, Time.zone.now)
+
+      res = after.last([before.count, lim / 2].min)
+      res += before.first(lim - res.count)
+      res
     end
 
     def time_comparation(time, comparation)

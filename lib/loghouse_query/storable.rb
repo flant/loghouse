@@ -20,8 +20,6 @@ class LoghouseQuery
           t.string       :name
           t.array        :namespaces, 'String'
           t.string       :query
-          t.string       :time_from
-          t.string       :time_to
           t.uint8        :position
           t.engine       "TinyLog"
         end
@@ -69,7 +67,7 @@ class LoghouseQuery
       protected
 
       def build_from_row(row)
-        lq = new id: row[0], name: row[1], namespaces: row[2], query: row[3], time_from: row[4], time_to: row[5], position: row[6]
+        lq = new id: row[0], name: row[1], namespaces: row[2], query: row[3], position: row[4]
         lq.persisted = true
         lq
       end
@@ -101,7 +99,7 @@ class LoghouseQuery
       attributes[:namespaces] = attributes[:namespaces].to_s.gsub(/"/, "'") # KOSTYL for bad working with arrays in gem
 
       ::Clickhouse.connection.insert_rows QUERIES_TABLE do |rows|
-        rows << attributes
+        rows << attributes.except(:time_from, :time_to, :seek_to)
       end
     end
 

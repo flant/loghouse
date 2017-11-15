@@ -34,6 +34,17 @@ class LoghouseQuery
       @parsed_time_to ||= time_parser.parse_time(attributes[:time_to]) if attributes[:time_to].present?
     end
 
+    def parsed_seek_to
+      @parsed_seek_to ||= begin
+        return if attributes[:seek_to].blank?
+
+        time = Chronic.parse(attributes[:seek_to])
+
+        raise BadTimeFormat.new("Unable to parse seek_to '#{attributes[:seek_to]}'") if time.nil?
+        time
+      end
+    end
+
     def parsed_query
       return if attributes[:query].blank?
 

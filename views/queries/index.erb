@@ -30,7 +30,6 @@
               <col>
               <col>
               <col>
-              <col>
               <col style="white-space: nowrap; width: 1%;">
             </colgroup>
             <thead>
@@ -40,8 +39,6 @@
                 <th>Name</th>
                 <th>Namespaces</th>
                 <th>Query</th>
-                <th>From</th>
-                <th>To</th>
                 <th></th>
               </tr>
             </thead>
@@ -68,12 +65,6 @@
                 </td>
                 <td>
                   <i><%= h q.attributes[:query] %></i>
-                </td>
-                <td>
-                  <%= h q.attributes[:time_from] %>
-                </td>
-                <td>
-                  <%= h q.attributes[:time_to] %>
                 </td>
                 <td>
                   <button class="btn btn-danger btn-xs delete-query" data-id="<%= q.id %>">

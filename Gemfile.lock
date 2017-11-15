@@ -23,6 +23,7 @@ GEM
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
     backports (3.10.3)
+    chronic (0.10.2)
     coderay (1.1.1)
     concurrent-ruby (1.0.5)
     domain_name (0.5.20161021)
@@ -99,6 +100,7 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport
+  chronic
   clickhouse!
   json
   kubeclient
@@ -112,4 +114,4 @@ RUBY VERSION
    ruby 2.3.4p301
 
 BUNDLED WITH
-   1.15.4
+   1.16.0

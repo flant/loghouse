@@ -9,6 +9,7 @@ gem 'clickhouse', github: 'archan937/clickhouse'
 gem 'parslet'
 gem 'activesupport'
 gem 'json'
+gem 'chronic'
 
 gem 'kubeclient'
 

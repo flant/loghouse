@@ -1,8 +1,9 @@
 #!/usr/bin/env ruby
 def reload!
   load './application.rb'
-  Time.zone = Loghouse::TIME_ZONE
-  User.current = 'admin'
+  Time.zone          = Loghouse::TIME_ZONE
+  Chronic.time_class = Time.zone
+  User.current       = 'admin'
 end
 
 reload!

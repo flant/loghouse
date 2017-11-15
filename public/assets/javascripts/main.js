@@ -121,19 +121,25 @@ function addBreakpoint() {
 }
 
 function getCurrentQuickItem() {
-  return $('.super-date-picker__quick-item[data-from="' + $('#time-from').val() + '"][data-to="' + $('#time-to').val() + '"]');
+  if ($("#seek-to").length)
+    return $("#seek-to").val();
+  else
+    return $('.super-date-picker__quick-item[data-from="' + $('#time-from').val() + '"][data-to="' + $('#time-to').val() + '"]');
 }
 
 function refreshPeriodTitle() {
   var quick_item = getCurrentQuickItem();
   var new_period_title;
-
-  if ($('#time-from').val() == '' && $('#time-to').val() == '') {
-    new_period_title = $('#superDatePickerBtn').data('default-title');
-  } else if (quick_item.length) {
-    new_period_title = quick_item.text();
-  } else {
-    new_period_title = $('#time-from').val() + ' – ' + $('#time-to').val();
+  if ($("#seek-to").length)
+    new_period_title = $("#seek-to").val();
+  else {
+    if ($('#time-from').val() == '' && $('#time-to').val() == '') {
+      new_period_title = $('#superDatePickerBtn').data('default-title');
+    } else if (quick_item.length) {
+      new_period_title = quick_item.text();
+    } else {
+      new_period_title = $('#time-from').val() + ' – ' + $('#time-to').val();
+    }
   }
   $('.super-date-picker__period-title').text(new_period_title);
 }
@@ -142,6 +148,7 @@ function refreshCurrentQuickItem() {
   var quick_item = getCurrentQuickItem();
   if (quick_item.length) {
     $('.super-date-picker__quick-item').removeClass('btn-success').removeClass('btn-inverse').removeClass('active').addClass('btn-default');
+    $('.super-date-picker__quick-seek-to').removeClass('btn-success').removeClass('btn-inverse').removeClass('active').addClass('btn-default');
     $(quick_item).removeClass('btn-default').addClass('btn-success').addClass('btn-inverse').addClass('active');
   }
 }
@@ -305,9 +312,25 @@ $(document).ready(function() {
     submitForm();
   });
 
+  $('.super-date-picker__quick-seek-to').on('click', function() {
+    // get data
+    var current_seek_to = $(this).text();
+    // set data
+    $('#seek-to').val(current_seek_to);
+
+    // set title
+    refreshPeriodTitle();
+    // update styles
+    refreshCurrentQuickItem();
+    // close popover
+    search_params.closeAll();
+    submitForm();
+  });
+
   $('.super-date-picker__reset').on('click', function() {
     $('#time-from').val('');
     $('#time-to').val('');
+    $('#seek-to').val('');
     refreshPeriodTitle();
     refreshCurrentQuickItem();
     search_params.closeAll();
@@ -351,10 +374,22 @@ $(document).ready(function() {
   // Infinite scroll
   var paginatable_element = $('.logs-result__container');
 	paginatable_element.scroll(function() {
+    console.log(paginatable_element.scrollTop(), paginatable_element.innerHeight());
 		if (paginatable_element.scrollTop() == 0) {
       queryOlder();
+    } else if (paginatable_element.scrollTop() + paginatable_element.innerHeight() >= paginatable_element[0].scrollHeight) {
+      queryNewer();
 		}
 	});
+
+  // Scroll to seek_to
+  // if ($("#seek-to-anchor").length){
+  //   console.log('hello', $("#seek-to-anchor").offset().top, (paginatable_element.innerHeight() / 2));
+  //   paginatable_element.animate({
+  //     scrollTop: $("#seek-to-anchor").offset().top
+  //   }, 200);
+  // }
+
 
   // Manage queries
   $('#delete-queries').on('click', function() {

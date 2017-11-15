@@ -14,12 +14,16 @@ class LoghouseQuery
       self
     end
 
+    def parsed_seek_to
+      (@newer_than.present? || @oler_than.present?) ? nil : super
+    end
+
     def parsed_time_from
       s = super
 
       return s if newer_than.blank?
 
-      [s, newer_than].max
+      [s, newer_than].compact.max
     end
 
     def parsed_time_to
@@ -27,7 +31,7 @@ class LoghouseQuery
 
       return s if older_than.blank?
 
-      [s, older_than].min
+      [s, older_than].compact.min
     end
   end
 end
