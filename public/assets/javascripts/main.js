@@ -374,7 +374,6 @@ $(document).ready(function() {
   // Infinite scroll
   var paginatable_element = $('.logs-result__container');
 	paginatable_element.scroll(function() {
-    console.log(paginatable_element.scrollTop(), paginatable_element.innerHeight());
 		if (paginatable_element.scrollTop() == 0) {
       queryOlder();
     } else if (paginatable_element.scrollTop() + paginatable_element.innerHeight() >= paginatable_element[0].scrollHeight) {
@@ -383,12 +382,12 @@ $(document).ready(function() {
 	});
 
   // Scroll to seek_to
-  // if ($("#seek-to-anchor").length){
-  //   console.log('hello', $("#seek-to-anchor").offset().top, (paginatable_element.innerHeight() / 2));
-  //   paginatable_element.animate({
-  //     scrollTop: $("#seek-to-anchor").offset().top
-  //   }, 200);
-  // }
+
+  if ($(".seek-to-anchor").length){
+    paginatable_element.animate({
+      scrollTop: paginatable_element[0].scrollHeight - paginatable_element.innerHeight() - 100 + $(".seek-to-anchor").offset().top
+    }, 200);
+  }
 
 
   // Manage queries
