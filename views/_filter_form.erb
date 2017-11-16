@@ -24,8 +24,7 @@
     <div id="superDatePicker" class="search-params-popover">
       <div class="panel panel-default">
         <div class="panel-body">
-          <%= erb :_super_date_picker, locals: { extra_class: 'super-date-picker-seek-to'} %>
-          <%= erb :_super_date_picker, locals: { range: true, extra_class: 'super-date-picker-range'} %>
+          <%= erb :_super_date_picker %>
         </div>
       </div>
     </div>
@@ -77,11 +76,6 @@
         <div class="col-xs-1">
           <div class="form-group" data-toggle="tooltip" title="Hide/Show keys">
             <a class="btn btn-link btn-link-alt hide-show-keys-toggle search-params-btn disabled" role="button" data-target="#hideShowKeys"><span class="glyphicon glyphicon-th" aria-hidden="true"></span></a>
-          </div>
-          <div class="form-group" data-toggle="tooltip" title="Toggle range time format">
-            <a role="button" id="toggle-range-time-format" class="btn btn-link btn-link-alt <%= 'active' if params[:time_format] == 'range' %>">
-              <span class="glyphicon glyphicon-resize-horizontal" aria-hidden="true"></span>
-            </a>
           </div>
         </div>
         <div class="col-xs-2" align="right">

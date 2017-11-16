@@ -1,78 +1,86 @@
-<% range ||= false %>
-<% extra_class ||= '' %>
-<div class="row super-date-picker <%= extra_class %>">
+<div class="row super-date-picker">
+  <div class="col-xs-12">
+    <div class="btn-group btn-group-xs btn-group-justified range-time-format" role="group">
+      <a class="btn <%= params[:time_format] == 'range' ? 'btn-success btn-inverse active' : 'btn-default' %>" data-format="range">From [time] To [time]</a>
+      <a class="btn <%= params[:time_format] != 'range' ? 'btn-success btn-inverse active' : 'btn-default' %>" data-format="seek_to">Seek to [time]</a>
+    </div>
+    <br/>
+  </div>
+</div>
+<div class="row super-date-picker super-date-picker_seekto">
   <div class="col-md-4">
-    <% if !range %>
-      <div class="form-group">
-        <label for="seek_to">Seek To:</label>
-        <div class="input-group input-group-sm date">
-            <input type="text" class="form-control" id="seek-to" name="seek_to" size="10" value="<%= h @query.time_params[:seek_to] if @query %>">
-            <span class="input-group-addon">
-                <span class="glyphicon glyphicon-calendar"></span>
-            </span>
-        </div>
+    <div class="form-group">
+      <label for="seek_to">Seek To:</label>
+      <div class="input-group input-group-sm date">
+          <input type="text" class="form-control" id="seek-to" name="seek_to" size="10" value="<%= h @query.time_params[:seek_to] if @query %>">
+          <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+          </span>
       </div>
-    <% else %>
-      <div class="form-group">
-        <label for="time_from">From:</label>
-         <div class="input-group input-group-sm date">
-            <input type="text" class="form-control" id="time-from" name="time_from" size="10" value="<%= h @query.time_params[:from] if @query %>">
-            <span class="input-group-addon">
-                <span class="glyphicon glyphicon-calendar"></span>
-            </span>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="time_to">To:</label>
-        <div class="input-group input-group-sm date">
-            <input type="text" class="form-control" id="time-to" name="time_to" size="10" value="<%= h @query.time_params[:to] if @query %>">
-            <span class="input-group-addon">
-                <span class="glyphicon glyphicon-calendar"></span>
-            </span>
-        </div>
-      </div>
-    <% end %>
+    </div>
     <div class="form-group">
       <a role="button" class="btn btn-default btn-xs btn-block super-date-picker__reset">Reset</a>
     </div>
   </div>
-  <% if !range %>
-    <div class="col-md-4">
-      <div class="form-group">
-        <div class="btn-group-vertical btn-group-xs super-date-picker__quick-item-group" role="group">
-          <% Loghouse::SUPER_DATEPICKER_PRESETS[:seek_to].first(Loghouse::SUPER_DATEPICKER_PRESETS[:seek_to].length / 2).each do |st| %>
-            <a role="button" class="btn btn-default super-date-picker__quick-seek-to"><%= st %></a>
-          <% end %>
-        </div>
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="btn-group-vertical btn-group-xs super-date-picker__quick-item-group" role="group">
+        <% Loghouse::SUPER_DATEPICKER_PRESETS[:seek_to].first(Loghouse::SUPER_DATEPICKER_PRESETS[:seek_to].length / 2).each do |st| %>
+          <a role="button" class="btn btn-default super-date-picker__quick-seek-to"><%= st %></a>
+        <% end %>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="form-group">
-        <div class="btn-group-vertical btn-group-xs super-date-picker__quick-item-group" role="group">
-          <% Loghouse::SUPER_DATEPICKER_PRESETS[:seek_to].last(Loghouse::SUPER_DATEPICKER_PRESETS[:seek_to].length / 2).each do |st| %>
-            <a role="button" class="btn btn-default super-date-picker__quick-seek-to"><%= st %></a>
-          <% end %>
-        </div>
+  </div>
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="btn-group-vertical btn-group-xs super-date-picker__quick-item-group" role="group">
+        <% Loghouse::SUPER_DATEPICKER_PRESETS[:seek_to].last(Loghouse::SUPER_DATEPICKER_PRESETS[:seek_to].length / 2).each do |st| %>
+          <a role="button" class="btn btn-default super-date-picker__quick-seek-to"><%= st %></a>
+        <% end %>
       </div>
     </div>
-  <% else %>
-    <div class="col-md-4">
-      <div class="form-group">
-        <div class="btn-group-vertical btn-group-xs super-date-picker__quick-item-group" role="group">
-          <% Loghouse::SUPER_DATEPICKER_PRESETS[:last_days].each do |p| %>
-            <a role="button" class="btn btn-default super-date-picker__quick-item" data-from="<%= p[:from] %>" data-to="<%= p[:to] %>"><%= p[:name] %></a>
-          <% end %>
-        </div>
+  </div>
+</div>
+<div class="row super-date-picker super-date-picker_range">
+  <div class="col-md-4">
+    <div class="form-group">
+      <label for="time_from">From:</label>
+       <div class="input-group input-group-sm date">
+          <input type="text" class="form-control" id="time-from" name="time_from" size="10" value="<%= h @query.time_params[:from] if @query %>">
+          <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+          </span>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="form-group">
-        <div class="btn-group-vertical btn-group-xs super-date-picker__quick-item-group" role="group">
-          <% Loghouse::SUPER_DATEPICKER_PRESETS[:last_day].each do |p| %>
-            <a role="button" class="btn btn-default super-date-picker__quick-item" data-from="<%= p[:from] %>" data-to="<%= p[:to] %>"><%= p[:name] %></a>
-          <% end %>
-        </div>
+    <div class="form-group">
+      <label for="time_to">To:</label>
+      <div class="input-group input-group-sm date">
+          <input type="text" class="form-control" id="time-to" name="time_to" size="10" value="<%= h @query.time_params[:to] if @query %>">
+          <span class="input-group-addon">
+              <span class="glyphicon glyphicon-calendar"></span>
+          </span>
       </div>
     </div>
-  <% end %>
+    <div class="form-group">
+      <a role="button" class="btn btn-default btn-xs btn-block super-date-picker__reset">Reset</a>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="btn-group-vertical btn-group-xs super-date-picker__quick-item-group" role="group">
+        <% Loghouse::SUPER_DATEPICKER_PRESETS[:last_days].each do |p| %>
+          <a role="button" class="btn btn-default super-date-picker__quick-item" data-from="<%= p[:from] %>" data-to="<%= p[:to] %>"><%= p[:name] %></a>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="form-group">
+      <div class="btn-group-vertical btn-group-xs super-date-picker__quick-item-group" role="group">
+        <% Loghouse::SUPER_DATEPICKER_PRESETS[:last_day].each do |p| %>
+          <a role="button" class="btn btn-default super-date-picker__quick-item" data-from="<%= p[:from] %>" data-to="<%= p[:to] %>"><%= p[:name] %></a>
+        <% end %>
+      </div>
+    </div>
+  </div>
 </div>

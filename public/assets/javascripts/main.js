@@ -513,22 +513,24 @@ $(document).ready(function() {
     window.location = '/query.csv?' + $('#filter-form').serialize();
   });
 
-  $('#toggle-range-time-format').on('click', function(){
-    $(this).toggleClass('active');
+  $('.range-time-format a').on('click', function() {
+    $('.range-time-format a').removeClass('active').removeClass('btn-inverse').removeClass('btn-success').addClass('btn-default');
+    $(this).addClass('active').addClass('btn-inverse').addClass('btn-success').removeClass('btn-default');
     toggleTimeFormat();
   });
 
   function toggleTimeFormat() {
-    if ($('#toggle-range-time-format').hasClass('active')){
+    var format = $('.range-time-format a.active').data('format');
+    if (format == 'range'){
       $('#time-format').val('range');
       $('#save-as-csv').removeClass('disabled');
-      $('.super-date-picker-seek-to').hide();
-      $('.super-date-picker-range').show();
+      $('.super-date-picker_seekto').hide();
+      $('.super-date-picker_range').show();
     } else {
       $('#time-format').val('seek_to');
       $('#save-as-csv').addClass('disabled');
-      $('.super-date-picker-range').hide();
-      $('.super-date-picker-seek-to').show();
+      $('.super-date-picker_range').hide();
+      $('.super-date-picker_seekto').show();
     }
     refreshPeriodTitle();
     refreshCurrentQuickItem();
