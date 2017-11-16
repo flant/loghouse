@@ -5,6 +5,10 @@ function commonTimestamp() {
   return moment().format('YYYY-MM-DD HH:mm:ss');
 }
 
+submitForm = function () {
+  $('#filter-form').submit();
+};
+
 function commonShowError(text) {
   var $errorContainer = $('.error-container .error-container__content');
   $errorContainer.append("<div class=\"alert alert-danger alert-dismissible\" role=\"alert\">" + text + "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button></div>");
@@ -341,9 +345,14 @@ $(document).ready(function() {
     $('.super-date-picker__quick-item').removeClass('btn-primary').removeClass('active').addClass('btn-default');
   });
 
-  $('.input-group.date').datetimepicker({locale: 'ru', keepInvalid: true, useStrict: true});
+  $('.input-group.date').datetimepicker({
+    locale: 'ru',
+    keepInvalid: true,
+    useStrict: true,
+    keyBinds: $.extend({}, $.fn.datetimepicker.defaults.keyBinds, { t: null, enter: submitForm })
+  });
   $('.input-group.date input').on('input', function(e) {refreshPeriodTitle();});
-  $('.input-group.date').on('dp.change', function(e) {refreshPeriodTitle();});
+  $('.input-group.date').on('dp.change', function(e) {refreshPeriodTitle(); submitForm();});
 
   refreshPeriodTitle();
   refreshCurrentQuickItem();
@@ -457,9 +466,6 @@ $(document).ready(function() {
   }
 
   // Autosend query
-  submitForm = function () {
-    $('#filter-form').submit();
-  };
   $(document).on('change', '#query', submitForm);
   $('#namespaces-select').on('change', submitForm);
 

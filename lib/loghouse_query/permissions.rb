@@ -10,7 +10,7 @@ class LoghouseQuery
     end
 
     def to_clickhouse_where(from = nil, to = nil)
-      "(#{[super, to_clickhouse_permissions].join(') AND (')})"
+      "(#{[super, to_clickhouse_permissions].compact.join(') AND (')})"
     end
   end
 end

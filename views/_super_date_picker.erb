@@ -1,5 +1,6 @@
 <% range ||= false %>
-<div class="row super-date-picker">
+<% extra_class ||= '' %>
+<div class="row super-date-picker <%= extra_class %>">
   <div class="col-md-4">
     <% if !range %>
       <div class="form-group">
@@ -39,7 +40,16 @@
     <div class="col-md-4">
       <div class="form-group">
         <div class="btn-group-vertical btn-group-xs super-date-picker__quick-item-group" role="group">
-          <% Loghouse::SUPER_DATEPICKER_PRESETS[:seek_to].each do |st| %>
+          <% Loghouse::SUPER_DATEPICKER_PRESETS[:seek_to].first(Loghouse::SUPER_DATEPICKER_PRESETS[:seek_to].length / 2).each do |st| %>
+            <a role="button" class="btn btn-default super-date-picker__quick-seek-to"><%= st %></a>
+          <% end %>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="form-group">
+        <div class="btn-group-vertical btn-group-xs super-date-picker__quick-item-group" role="group">
+          <% Loghouse::SUPER_DATEPICKER_PRESETS[:seek_to].last(Loghouse::SUPER_DATEPICKER_PRESETS[:seek_to].length / 2).each do |st| %>
             <a role="button" class="btn btn-default super-date-picker__quick-seek-to"><%= st %></a>
           <% end %>
         </div>

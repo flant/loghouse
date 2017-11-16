@@ -15,7 +15,7 @@ class LoghouseQuery
     end
 
     def parsed_seek_to
-      (@newer_than.present? || @oler_than.present?) ? nil : super
+      (@newer_than.present? || @older_than.present?) ? nil : super
     end
 
     def parsed_time_from
