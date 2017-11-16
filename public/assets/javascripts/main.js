@@ -353,7 +353,11 @@ $(document).ready(function() {
     keyBinds: $.extend({}, $.fn.datetimepicker.defaults.keyBinds, { t: null, enter: submitForm })
   });
   $('.input-group.date input').on('input', function(e) {refreshPeriodTitle();});
-  $('.input-group.date').on('dp.change', function(e) {refreshPeriodTitle(); submitForm();});
+  $('.input-group.date').on('dp.change', function(e) {
+    refreshPeriodTitle();
+    if ($("#time-format").val() == 'seek_to')
+      submitForm();
+  });
 
   refreshPeriodTitle();
   refreshCurrentQuickItem();
