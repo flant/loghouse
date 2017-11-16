@@ -99,7 +99,7 @@ class LoghouseQuery
       attributes[:namespaces] = attributes[:namespaces].to_s.gsub(/"/, "'") # KOSTYL for bad working with arrays in gem
 
       ::Clickhouse.connection.insert_rows QUERIES_TABLE do |rows|
-        rows << attributes.except(:time_from, :time_to, :seek_to)
+        rows << attributes
       end
     end
 

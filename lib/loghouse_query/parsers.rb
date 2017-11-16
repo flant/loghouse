@@ -27,20 +27,20 @@ class LoghouseQuery
     end
 
     def parsed_time_from
-      @parsed_time_from ||= time_parser.parse_time(attributes[:time_from]) if attributes[:time_from].present?
+      @parsed_time_from ||= time_parser.parse_time(time_params[:from]) if time_params[:from].present?
     end
 
     def parsed_time_to
-      @parsed_time_to ||= time_parser.parse_time(attributes[:time_to]) if attributes[:time_to].present?
+      @parsed_time_to ||= time_parser.parse_time(time_params[:to]) if time_params[:to].present?
     end
 
     def parsed_seek_to
       @parsed_seek_to ||= begin
-        return if attributes[:seek_to].blank?
+        return if time_params[:seek_to].blank?
 
-        time = Chronic.parse(attributes[:seek_to])
+        time = Chronic.parse(time_params[:seek_to])
 
-        raise BadTimeFormat.new("Unable to parse seek_to '#{attributes[:seek_to]}'") if time.nil?
+        raise BadTimeFormat.new("Unable to parse seek_to '#{time_params[:seek_to]}'") if time.nil?
         time
       end
     end

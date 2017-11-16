@@ -177,8 +177,10 @@ module Loghouse
     private
 
     def query_from_params
-      LoghouseQuery.new(name: params[:name], query: params[:query].to_s, namespaces: params[:namespaces],
-                        time_from: params[:time_from], time_to: params[:time_to], seek_to: params[:seek_to])
+      LoghouseQuery.new(name: params[:name], query: params[:query].to_s, namespaces: params[:namespaces])
+                   .time_params(format: params[:time_format], from: params[:time_from], to: params[:time_to],
+                                seek_to: params[:seek_to])
+
     end
 
     def user_from_header

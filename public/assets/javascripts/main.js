@@ -125,18 +125,16 @@ function addBreakpoint() {
 }
 
 function getCurrentQuickItem() {
-  if ($("#seek-to").length)
-    return $("#seek-to").val();
-  else
+  if ($("#time-format").val() == 'range')
     return $('.super-date-picker__quick-item[data-from="' + $('#time-from').val() + '"][data-to="' + $('#time-to').val() + '"]');
+  else if ($("#seek-to").val().length)
+    return $('.super-date-picker__quick-seek-to:contains("' + $("#seek-to").val() + '")');
 }
 
 function refreshPeriodTitle() {
   var quick_item = getCurrentQuickItem();
   var new_period_title;
-  if ($("#seek-to").length)
-    new_period_title = $("#seek-to").val();
-  else {
+  if ($("#time-format").val() == 'range')
     if ($('#time-from').val() == '' && $('#time-to').val() == '') {
       new_period_title = $('#superDatePickerBtn').data('default-title');
     } else if (quick_item.length) {
@@ -144,17 +142,20 @@ function refreshPeriodTitle() {
     } else {
       new_period_title = $('#time-from').val() + ' – ' + $('#time-to').val();
     }
+  else {
+    new_period_title = $("#seek-to").val();
   }
   $('.super-date-picker__period-title').text(new_period_title);
 }
 
 function refreshCurrentQuickItem() {
   var quick_item = getCurrentQuickItem();
-  if (quick_item.length) {
-    $('.super-date-picker__quick-item').removeClass('btn-success').removeClass('btn-inverse').removeClass('active').addClass('btn-default');
-    $('.super-date-picker__quick-seek-to').removeClass('btn-success').removeClass('btn-inverse').removeClass('active').addClass('btn-default');
-    $(quick_item).removeClass('btn-default').addClass('btn-success').addClass('btn-inverse').addClass('active');
-  }
+  $('.super-date-picker__quick-item').removeClass('btn-success').removeClass('btn-inverse').removeClass('active').addClass('btn-default');
+  $('.super-date-picker__quick-seek-to').removeClass('btn-success').removeClass('btn-inverse').removeClass('active').addClass('btn-default');
+
+  if (!quick_item || !quick_item.length) return;
+
+  $(quick_item).removeClass('btn-default').addClass('btn-success').addClass('btn-inverse').addClass('active');
 }
 
 function initHideShow() {
@@ -511,4 +512,27 @@ $(document).ready(function() {
   $('#save-as-csv').on('click', function() {
     window.location = '/query.csv?' + $('#filter-form').serialize();
   });
+
+  $('#toggle-range-time-format').on('click', function(){
+    $(this).toggleClass('active');
+    toggleTimeFormat();
+  });
+
+  function toggleTimeFormat() {
+    if ($('#toggle-range-time-format').hasClass('active')){
+      $('#time-format').val('range');
+      $('#save-as-csv').removeClass('disabled');
+      $('.super-date-picker-seek-to').hide();
+      $('.super-date-picker-range').show();
+    } else {
+      $('#time-format').val('seek_to');
+      $('#save-as-csv').addClass('disabled');
+      $('.super-date-picker-range').hide();
+      $('.super-date-picker-seek-to').show();
+    }
+    refreshPeriodTitle();
+    refreshCurrentQuickItem();
+  }
+
+  toggleTimeFormat();
 });
