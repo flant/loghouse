@@ -44,7 +44,7 @@ class LoghouseQuery
   def time_params(params=nil)
     return @time_params if params.nil?
 
-    @time_params ||= TIME_PARAMS_DEFAULTS.dup
+    @time_params = TIME_PARAMS_DEFAULTS.dup
     params.each do |k, v|
       @time_params[k] = params[k] if params[k].present?
     end
