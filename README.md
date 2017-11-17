@@ -16,7 +16,7 @@ Loghouse-dashboard UI demo in action (~3 Mb):
 * Quickly & straightforward deployable to Kubernetes via Dockerfiles and Helm chart.
 * Web UI made cosy and powerful:
   * Papertrail-like user experience.
-  * Customizable time frames: from date to date / from now till given period (last hour, last day, etc).
+  * Customizable time frames: from date to date / from now till given period (last hour, last day, etc) / seek to specific time and show logs around it.
   * Infinite scrolling of older log entries.
   * Save your queries to use in future.
   * Basic permissions (limiting entries shown for users by specifying Kubernetes namespaces).
