@@ -367,6 +367,9 @@ $(document).ready(function() {
   $('.input-group.date input').on('input', function(e) {refreshPeriodTitle();});
   $('.input-group.date').on('dp.change', function(e) {
     refreshPeriodTitle();
+  });
+
+  $('.input-group.date').on('dp.hide', function(e) {
     if ($("#time-format").val() == 'seek_to')
       submitForm();
   });
