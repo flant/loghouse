@@ -297,9 +297,6 @@ $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
 
   $('.select2').select2({
-    placeholder: function(){
-      $(this).data('placeholder');
-    },
     width: '100%',
     allowClear: true,
     theme: "bootstrap"
