@@ -7,3 +7,6 @@
 ## Environment normalization:
 /.bundle
 /vendor/bundle
+
+/node_modules/
+/public/app/

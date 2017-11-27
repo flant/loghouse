@@ -2,6 +2,7 @@ require 'bundler'
 require 'pathname'
 
 Bundler.require(:default, ENV.fetch('RACK_ENV') { 'development' })
+Dotenv.load!
 
 $LOAD_PATH.unshift Pathname.new(File.expand_path('.')).join('lib').to_s
 

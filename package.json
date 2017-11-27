@@ -1,0 +1,45 @@
+{
+  "name": "loghouse",
+  "version": "0.0.1",
+  "description": "Ready to use log management solution for Kubernetes. Efficiently store big amounts of your logs (in [ClickHouse](https://github.com/yandex/ClickHouse) database), process them using a simple query language and monitor them online through web UI. Easy and quick to deploy in an already functioning Kubernetes cluster.",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flant/loghouse.git"
+  },
+  "author": "Flant CJSC",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "browserify": "^14.5.0",
+    "browserify-shim": "^3.8.14",
+    "del": "^3.0.0",
+    "eslint": "^4.11.0",
+    "eslint-plugin-angular": "^3.1.1",
+    "eslint-plugin-es6-recommended": "^0.1.2",
+    "gulp": "^3.9.1",
+    "gulp-angular-templatecache": "^2.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-eslint": "^4.0.0",
+    "gulp-filter": "^5.0.1",
+    "gulp-load-plugins": "^1.5.0",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-minify-html": "^1.0.6",
+    "gulp-npm-files": "^0.1.3",
+    "gulp-sourcemaps": "^2.6.1",
+    "gulp-tap": "^1.0.1",
+    "gulp-uglify": "^3.0.0",
+    "gulp-util": "^3.0.8",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  },
+  "dependencies": {
+    "bootstrap3": "^3.3.5",
+    "eonasdan-bootstrap-datetimepicker": "^4.17.47",
+    "html5sortable": "^0.6.3",
+    "jquery": "^3.2.1",
+    "moment": "^2.19.2",
+    "select2": "^4.0.6-rc.1",
+    "select2-bootstrap-theme": "0.1.0-beta.10",
+    "urijs": "^1.19.0"
+  }
+}
