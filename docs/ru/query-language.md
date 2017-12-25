@@ -26,7 +26,7 @@ P.S. Все встроенные операторы (`is true`, `is null` и т.
 ## Примеры
 1.  `host=kube-1 and log.level > 10`
 1.  `* =~ kube-[1-9]`
-1.  `log !~ warning`
+1.  `log !~ (warning|info)`
 1.  `~component = clickhouse`
 1.  `log = %error% or log != %success%`
 1.  `unhealthy is true`
