@@ -11,6 +11,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "browserify": "^14.5.0",
+    "browserify-ng-html2js": "^1.3.0",
     "browserify-shim": "^3.8.14",
     "del": "^3.0.0",
     "eslint": "^4.11.0",
@@ -33,6 +34,10 @@
     "vinyl-source-stream": "^1.1.0"
   },
   "dependencies": {
+    "@uirouter/angularjs": "^1.0.12",
+    "angular": "^1.6.8",
+    "angular-resource": "^1.6.8",
+    "angular-route": "^1.6.8",
     "bootstrap3": "^3.3.5",
     "eonasdan-bootstrap-datetimepicker": "^4.17.47",
     "html5sortable": "^0.6.3",
@@ -40,6 +45,7 @@
     "moment": "^2.19.2",
     "select2": "^4.0.5",
     "select2-bootstrap-theme": "0.1.0-beta.10",
+    "ui-select": "^0.19.8",
     "urijs": "^1.19.0"
   }
 }

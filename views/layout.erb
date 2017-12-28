@@ -10,40 +10,52 @@
     <link href="<%= url('app/css/app.css') %>" rel="stylesheet" type="text/css" />
   </head>
   <body>
+    <div id="ng-app-root-element" ng-app="loghouseApp" ng-strict-di>
+      <base href="/">
+      <div class="view-container">
+        <div ui-view class="view-frame"></div>
+      </div>
+    </div>
+
+<!--
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
           <a class="navbar-brand" href="/">Loghouse</a>
         </div>
         <ul class="nav navbar-nav">
-          <li <%= 'class="active"' if @tab.blank? %>><a href="/">Default query</a></li>
-          <% @tab_queries.each do |q| %>
-            <li class="<%= 'active' if @tab == q.id %>">
-              <a href="/query?query_id=<%= q.id %>">
-                <%= q.attributes[:name] %>
+          <li <%#= 'class="active"' if @tab.blank? %>><a href="/">Default query</a></li>
+          <%# @tab_queries.each do |q| %>
+            <li class="<%#= 'active' if @tab == q.id %>">
+              <a href="/query?query_id=<%#= q.id %>">
+                <%#= q.attributes[:name] %>
               </a>
             </li>
-          <% end %>
-          <li <%= 'class="active"' if @tab == :queries %>>
+          <%# end %>
+          <li <%#= 'class="active"' if @tab == :queries %>>
             <a href="/queries" data-toggle="tooltip" data-placement="bottom" title="Manage queries"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
           </li>
           <li class="navbar-right">
-            <a href="https://github.com/flant/loghouse/commit/<%= version %>" target="_blank">
+            <a href="https://github.com/flant/loghouse/commit/<%#= version %>" target="_blank">
               <span class="glyphicon glyphicon-link"></span>
-              ver. <%= version %>
+              ver. <%#= version %>
             </a>
           </li>
           <li class="navbar-right">
             <a href="javascript:void(0)">
-              Welcome back, <%= User.current %>
+              Welcome back, <%#= User.current %>
             </a>
           </li>
         </ul>
       </div>
     </nav>
 
-    <%= yield %>
+    <%##= yield %> -->
 
     <script src="<%= url('app/js/app.js') %>" charset="utf-8"></script>
+    <script type="text/javascript">
+      window.appVersion = "<%= version %>";
+      window.currentUser = "<%= User.current %>";
+    </script>
   </body>
 </html>

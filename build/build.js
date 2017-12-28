@@ -9,6 +9,9 @@ var buffer = require('vinyl-buffer');
 var uglify = require('gulp-uglify');
 var minifyCSS = require('gulp-minify-css');
 var sourcemaps = require('gulp-sourcemaps');
+var ngHtml2Js = require('browserify-ng-html2js');
+
+// var templateCache = require('gulp-angular-templatecache');
 
 var conf = require('./conf');
 
@@ -47,12 +50,21 @@ gulp.task('clean', function () {
 });
 
 gulp.task('prebuild', ['fonts', 'other']);
-
+//
+// gulp.task('templates', ['prebuild'], function() {
+//   return gulp.src(path.join(conf.paths.src, 'templates/**/*.html'))
+//       .pipe(templateCache({ moduleSystem: 'Browserify' }))
+//       .pipe(gulp.dest(path.join(conf.paths.dist)));
+// });
+//
 gulp.task('js', ['prebuild'], function() {
     var b = browserify({
         entries: path.join(conf.paths.src, 'js/app.js'),
         debug: true
-    });
+    }).transform(ngHtml2Js({
+        module: 'templates',
+        baseDir: path.join(conf.paths.src, 'templates/')
+    }));
 
     return b.bundle()
         .pipe(source('app.js'))
@@ -85,10 +97,15 @@ gulp.task('watch', ['default'], function() {
             gulp.start('css');
         });
 
-        gulp.watch(path.join(conf.paths.src, '**/*.js'), function(event) {
+        gulp.watch(path.join(conf.paths.src, '**/*.{js,html}'), function(event) {
             console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
             gulp.start('js');
         });
+
+        // gulp.watch(path.join(conf.paths.src, '**/*.html'), function(event) {
+        //     console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');
+        //     gulp.start('templates');
+        // });
 
         gulp.watch(path.join('!' + conf.paths.src, '/**/*.{html,css,js,less,json}'), function(event) {
             console.log('File ' + event.path + ' was ' + event.type + ', running tasks...');

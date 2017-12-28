@@ -26,8 +26,17 @@ module Loghouse
       end
     end
 
-    get '/' do
-      redirect '/query'
+    ## API
+
+    get '/api/queries' do
+      content_type :json
+
+      LoghouseQuery.all.to_json
+    end
+
+    get '/*' do
+      # redirect '/query'
+      erb :index
     end
 
     get '/query', provides: [:html, :csv] do

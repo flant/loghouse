@@ -1,0 +1,29 @@
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" ui-sref="base.search">Loghouse</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li ng-class="nav_vm.state == 'base.search' && !$parent.query_id ? 'active' : ''"><a ui-sref="base.search({ query_id: null })" role="button">Default query</a></li>
+      <li ng-repeat="query in nav_vm.queries" ng-class="(nav_vm.state == 'base.search') && ($parent.query_id == query.attributes.id) ? 'active' : ''">
+        <a ui-sref="base.search({ query_id: query.attributes.id })">
+          {{ query.attributes.name }}
+        </a>
+      </li>
+      <li>
+        <a ui-sref="queries" data-toggle="tooltip" data-placement="bottom" title="Manage queries"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
+      </li>
+      <li class="navbar-right">
+        <a href="https://github.com/flant/loghouse/commit/{{:: base_vm.version }}" target="_blank">
+          <span class="glyphicon glyphicon-link"></span>
+          ver. {{:: base_vm.version }}
+        </a>
+      </li>
+      <li class="navbar-right">
+        <a href="javascript:void(0)">
+          Welcome back, {{:: base_vm.currentUser }}
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
