@@ -28,10 +28,35 @@ module Loghouse
 
     ## API
 
+    get '/api/search' do
+      content_type :json
+
+      @query =  if params[:query_id]
+                  @tab = params[:query_id]
+                  LoghouseQuery.find!(params[:query_id])
+                else
+                  query_from_params
+                end
+
+      begin
+        @query.validate!(name: false)
+      rescue LoghouseQuery::BadFormat => e
+        @error = "Bad query format: #{e}"
+      rescue LoghouseQuery::BadTimeFormat => e
+        @error = "Bad time format: #{e}"
+      end
+
+      @query.paginate(newer_than: params[:newer_than], older_than: params[:older_than], per_page: params[:per_page])
+
+      jbuilder :search
+    end
+
     get '/api/queries' do
       content_type :json
 
-      LoghouseQuery.all.to_json
+      @queries = LoghouseQuery.all
+
+      jbuilder :'queries/index'
     end
 
     get '/*' do

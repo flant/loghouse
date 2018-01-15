@@ -3,9 +3,9 @@
     <div class="navbar-header">
       <a class="navbar-brand" ui-sref="base.search">Loghouse</a>
     </div>
-    <ul class="nav navbar-nav">
-      <li ng-class="nav_vm.state == 'base.search' && !$parent.query_id ? 'active' : ''"><a ui-sref="base.search({ query_id: null })" role="button">Default query</a></li>
-      <li ng-repeat="query in nav_vm.queries" ng-class="(nav_vm.state == 'base.search') && ($parent.query_id == query.attributes.id) ? 'active' : ''">
+    <ul class="nav navbar-nav" width="100px;">
+      <li ng-class="nav_vm.state == 'base.search' && !nav_vm.appContext.query_id ? 'active' : ''"><a ui-sref="base.search({ query_id: null })" role="button">Default query</a></li>
+      <li ng-repeat="query in nav_vm.queries" ng-class="(nav_vm.state == 'base.search') && (nav_vm.appContext.query_id == query.attributes.id) ? 'active' : ''">
         <a ui-sref="base.search({ query_id: query.attributes.id })">
           {{ query.attributes.name }}
         </a>
@@ -14,14 +14,14 @@
         <a ui-sref="queries" data-toggle="tooltip" data-placement="bottom" title="Manage queries"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
       </li>
       <li class="navbar-right">
-        <a href="https://github.com/flant/loghouse/commit/{{:: base_vm.version }}" target="_blank">
+        <a href="https://github.com/flant/loghouse/commit/{{:: nav_vm.appContext.version }}" target="_blank">
           <span class="glyphicon glyphicon-link"></span>
-          ver. {{:: base_vm.version }}
+          ver. {{:: nav_vm.appContext.version }}
         </a>
       </li>
       <li class="navbar-right">
         <a href="javascript:void(0)">
-          Welcome back, {{:: base_vm.currentUser }}
+          Welcome back, {{:: nav_vm.appContext.currentUser.name }}
         </a>
       </li>
     </ul>

@@ -33,4 +33,11 @@ class User
   def to_s
     name
   end
+
+  def as_json(opts = {})
+    {
+      name: name,
+      available_namespaces: available_namespaces
+    }
+  end
 end

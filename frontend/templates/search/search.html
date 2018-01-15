@@ -11,8 +11,8 @@
     <div class="logs-result__container" ng-if="!vm.error"
         data-entry-oldest='<%#= @query.result.length > 0 ? @query.result.last.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") : Time.now.strftime("%Y-%m-%d %H:%M:%S.%N") %>'
         data-entry-newest='<%#= @query.result.length > 0 ? @query.result.first.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") : Time.now.strftime("%Y-%m-%d %H:%M:%S.%N") %>'>
-      <div ng-include="index/_result.html"></div>
+      <div ng-include="'search/_result.html'"></div>
     </div>
   </div>
 </div>
-<div ng-include="index/_filter_form.html"></div>
+<lh-filter-form query="vm.query" app-context="vm.appContext"></lh-filter-form>

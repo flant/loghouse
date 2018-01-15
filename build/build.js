@@ -81,8 +81,9 @@ gulp.task('css', ['prebuild'], function() {
         .src([
             path.join(conf.paths.nodeModules, 'bootstrap3/dist/css/bootstrap.css'),
             path.join(conf.paths.nodeModules, 'eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css'),
-            path.join(conf.paths.nodeModules, 'select2/dist/css/select2.css'),
-            path.join(conf.paths.nodeModules, 'select2-bootstrap-theme/dist/select2-bootstrap.css'),
+            path.join(conf.paths.nodeModules, 'ui-select/dist/select.css'),
+            // path.join(conf.paths.nodeModules, 'select2/dist/css/select2.css'),
+            // path.join(conf.paths.nodeModules, 'select2-bootstrap-theme/dist/select2-bootstrap.css'),
             path.join(conf.paths.src, '**/*.css'),
         ])
         .pipe($.concat('app.css'))

@@ -38,6 +38,7 @@
     "angular": "^1.6.8",
     "angular-resource": "^1.6.8",
     "angular-route": "^1.6.8",
+    "angular-ui-select": "^0.12.100",
     "bootstrap3": "^3.3.5",
     "eonasdan-bootstrap-datetimepicker": "^4.17.47",
     "html5sortable": "^0.6.3",

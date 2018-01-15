@@ -1,23 +1,24 @@
 'use strict';
-window.$ = window.jQuery = require('jquery');
 
 var angular = require('angular');
 require ('@uirouter/angularjs/release/angular-ui-router');
 require ('angular-resource');
+require ('ui-select');
 
 // require('./main');
 require ('../templates/layout');
 
 var app = angular.module('loghouseApp', [
   'ui.router',
+  'ui.select',
   'ngResource',
   'templates'
 ])
 
+require ('./app_context_service');
 require ('./layout');
 require ('./search');
 require ('./queries');
-
 
 app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', function($stateProvider, $locationProvider, $urlRouterProvider) {
   $locationProvider.html5Mode(true);
