@@ -46,6 +46,8 @@ class LoghouseQuery
           number_comparison
         when '=~'
           string_regex
+        when '!~'
+          "not(#{string_regex})"
         when '=', '!='
           if (value.is_a?(String) || label_key?)
             equation_string
