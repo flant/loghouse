@@ -16,7 +16,7 @@ spec:
       initContainers:
       - name: wait-clickhouse
         image: alpine:3.6
-        command: [ '/bin/sh', '-c', 'while ! getent ahostsv4 clickhouse; do sleep 1; done' ]
+        command: [ '/bin/sh', '-c', 'while ! nc -z clickhouse 8123; do sleep 1; done' ]
       containers:
       - name: init
         image: flant/loghouse-fluentd:{{ default .Chart.Version .Values.version }}
