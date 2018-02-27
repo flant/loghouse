@@ -49,6 +49,8 @@ To install loghouse, you need to have [Helm](https://github.com/kubernetes/helm)
 
 Web UI (loghouse-dashboard) will be reachable via address specified in values.yaml config as ```loghouse_host```. You'll be prompted by basic authorization generated via htpasswd and configured in ```auth``` parameter of your values.yaml.
 
+> To clean old logs in cron, you can use a script in this [issue](https://github.com/flant/loghouse/issues/42).
+
 # Architecture
 
 ![loghouse architecture](https://cdn.rawgit.com/flant/loghouse/master/docs/architecture.png)
