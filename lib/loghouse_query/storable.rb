@@ -1,33 +1,20 @@
-class LoghouseQuery
-  QUERIES_TABLE = ENV.fetch('CLICKHOUSE_QUERIES_TABLE') { 'queries' }
+require 'loghouse_query/table'
 
+class LoghouseQuery
   module Storable
     class NotValid < StandardError; end
     class NotFound < StandardError; end
 
     extend ActiveSupport::Concern
 
+    included do
+      include Table
+    end
+
     module ClassMethods
-      def create_table!(force = false)
-        if ::Clickhouse.connection.exists_table(QUERIES_TABLE)
-          return unless force
-
-          ::Clickhouse.connection.drop_table(QUERIES_TABLE)
-        end
-
-        ::Clickhouse.connection.create_table(QUERIES_TABLE) do |t|
-          t.fixed_string :id, 36
-          t.string       :name
-          t.array        :namespaces, 'String'
-          t.string       :query
-          t.uint8        :position
-          t.engine       "TinyLog"
-        end
-      end
-
       def count(params = {})
         params.merge!({
-          from: QUERIES_TABLE
+          from: table_name
         })
 
         ::Clickhouse.connection.count(params)
@@ -36,7 +23,7 @@ class LoghouseQuery
       def all(params = {})
         params.merge!({
           select: '*',
-          from: QUERIES_TABLE,
+          from: table_name,
           order: 'position ASC'
         })
 
@@ -44,7 +31,7 @@ class LoghouseQuery
       end
 
       def find(id)
-        if (row = ::Clickhouse.connection.select_row(select: '*', from: QUERIES_TABLE, where: { id: id }))
+        if (row = ::Clickhouse.connection.select_row(select: '*', from: table_name, where: { id: id }))
           build_from_row row
         end
       end
@@ -67,7 +54,12 @@ class LoghouseQuery
       protected
 
       def build_from_row(row)
-        lq = new id: row[0], name: row[1], namespaces: row[2], query: row[3], position: row[4]
+        attrs = {}
+        columns.keys.each_with_index do |c, i|
+          attrs[c] = row[i]
+        end
+
+        lq = new attrs
         lq.persisted = true
         lq
       end
@@ -77,7 +69,7 @@ class LoghouseQuery
       all_queries = self.class.all
       all_queries.reject!{ |q| q.id == id }
 
-      self.class.create_table!(true)
+      self.class.create_table!(force: true)
 
       all_queries.each(&:save!)
     end
@@ -98,7 +90,7 @@ class LoghouseQuery
       attributes[:position]   ||= self.class.count
       attributes[:namespaces] = attributes[:namespaces].to_s.gsub(/"/, "'") # KOSTYL for bad working with arrays in gem
 
-      ::Clickhouse.connection.insert_rows QUERIES_TABLE do |rows|
+      ::Clickhouse.connection.insert_rows self.class.table_name do |rows|
         rows << attributes
       end
     end

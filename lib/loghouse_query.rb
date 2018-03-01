@@ -14,14 +14,6 @@ class LoghouseQuery
   include Permissions
   include CSV
 
-  DEFAULTS = {
-    id:         nil,
-    name:       nil,
-    namespaces: [],
-    query:      nil,
-    position:   nil
-  }.freeze # Trick for all-attributes-hash in correct order in insert
-
   TIME_PARAMS_DEFAULTS = {
     format:  'seek_to',
     seek_to: 'now',
@@ -33,7 +25,7 @@ class LoghouseQuery
 
   def initialize(attrs = {})
     attrs.symbolize_keys!
-    @attributes = DEFAULTS.dup
+    @attributes = self.class.columns.dup
     @attributes.each do |k, v|
       @attributes[k] = attrs[k] if attrs[k].present?
     end

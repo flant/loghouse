@@ -27,7 +27,8 @@
 .kube-attribute:hover,
 .kube-label:hover,
 .kube-attribute:hover .logs-result__entry-key,
-.kube-label:hover .logs-result__entry-key {
+.kube-label:hover .logs-result__entry-key,
+.logs-timestamp-seek-to:hover {
   cursor: pointer;
   background: #fff;
   color: #000;

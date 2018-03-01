@@ -362,8 +362,10 @@ $(document).ready(function() {
       submitForm();
   });
 
-  refreshPeriodTitle();
-  refreshCurrentQuickItem();
+  if ($('.input-group.date').length) {
+    refreshPeriodTitle();
+    refreshCurrentQuickItem();
+  }
 
   // Play/pause
   var $playBtn = $('#playBtn');
@@ -498,6 +500,12 @@ $(document).ready(function() {
     }, 250);
   });
 
+  $(document).on('click', '.logs-timestamp-seek-to', function() {
+    time = $(this).text().split('.')[0];
+    $('#seek-to').val(time).trigger('change');
+    submitForm();
+  });
+
   $(document).on('click', '.kube-attribute, .kube-label', function() {
     var key        = $(this).data('key');
     var value      = $(this).find('span.logs-result__entry-value').text();
@@ -529,11 +537,13 @@ $(document).ready(function() {
   function toggleTimeFormat() {
     var format = $('.range-time-format a.active').data('format');
     if (format == 'range'){
+      $('.logs-result__entry-timestamp').removeClass('logs-timestamp-seek-to');
       $('#time-format').val('range');
       $('#save-as-csv').removeClass('disabled');
       $('.super-date-picker_seekto').hide();
       $('.super-date-picker_range').show();
     } else {
+      $('.logs-result__entry-timestamp').addClass('logs-timestamp-seek-to');
       $('#time-format').val('seek_to');
       $('#save-as-csv').addClass('disabled');
       $('.super-date-picker_range').hide();
@@ -542,6 +552,7 @@ $(document).ready(function() {
     refreshPeriodTitle();
     refreshCurrentQuickItem();
   }
-
-  toggleTimeFormat();
+  if ($('.input-group.date').length) {
+    toggleTimeFormat();
+  }
 });
