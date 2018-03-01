@@ -15,9 +15,10 @@ module Loghouse
     end
 
     before do
-      Time.zone    = TIME_ZONE
-      User.current = self.class.development? ? 'admin' : user_from_header
-      @tab_queries = LoghouseQuery.all.first(10)
+      Time.zone          = TIME_ZONE
+      Chronic.time_class = Time.zone
+      User.current       = self.class.development? ? 'admin' : user_from_header
+      @tab_queries       = LoghouseQuery.all.first(10)
 
       if request.path_info.match(/.csv$/)
         request.accept.unshift('text/csv')
@@ -176,8 +177,10 @@ module Loghouse
     private
 
     def query_from_params
-      LoghouseQuery.new(name: params[:name], query: params[:query].to_s, namespaces: params[:namespaces],
-                        time_from: params[:time_from], time_to: params[:time_to])
+      LoghouseQuery.new(name: params[:name], query: params[:query].to_s, namespaces: params[:namespaces])
+                   .time_params(format: params[:time_format], from: params[:time_from], to: params[:time_to],
+                                seek_to: params[:seek_to])
+
     end
 
     def user_from_header

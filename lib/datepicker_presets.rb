@@ -19,6 +19,16 @@ module Loghouse
       { name: 'Last 6 hours', from: 'now-6h', to: 'now' },
       { name: 'Last 12 hours', from: 'now-12h', to: 'now' },
       { name: 'Last 24 hours', from: 'now-24h', to: 'now' }
+    ],
+    seek_to: [
+      '5 minutes ago',
+      '15 minutes ago',
+      '30 minutes ago',
+      '1 hour ago',
+      '3 hours ago',
+      '6 hours ago',
+      '12 hours ago',
+      '24 hours ago'
     ]
   }.freeze
 end
