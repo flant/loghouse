@@ -1,3 +1,10 @@
+<p align="center">
+  <img src="https://cdn.rawgit.com/flant/loghouse/master/docs/logo.png" style="max-height:100%;" height="300">
+</p>
+
+___
+
+
 Ready to use log management solution for Kubernetes. Efficiently store big amounts of your logs (in [ClickHouse](https://github.com/yandex/ClickHouse) database), process them using a simple query language and monitor them online through web UI. Easy and quick to deploy in an already functioning Kubernetes cluster.
 
 Status is **alpha**. However we (Flant) use it in our production Kubernetes deployments since September, 2017.
