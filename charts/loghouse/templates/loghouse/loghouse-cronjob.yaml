@@ -19,7 +19,7 @@ spec:
             command: ['/bin/sh', '-c', 'while ! getent ahostsv4 clickhouse; do sleep 1; done']
           containers:
             - name: cron
-              image: flant/loghouse-dashboard:{{ default .Chart.Version .Values.version }}
+              image: flant/loghouse-dashboard:{{ .Chart.Version }}
               imagePullPolicy: {{ .Values.imagePullPolicy }}
               command: ['/bin/bash', '-l', '-c', 'rake create_logs_tables']
               env:

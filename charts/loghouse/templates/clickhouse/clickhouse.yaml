@@ -28,7 +28,7 @@ spec:
           mountPath: /var/lib/clickhouse
       containers:
       - name: clickhouse
-        image: flant/loghouse-clickhouse:{{ default .Chart.Version .Values.version }}
+        image: flant/loghouse-clickhouse:{{ .Chart.Version }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         ports:
         - name: http
