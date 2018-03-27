@@ -14,3 +14,4 @@ gem 'chronic'
 gem 'kubeclient'
 
 gem 'pry', group: :development
+gem 'dotenv', require: 'dotenv/load', group: :development
