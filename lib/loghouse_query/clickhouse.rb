@@ -73,11 +73,17 @@ class LoghouseQuery
     def result_from_seek_to
       lim = limit || Pagination::DEFAULT_PER_PAGE
 
+      seek_to_max_periods = 2
+
+      max_search_before = parsed_seek_to - (LogsTables::PARTITION_PERIOD.hours * seek_to_max_periods)
+      max_search_after  = parsed_seek_to + (LogsTables::PARTITION_PERIOD.hours * seek_to_max_periods)
+      max_search_after = Time.zone.now if max_search_after > Time.zone.now
+
       # search before part
-      before = result_older(parsed_seek_to, lim)
+      before = result_older(parsed_seek_to, lim, max_search_before)
 
       # search after part
-      after = result_newer(parsed_seek_to, lim, Time.zone.now)
+      after = result_newer(parsed_seek_to, lim, max_search_after)
 
       res = after.last([before.count, lim / 2].min)
       res += before.first(lim - res.count)
