@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: tabix
-        image: flant/loghouse-tabix:{{ default .Chart.Version .Values.version }}
+        image: flant/loghouse-tabix:{{ .Chart.Version }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         ports:
         - name: http

@@ -33,7 +33,7 @@ spec:
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
       - name: backend
-        image: flant/loghouse-dashboard:{{ default .Chart.Version .Values.version }}
+        image: flant/loghouse-dashboard:{{ .Chart.Version }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         command: ["bundle", "exec", "puma"]
         ports:

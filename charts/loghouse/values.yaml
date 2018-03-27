@@ -61,9 +61,6 @@ partition_period: 1
 # If you not want install fluentd on master
 install_master: false
 
-# For install specific version of Chart use version
-version: latest
-
 imagePullPolicy: Always
 
 clickhouse:

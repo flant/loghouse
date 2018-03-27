@@ -19,7 +19,7 @@ spec:
         command: [ '/bin/sh', '-c', 'while ! getent ahostsv4 clickhouse; do sleep 1; done' ]
       containers:
       - name: init
-        image: flant/loghouse-fluentd:{{ default .Chart.Version .Values.version }}
+        image: flant/loghouse-fluentd:{{ .Chart.Version }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         command: ['/bin/bash', '-l', '-c', 'clickhouse-client --host=${CLICKHOUSE_URL} --port=9000 --user=${CLICKHOUSE_USERNAME} --password=${CLICKHOUSE_PASSWORD} --query="CREATE DATABASE ${CLICKHOUSE_DATABASE};"']
         env:
