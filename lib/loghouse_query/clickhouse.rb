@@ -4,6 +4,7 @@ require 'loghouse_query/clickhouse/expression'
 class LoghouseQuery
   module Clickhouse
     extend ActiveSupport::Concern
+    MAX_GREEDY_SEARCH_PERIODS = 2
 
     def result
       @result ||= begin
@@ -37,7 +38,9 @@ class LoghouseQuery
     def result_older(start_time, lim, stop_at = nil)
       result = []
       time = start_time
-      while lim.positive? && (stop_at.blank? || time >= stop_at)
+      stop_at ||= start_time - LogsTables::PARTITION_PERIOD.hours * MAX_GREEDY_SEARCH_PERIODS
+
+      while lim.positive? && (time >= stop_at)
         table = LogsTables.partition_table_name(time)
         break unless ::Clickhouse.connection.exists_table(table)
 
@@ -55,7 +58,10 @@ class LoghouseQuery
     def result_newer(start_time, lim, stop_at = nil)
       result = []
       time = start_time
-      while lim.positive? && (stop_at.blank? || time <= stop_at)
+      stop_at ||= start_time + LogsTables::PARTITION_PERIOD.hours * MAX_GREEDY_SEARCH_PERIODS
+      stop_at = Time.zone.now if stop_at > Time.zone.now
+
+      while lim.positive? && (time <= stop_at)
         table = LogsTables.partition_table_name(time)
         break unless ::Clickhouse.connection.exists_table(table)
 
@@ -73,17 +79,11 @@ class LoghouseQuery
     def result_from_seek_to
       lim = limit || Pagination::DEFAULT_PER_PAGE
 
-      seek_to_max_periods = 2
-
-      max_search_before = parsed_seek_to - (LogsTables::PARTITION_PERIOD.hours * seek_to_max_periods)
-      max_search_after  = parsed_seek_to + (LogsTables::PARTITION_PERIOD.hours * seek_to_max_periods)
-      max_search_after = Time.zone.now if max_search_after > Time.zone.now
-
       # search before part
-      before = result_older(parsed_seek_to, lim, max_search_before)
+      before = result_older(parsed_seek_to, lim)
 
       # search after part
-      after = result_newer(parsed_seek_to, lim, max_search_after)
+      after = result_newer(parsed_seek_to, lim, Time.zone.now)
 
       res = after.last([before.count, lim / 2].min)
       res += before.first(lim - res.count)
