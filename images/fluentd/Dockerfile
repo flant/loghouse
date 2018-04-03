@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 COPY clean-apt /usr/bin
 COPY clean-install /usr/bin
 COPY Gemfile /Gemfile
-ARG repository="deb http://repo.yandex.ru/clickhouse/xenial stable main"
+ARG repository="deb http://repo.yandex.ru/clickhouse/deb/stable/ main/"
 ARG version=\*
 
 # 1. Install & configure dependencies.
