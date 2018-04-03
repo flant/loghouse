@@ -4,6 +4,7 @@ require 'loghouse_query/clickhouse/expression'
 class LoghouseQuery
   module Clickhouse
     extend ActiveSupport::Concern
+    MAX_GREEDY_SEARCH_PERIODS = 2
 
     def result
       @result ||= begin
@@ -37,7 +38,9 @@ class LoghouseQuery
     def result_older(start_time, lim, stop_at = nil)
       result = []
       time = start_time
-      while lim.positive? && (stop_at.blank? || time >= stop_at)
+      stop_at ||= start_time - LogsTables::PARTITION_PERIOD.hours * MAX_GREEDY_SEARCH_PERIODS
+
+      while lim.positive? && (time >= stop_at)
         table = LogsTables.partition_table_name(time)
         break unless ::Clickhouse.connection.exists_table(table)
 
@@ -55,7 +58,10 @@ class LoghouseQuery
     def result_newer(start_time, lim, stop_at = nil)
       result = []
       time = start_time
-      while lim.positive? && (stop_at.blank? || time <= stop_at)
+      stop_at ||= start_time + LogsTables::PARTITION_PERIOD.hours * MAX_GREEDY_SEARCH_PERIODS
+      stop_at = Time.zone.now if stop_at > Time.zone.now
+
+      while lim.positive? && (time <= stop_at)
         table = LogsTables.partition_table_name(time)
         break unless ::Clickhouse.connection.exists_table(table)
 
