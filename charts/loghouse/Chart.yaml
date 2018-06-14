@@ -1,5 +1,5 @@
 name: loghouse
-version: 0.0.1
+version: 0.2.2
 description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
              logs for Kubernetes cluster.
 keywords:
