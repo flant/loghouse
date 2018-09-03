@@ -1,4 +1,4 @@
-apiVersion: batch/v2alpha1
+apiVersion: {{ .Values.loghouse.cronJob.apiVersion }}
 kind: CronJob
 metadata:
   name: {{ .Chart.Name }}-tables

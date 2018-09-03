@@ -92,6 +92,8 @@ loghouse:
     requests:
       cpu: 0.5
       memory: 256Mi
+  cronJob:
+    apiVersion: batch/v2alpha1
 tabix:
   resources:
     limits:
