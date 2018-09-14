@@ -34,6 +34,7 @@ data:
           auth_basic "Authrentication Required";
           auth_basic_user_file /nginx/passwd/auth;
           proxy_redirect      off;
+          proxy_read_timeout  10m;
           proxy_set_header    Host          $http_host;
           proxy_set_header    X-Real-Ip     $remote_addr;
           proxy_set_header    X-Forwarded-For   $proxy_add_x_forwarded_for;
