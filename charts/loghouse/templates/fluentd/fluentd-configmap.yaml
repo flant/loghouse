@@ -88,7 +88,7 @@ data:
         # static fields
         source                 "kubernetes"
         namespace              ${record["kubernetes"]["namespace_name"]}
-        host                   ${record["kubernetes"]["host"]}
+        host                   ${record["kubernetes"]["host"] || ENV["K8S_NODE_NAME"]}
         pod_name               ${record["kubernetes"]["pod_name"]}
         container_name         ${record["kubernetes"]["container_name"]}
         stream                 ${record["stream"]}
