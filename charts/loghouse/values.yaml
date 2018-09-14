@@ -18,6 +18,9 @@ ingress:
   clickhouse_host: clickhouse.domain.com
   loghouse_host: loghouse.domain.com
   tabix_host: tabix.domain.com
+#  annotations:
+#  - 'kubernetes.io/ingress.class: traefik'
+#  - 'traefik.frontend.passHostHeader: "true"'
 
 # Enable tabix
 enable_tabix: false
