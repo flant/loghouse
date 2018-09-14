@@ -60,7 +60,7 @@ data:
         </profiles>
         <users>
             <default>
-                <password_sha256_hex>{{ .Values.clickhouse_pass_sha256 }}</password_sha256_hex>
+                <password_sha256_hex>{{ .Values.clickhouse_pass_original | sha256sum }}</password_sha256_hex>
                 <networks incl="networks" replace="replace">
                     <ip>::/0</ip>
                 </networks>
