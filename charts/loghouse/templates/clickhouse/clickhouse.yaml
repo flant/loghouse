@@ -3,7 +3,7 @@ apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
   name: clickhouse-server
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   revisionHistoryLimit: 1
   replicas: 1
@@ -101,8 +101,8 @@ spec:
         effect: {{ .Values.tolerations.effect | quote }}
 {{- end }}
 {{- end }}
-{{- if .Values.nodeSelector }}
+{{- if .Values.clickhouse.node_selector }}
       nodeSelector:
-        {{ .Values.nodeSelector.key }}: {{ .Values.nodeSelector.value }}
+        {{ .Values.clickhouse.node_selector.key }}: {{ .Values.clickhouse.node_selector.value }}
 {{- end }}
 

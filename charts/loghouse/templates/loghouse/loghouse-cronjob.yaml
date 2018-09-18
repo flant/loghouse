@@ -2,7 +2,7 @@ apiVersion: {{ template "CronJob.apiVersion" $ }}
 kind: CronJob
 metadata:
   name: {{ .Chart.Name }}-tables
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
 spec:
   schedule: "59 23 * * *"
   concurrencyPolicy: Forbid

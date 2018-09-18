@@ -3,7 +3,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: loghouse
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   annotations:
 {{- if .Values.ingress.annotations }}
 {{- range .Values.ingress.annotations }}
@@ -22,17 +22,17 @@ metadata:
 {{- end }}
 spec:
   rules:
-  - host: {{ .Values.ingress.loghouse_host }}
+  - host: {{ .Values.ingress.loghouse.host }}
     http:
       paths:
-      - path: /
+      - path: {{ .Values.ingress.loghouse.path }}
         backend:
           serviceName: loghouse
           servicePort: http
 {{- if .Values.ingress.enable_https }}
   tls:
   - hosts:
-    - {{ .Values.ingress.loghouse_host }}
-    secretName: loghouse
+    - {{ .Values.ingress.loghouse.host }}
+    secretName: {{ .Values.ingress.loghouse.tls_secret_name}}
 {{- end }}
 {{- end }}
