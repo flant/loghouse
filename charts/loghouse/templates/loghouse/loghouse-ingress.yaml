@@ -5,6 +5,11 @@ metadata:
   name: loghouse
   namespace: {{ .Release.Namespace }}
   annotations:
+{{- if .Values.ingress.annotations }}
+{{- range .Values.ingress.annotations }}
+    {{ . }}
+{{- end }}
+{{- else }}
     kubernetes.io/ingress.class: "nginx"
 {{- if .Values.ingress.enable_https }}
     kubernetes.io/tls-acme: "true"
@@ -13,6 +18,7 @@ metadata:
 {{- else }}
     ingress.kubernetes.io/force-ssl-redirect: "false"
     ingress.kubernetes.io/ssl-redirect: "false"
+{{- end }}
 {{- end }}
 spec:
   rules:

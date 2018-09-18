@@ -46,6 +46,10 @@ module LogsTables
     round_time_to_partition(time) + PARTITION_PERIOD.hours
   end
 
+  def prev_time_partition(time)
+    round_time_to_partition(time) - PARTITION_PERIOD.hours
+  end
+
   def split_range_to_tables(time_from, time_to)
     table_ranges = {}
     time = round_time_to_partition time_from

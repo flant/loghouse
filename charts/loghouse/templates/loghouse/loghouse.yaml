@@ -15,6 +15,10 @@ spec:
         component: loghouse
     spec:
       serviceAccountName: loghouse
+      initContainers:
+      - name: wait-clickhouse
+        image: alpine:3.6
+        command: [ '/bin/sh', '-c', 'while ! nc -z clickhouse 8123; do sleep 1; done' ]
       containers:
       - name: frontend
         image: nginx:alpine
@@ -33,7 +37,7 @@ spec:
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
       - name: backend
-        image: flant/loghouse-dashboard:{{ default .Chart.Version .Values.version }}
+        image: flant/loghouse-dashboard:{{ .Chart.Version }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         command: ["bundle", "exec", "puma"]
         ports:

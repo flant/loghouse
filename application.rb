@@ -3,6 +3,8 @@ require_relative 'config/boot'
 module Loghouse
   TIME_ZONE = ENV.fetch('TIME_ZONE') { 'Europe/Moscow' }
 
+  class UnauthenticatedError < StandardError; end
+
   # rubocop:disable Metrics/ClassLength
   class Application < Sinatra::Base
     configure do
@@ -13,9 +15,10 @@ module Loghouse
     end
 
     before do
-      Time.zone    = TIME_ZONE
-      User.current = self.class.development? ? 'admin' : user_from_header
-      @tab_queries = LoghouseQuery.all.first(10)
+      Time.zone          = TIME_ZONE
+      Chronic.time_class = Time.zone
+      User.current       = self.class.development? ? 'admin' : user_from_header
+      @tab_queries       = LoghouseQuery.all.first(10)
 
       if request.path_info.match(/.csv$/)
         request.accept.unshift('text/csv')
@@ -36,7 +39,7 @@ module Loghouse
                 end
 
       begin
-        @query.validate_query!
+        @query.validate!(name: false)
       rescue LoghouseQuery::BadFormat => e
         @error = "Bad query format: #{e}"
       rescue LoghouseQuery::BadTimeFormat => e
@@ -136,6 +139,27 @@ module Loghouse
       ''
     end
 
+    error UnauthenticatedError do |e|
+      @status = 401
+      @message = "Not Authenticated"
+
+      render_error
+    end
+
+    error User::PermissionsNotFound do |e|
+      @status = 403
+      @message = e.message
+
+      render_error
+    end
+
+    error do |e|
+      @status = 500
+      @message = 'Internal Server Error'
+
+      render_error
+    end
+
     helpers do
       def h(text)
         Rack::Utils.escape_html(text)
@@ -153,16 +177,23 @@ module Loghouse
     private
 
     def query_from_params
-      LoghouseQuery.new(name: params[:name], query: params[:query].to_s, namespaces: params[:namespaces],
-                        time_from: params[:time_from], time_to: params[:time_to])
+      LoghouseQuery.new(name: params[:name], query: params[:query].to_s, namespaces: params[:namespaces])
+                   .time_params(format: params[:time_format], from: params[:time_from], to: params[:time_to],
+                                seek_to: params[:seek_to])
+
     end
 
     def user_from_header
       auth_header = env['HTTP_AUTHORIZATION']
 
-      raise 'Unauthenticated' if auth_header.blank?
+      raise UnauthenticatedError if auth_header.blank?
 
       Base64.decode64(auth_header.gsub(/Basic /, '')).split(':').first
+    end
+
+    def render_error
+      status @status
+      erb :error, layout: false
     end
   end
 end

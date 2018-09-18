@@ -1,5 +1,6 @@
 class User
   PERMISSONS_FILE_PATH = ENV.fetch('PERMISSONS_FILE_PATH') { 'config/permissions.yml' }
+  class PermissionsNotFound < StandardError; end
 
   class << self
     def current
@@ -16,7 +17,7 @@ class User
     @name        = name
     @permissions = YAML.load_file(PERMISSONS_FILE_PATH)[name]
 
-    raise "no user permissions configured for user '#{self}'" if permissions.blank?
+    raise PermissionsNotFound, "No user permissions configured for user '#{self}'" if permissions.blank?
   end
 
   def allowed_to?(namespace)
@@ -26,7 +27,7 @@ class User
   end
 
   def available_namespaces
-    Kubernetes.namespaces.select { |ns| allowed_to?(ns) } 
+    Kubernetes.namespaces.select { |ns| allowed_to?(ns) }
   end
 
   def to_s

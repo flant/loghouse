@@ -36,16 +36,21 @@
             <input type="text" class="form-control" id="query" placeholder="Query..." name='query' size="60" value="<%= h @query.attributes[:query] if @query %>">
             <span class="input-group-btn">
               <input type="hidden" name="per_page" value="<%= params[:per_page] %>"/>
+              <input type="hidden" id="time-format" name="time_format" value="<%= @query.time_params[:format] %>"/>
               <button type="submit" class="btn btn-default btn-transparent">Send</button>
             </span>
           </div>
         </div>
         <div class="col-xs-1">
           <div class="form-group" data-toggle="tooltip" title="Save query">
-            <a role="button" class="btn btn-link btn-link-alt<% if @query.persisted %> disabled<% end %>" <% if !@query.persisted %> id="save-query"<% end %>><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></a>
+            <a role="button" class="btn btn-link btn-link-alt <%= 'disabled' if @query.persisted %>" <% if !@query.persisted %> id="save-query"<% end %>><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></a>
           </div>
           <div class="form-group" data-toggle="tooltip" title="Save result as CSV">
-            <a role="button" class="btn btn-link btn-link-alt" <% if @query %> id="save-as-csv"<% end %>><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+            <a role="button" class="btn btn-link btn-link-alt <%= 'disabled' unless @query.time_params[:format] == 'range' %>"
+              <%= 'id="save-as-csv"' if @query %>
+            >
+              <span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>
+            </a>
           </div>
         </div>
         <div class="col-xs-2" align="right">
@@ -66,7 +71,7 @@
           </select>
         </div>
         <div class="col-xs-4">
-            <a class="btn btn-default btn-transparent btn-block search-params-btn" id="superDatePickerBtn" role="button" data-target="#superDatePicker" data-toggle="tooltip" data-default-title="" data-original-title="Set period"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> <span class="super-date-picker__period-title"></span></a>
+            <a class="btn btn-default btn-transparent btn-block search-params-btn" id="superDatePickerBtn" data-target='#superDatePicker' role="button" data-toggle="tooltip" data-default-title="" data-original-title="Set time"><span class="glyphicon glyphicon-time" aria-hidden="true"></span> <span class="super-date-picker__period-title"></span></a>
         </div>
         <div class="col-xs-1">
           <div class="form-group" data-toggle="tooltip" title="Hide/Show keys">

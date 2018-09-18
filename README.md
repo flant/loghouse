@@ -1,6 +1,16 @@
+<p align="center">
+  <img src="https://cdn.rawgit.com/flant/loghouse/master/docs/logo.png" style="max-height:100%;" height="300">
+</p>
+
+___
+
+
 Ready to use log management solution for Kubernetes. Efficiently store big amounts of your logs (in [ClickHouse](https://github.com/yandex/ClickHouse) database), process them using a simple query language and monitor them online through web UI. Easy and quick to deploy in an already functioning Kubernetes cluster.
 
 Status is **alpha**. However we (Flant) use it in our production Kubernetes deployments since September, 2017.
+
+Some data may be dropped in alpha's updates. Be careful, when updating! All info will be published in release notes. 
+**Data's structure will be stable in beta version** (planned on April 2018).
 
 Loghouse-dashboard UI demo in action (~3 Mb):
 
@@ -16,7 +26,7 @@ Loghouse-dashboard UI demo in action (~3 Mb):
 * Quickly & straightforward deployable to Kubernetes via Dockerfiles and Helm chart.
 * Web UI made cosy and powerful:
   * Papertrail-like user experience.
-  * Customizable time frames: from date to date / from now till given period (last hour, last day, etc).
+  * Customizable time frames: from date to date / from now till given period (last hour, last day, etc) / seek to specific time and show logs around it.
   * Infinite scrolling of older log entries.
   * Save your queries to use in future.
   * Basic permissions (limiting entries shown for users by specifying Kubernetes namespaces).
@@ -48,6 +58,8 @@ To install loghouse, you need to have [Helm](https://github.com/kubernetes/helm)
 ```
 
 Web UI (loghouse-dashboard) will be reachable via address specified in values.yaml config as ```loghouse_host```. You'll be prompted by basic authorization generated via htpasswd and configured in ```auth``` parameter of your values.yaml.
+
+> To clean old logs in cron, you can use a script in this [issue](https://github.com/flant/loghouse/issues/42).
 
 # Architecture
 

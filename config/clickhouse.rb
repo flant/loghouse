@@ -6,4 +6,4 @@ config = {
 }
 
 Clickhouse.establish_connection config
-LoghouseQuery.create_table!
+LoghouseQuery.create_table_with_migration!

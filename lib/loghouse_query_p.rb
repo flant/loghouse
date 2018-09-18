@@ -4,7 +4,7 @@ class LoghouseQueryP < Parslet::Parser
   QUERY_OPERATORS             = %w[and or]
   EXPRESSION_ALL_OPERATORS    = %w[!= =]
   EXPRESSION_NUMBER_OPERATORS = %w[>= <= > < ]
-  EXPRESSION_STRING_OPERATORS = %w[=~]
+  EXPRESSION_STRING_OPERATORS = %w[=~ !~]
   ANY_RESERVED_KEY            = "*"
   LABEL_RESERVED_KEY          = "~"
 

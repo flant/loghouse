@@ -1,5 +1,18 @@
-<% @query.result.each do |entry| %>
+<% @query.result.each_with_index do |entry, i| %>
+  <% next_entry = @query.result[i+1] %>
+
+  <% if i.zero? && @query.parsed_seek_to && entry.timestamp <= @query.parsed_seek_to %>
+    <%= erb :_seek_to_anchor %>
+  <% end %>
+
   <div>
     <%= erb :_result_entry, locals: { entry: entry } %>
   </div>
+
+  <% if @query.parsed_seek_to &&
+        (entry.timestamp >= @query.parsed_seek_to &&
+        (next_entry.blank? || next_entry.timestamp <= @query.parsed_seek_to))
+  %>
+    <%= erb :_seek_to_anchor %>
+  <% end %>
 <% end %>

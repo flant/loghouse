@@ -17,7 +17,7 @@ Please note there is also a special shortcut for a `label` key: you can use `~` 
 `EXPRESSION_OPERATOR` possible values are:
 1. `=`, `!=` (equality) is used for string (`string_fields`) and numerical (`number_fields`) values. If `VALUE` is in quotes, only string values will be considered. If `VALUE` has `%` or `_` characters, `LIKE` is used for comparison.
 2. `>`, `<`, `>=`, `<=` (comparison) is used for numerical values only.
-3. `=~` (regular expression) is used for string values only. `MATCH` is used for comparison.
+3. `=~`, `!~` (regular expression) is used for string values only. `MATCH` is used for comparison. `!~` search entries that **does not match** regular expression.
 4. `is true`, `is false` is used for boolean values (`boolean_fields`) only.
 5. `is null`, `is not null` is used to match a key having corresponding value in NULL values (`null_fields`).
 
@@ -26,6 +26,7 @@ P.S. All built-in operators (`is true`, `is null`, etc) are case insensitive. Th
 ## Examples
 1.  `host=kube-1 and log.level > 10`
 1.  `* =~ kube-[1-9]`
+1.  `log !~ (warning|info)`
 1.  `~component = clickhouse`
 1.  `log = %error% or log != %success%`
 1.  `unhealthy is true`
