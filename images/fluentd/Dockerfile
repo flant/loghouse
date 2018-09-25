@@ -3,7 +3,7 @@ COPY clean-apt /usr/bin
 COPY clean-install /usr/bin
 COPY Gemfile /Gemfile
 ARG repository="deb http://repo.yandex.ru/clickhouse/deb/stable/ main/"
-ARG version=\*
+ARG version=18.10.3
 
 # 1. Install & configure dependencies.
 # 2. Install fluentd via ruby.
