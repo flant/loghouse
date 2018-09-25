@@ -1,6 +1,7 @@
 FROM ubuntu:16.04
 COPY clean-apt /usr/bin
 COPY clean-install /usr/bin
+COPY fluentd-systemd-plugin.patch /opt
 COPY Gemfile /Gemfile
 ARG repository="deb http://repo.yandex.ru/clickhouse/deb/stable/ main/"
 ARG version=18.10.3
@@ -22,13 +23,17 @@ RUN BUILD_DEPS="make gcc g++ libc6-dev ruby-dev" \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
     && apt-get update \
     && apt-get install tzdata clickhouse-server-base=$version clickhouse-client=$version \
+    && apt-get install patch \
     && apt-get purge -y --auto-remove \
                      -o APT::AutoRemove::RecommendsImportant=false \
                      $BUILD_DEPS \
     && clean-apt \
     && rm -rf /var/lib/apt/lists/* \
     # Ensure fluent has enough file descriptors
-    && ulimit -n 65536
+    && ulimit -n 65536 \
+    # patch fluentd
+    # https://github.com/reevoo/fluent-plugin-systemd/pull/41
+    && patch /var/lib/gems/2.3.0/gems/fluent-plugin-systemd-0.0.8/lib/fluent/plugin/in_systemd.rb /opt/fluentd-systemd-plugin.patch
 
 # Copy the Fluentd configuration file for logging Docker container logs.
 COPY fluent.conf /etc/fluent/fluent.conf
