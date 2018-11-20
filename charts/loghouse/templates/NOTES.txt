@@ -4,10 +4,9 @@ Ingress: {{ if .Values.ingress.enable }}ENABLED{{else}}no{{end}}
 Tabix: {{ if .Values.enable_tabix }}ENABLED{{else}}no{{end}}
 Clickhouse storage: {{ if .Values.storage.pvc }}pvc/{{.Values.storage.pvc.name}}{{end}}{{if .Values.storage.hostpath}}{{.Values.storage.hostpath}}{{end}}{{if .Values.storage.emptyDir}}emptyDir{{end}}
 
-
-{{- if not .Values.clickhouse.node_selector -}}
+{{ if not .Values.clickhouse.node_selector }}
 Production note: use clickhouse.node_selector to specify node for clickshouse server
-{{- end -}}
+{{ end }}
 
 Use .Values.docker_path if docker logs is not in /var/lib/docker.
 e.g. /dind/docker/containers if dind is used.
