@@ -9,8 +9,8 @@ Ready to use log management solution for Kubernetes. Efficiently store big amoun
 
 Status is **alpha**. However we (Flant) use it in our production Kubernetes deployments since September, 2017.
 
-Some data may be dropped in alpha's updates. Be careful, when updating! All info will be published in release notes. 
-**Data's structure will be stable in beta version** (planned on April 2018).
+Some data may be dropped in alpha's updates. Be careful, when updating! All info will be published in release notes.
+**Data's structure will be stable in beta version** (planned on 2019).
 
 Loghouse-dashboard UI demo in action (~3 Mb):
 
@@ -48,8 +48,10 @@ To install loghouse, you need to have [Helm](https://github.com/kubernetes/helm)
 ```
 # helm fetch loghouse/loghouse --untar
 # vim loghouse/values.yaml
-# helm install -n loghouse loghouse
+# helm install --namespace loghouse -n loghouse loghouse
 ```
+
+Note: use `--timeout 1200` flag in case slow image pulling.
 
 2.2. Using specific parameters *(check variables in chart's [values.yaml](charts/loghouse/values.yaml) — not documented yet)*:
 

@@ -19,7 +19,7 @@ spec:
       serviceAccountName: fluentd
       containers:
       - name: fluentd
-        image: flant/loghouse-fluentd:{{ .Chart.Version }}
+        image: flant/loghouse-fluentd:{{ template "app.version" $ }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         env:
         - name: FLUENTD_ARGS
