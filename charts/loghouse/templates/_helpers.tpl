@@ -8,3 +8,15 @@ CronJob api version
 "batch/v2alpha1"
 {{- end -}}
 {{- end -}}
+
+
+{{/*
+Images version. This version can be set from cli: --set app.version=master.
+*/}}
+{{- define "app.version" -}}
+{{- if .Values.app.version -}}
+{{- .Values.app.version -}}
+{{- else -}}
+{{- .Chart.AppVersion -}}
+{{- end -}}
+{{- end -}}

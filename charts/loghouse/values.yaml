@@ -15,7 +15,7 @@ ingress:
   clickhouse:
     host: clickhouse.domain.com
     path: "/"
-    tls_secret_name: clickhouse 
+    tls_secret_name: clickhouse
   loghouse:
     host: loghouse.domain.com
     path: "/"
@@ -35,6 +35,7 @@ enable_tabix: false
 # docker_path: /data/docker
 
 storage:
+  emptyDir: true
   # You can use some storageClass or hostpath for clickhouse data storage
   # hostpath: /data
   # OR:
@@ -61,15 +62,16 @@ partition_period: 1
 #   value: 'logging'
 #   effect: 'NoSchedule'
 
-# If you not want install fluentd on master
+# If you not want install fluentd on master node
 install_master: false
 
 imagePullPolicy: Always
 
 clickhouse:
-  node_selector:
-    key: 'node-role/logging'
-    value: 'clickhouse'
+  # use nodeSelector for clickhouse to limit clickhouse nodes.
+  #node_selector:
+  #  key: 'node-role/logging'
+  #  value: 'clickhouse'
   server: clickhouse
   port: 9000
   user: default

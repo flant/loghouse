@@ -14,21 +14,26 @@ spec:
       labels:
         component: clickhouse
     spec:
+      securityContext:
+        runAsUser: 105
+        fsGroup: 106
       initContainers:
-      - name: chown
+      - name: config
         image: alpine:3.6
-        command: ['/bin/sh', '-c', 'chown 105:106 -R /var/lib/clickhouse']
+        command:
+          - '/bin/sh'
+          - '-c'
+          - cd /etc/clickhouse-server;
+            ln -sf /etc/clickhouse-server-config/config.xml;
+            ln -sf /etc/clickhouse-server-config/users.xml
         volumeMounts:
-{{- if .Values.storage.pvc }}
-        - name: {{ .Values.storage.pvc.name }}
-{{- end }}
-{{- if .Values.storage.hostpath }}
-        - name: hostpath
-{{- end }}
-          mountPath: /var/lib/clickhouse
+        - mountPath: /etc/clickhouse-server/
+          name: config-directory
+        - mountPath: /etc/clickhouse-server-config/
+          name: config-volume
       containers:
       - name: clickhouse
-        image: flant/loghouse-clickhouse:{{ .Chart.Version }}
+        image: flant/loghouse-clickhouse:{{ template "app.version" $ }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         ports:
         - name: http
@@ -74,8 +79,14 @@ spec:
           - name: {{ .Values.storage.pvc.name }}
             mountPath: /var/lib/clickhouse/
 {{- end }}
-          - name: config-volume
-            mountPath: /etc/clickhouse-server/
+{{- if .Values.storage.emptyDir }}
+          - name: data
+            mountPath: /var/lib/clickhouse/
+{{- end }}
+          - mountPath: /etc/clickhouse-server/
+            name: config-directory
+          - mountPath: /etc/clickhouse-server-config/
+            name: config-volume
       volumes:
 {{- if .Values.storage.hostpath }}
         - name: hostpath
@@ -87,9 +98,18 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.storage.pvc.name }}
 {{- end }}
+{{- if .Values.storage.emptyDir }}
+        - name: data
+          emptyDir:
+            sizeLimit: "0"
+{{- end }}
         - name: config-volume
           configMap:
             name: clickhouse-config
+        - name: config-directory
+          emptyDir:
+            sizeLimit: "0"
+
 {{- if .Values.tolerations }}
       tolerations:
       - operator: {{ .Values.tolerations.operator | quote }}

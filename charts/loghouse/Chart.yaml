@@ -1,5 +1,6 @@
 name: loghouse
-version: 0.2.2
+version: 0.2.3
+appVersion: 0.2.3
 description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
              logs for Kubernetes cluster.
 keywords:
@@ -8,6 +9,8 @@ keywords:
 - tabix
 - loghouse
 - kubernetes
+home: https://github.com/flant/loghouse
+icon: https://cdn.rawgit.com/flant/loghouse/master/docs/logo.png
 maintainers:
 - name: Dmitry Stolyarov
   email: dmitry.stolyarov@flant.com
@@ -15,3 +18,6 @@ maintainers:
   email: andrey.sidorov@flant.com
 - name: Sergey Gnuskov
   email: sergey.gnuskov@flant.com
+- name: Ivan Mikheykin
+  email: ivan.mikheykin@flant.com
+
