@@ -1,0 +1,33 @@
+#! /bin/bash
+
+NAMESPACE=$1
+
+if [[ "${NAMESPACE}" = "" ]]; then
+  echo "  It's nessary to define NAMESPACE environment variable!"
+  echo "  Format: ./helm-update <NAMESPACE> [<KUBE_CONFIGURATION_DIR>]"
+  exit
+fi
+
+KUBE_CONFIGURATION_DIR="${HOME}/arcadia-bedrock/gpt-core"
+
+if [[ "$2" != "" ]]; then
+KUBE_CONFIGURATION_DIR="$2"
+fi
+
+if [[ ! -f ${KUBE_CONFIGURATION_DIR}/config || ! -f ${KUBE_CONFIGURATION_DIR}/.helm ]]; then
+   echo "  Check files ${KUBE_CONFIGURATION_DIR}/config and ${KUBE_CONFIGURATION_DIR}/.helm exist!"
+   echo " "
+   echo "  It's nessasry to save Kubernetes and Helm configs in folder '~/arcadia-bedrock/gpt-core' (default config folder)"
+   echo "  Also you can define another config folder in the second parameter of command"
+   echo "  Format: ./helm-update <NAMESPACE> [<KUBE_CONFIGURATION_DIR>]"
+   exit
+fi
+
+export KUBECONFIG=/home/lunx/projects/arcadia/dlp-bedrock-new/assets/dev1-config
+export HELM_HOME=~/.helm
+
+echo "  Deleting ${NAMESPACE} ... "
+( cd ./charts && helm delete ${NAMESPACE} --purge )
+
+echo "  Installing ${NAMESPACE} ... "
+( cd ./charts && helm install --namespace ${NAMESPACE} -n ${NAMESPACE} loghouse --tls )

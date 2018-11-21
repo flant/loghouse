@@ -5,6 +5,9 @@
 # result: YWRtaW46JGFwcjEkMzdxSEwvTVIkcEFvdzEzZDUwMkd5VFc2VDNlQmJiMAoK
 auth: YWRtaW46JGFwcjEkelhESkU5YTkkRkU0OFdnZlBMZlJJQjk0bVhXZVprMAoK
 
+app:
+  version: 0.2.2
+
 # Password for default user in clickhouse
 clickhouse_pass_original: password
 
@@ -24,9 +27,9 @@ ingress:
     host: tabix.domain.com
     path: "/"
     tls_secret_name: loghouse
-#  annotations:
-#  - 'kubernetes.io/ingress.class: traefik'
-#  - 'traefik.frontend.passHostHeader: "true"'
+  annotations:
+  - 'kubernetes.io/ingress.class: traefik'
+  - 'traefik.frontend.passHostHeader: "true"'
 
 # Enable tabix
 enable_tabix: false
