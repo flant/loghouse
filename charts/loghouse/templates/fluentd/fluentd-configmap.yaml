@@ -83,20 +83,24 @@ data:
       @type record_modifier
       <record>
         _json_log_             ${ log = record["log"].strip; if log[0].eql?('{') && log[-1].eql?('}'); begin; JSON.parse(log); rescue JSON::ParserError; end; end }
+        _params_select_        ${ record["_json_log_"] ? record["_json_log_"].select{|k, v| k == 'params' && v.is_a?(Hash)} : nil }
+        _params_hash_          ${ !record["_params_select_"].nil? && !record["_params_select_"]["params"].nil? ?  record["_params_select_"]["params"] : nil }
+        _params_keys_          ${ !record["_params_hash_"].nil? ? record["_params_hash_"].keys.map{ |key| 'params_' + key } : []}
+        _params_values_        ${ !record["_params_hash_"].nil? ? record["_params_hash_"].values.map(&:to_s) : []}
         timestamp              ${time}
         nsec                   ${record["time"].split('.').last.to_i}
         # static fields
         source                 "kubernetes"
         namespace              ${record["kubernetes"]["namespace_name"]}
-        host                   ${record["kubernetes"]["host"] || ENV["K8S_NODE_NAME"]}
+        jsonhost               ${record["kubernetes"]["host"] || ENV["K8S_NODE_NAME"]}
         pod_name               ${record["kubernetes"]["pod_name"]}
         container_name         ${record["kubernetes"]["container_name"]}
         stream                 ${record["stream"]}
         # dynamic fields
         labels.names           ${record["kubernetes"]["labels"].keys}
         labels.values          ${record["kubernetes"]["labels"].values}
-        string_fields.names    ${record["_json_log_"] ? record["_json_log_"].select{|_, v| !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.keys : ["log"]}
-        string_fields.values   ${record["_json_log_"] ? record["_json_log_"].select{|_, v| !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.values.map(&:to_s) : [record["log"]]}
+        string_fields.names    ${record["_json_log_"] ? record["_json_log_"].select{|k, v| k != 'params' && !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.keys + record["_params_keys_"] : ["log"]}
+        string_fields.values   ${record["_json_log_"] ? record["_json_log_"].select{|k, v| k != 'params' && !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.values.map(&:to_s) + record["_params_values_"] : [record["log"]]}
 
         number_fields.names    ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.is_a?(Numeric)}.keys : []}
         number_fields.values   ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.is_a?(Numeric)}.values : []}
@@ -106,7 +110,7 @@ data:
 
         null_fields.names      ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.nil?}.keys : []}
       </record>
-      remove_keys kubernetes, docker, master_url, time, log, _json_log_
+      remove_keys kubernetes, docker, master_url, time, log, _json_log_, _params_select_, _params_hash_, _params_keys_, _params_values_
      </filter>
 
     <filter docker.**>
@@ -137,9 +141,9 @@ data:
 
     <filter **>
       @type record_modifier
-      whitelist_keys timestamp, nsec, source, namespace, host, pod_name, container_name, stream, labels.names, labels.values, string_fields.names, string_fields.values, number_fields.names, number_fields.values, boolean_fields.names, boolean_fields.values, null_fields.names 
+      whitelist_keys timestamp, nsec, source, namespace, host, pod_name, container_name, stream, labels.names, labels.values, string_fields.names, string_fields.values, number_fields.names, number_fields.values, boolean_fields.names, boolean_fields.values, null_fields.names
     </filter>
- 
+
     <match **>
       @type exec
       command bash /usr/local/bin/insert_ch.sh
