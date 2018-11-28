@@ -5,28 +5,31 @@
 # result: YWRtaW46JGFwcjEkMzdxSEwvTVIkcEFvdzEzZDUwMkd5VFc2VDNlQmJiMAoK
 auth: YWRtaW46JGFwcjEkelhESkU5YTkkRkU0OFdnZlBMZlJJQjk0bVhXZVprMAoK
 
+app:
+  version: 0.2.2
+
 # Password for default user in clickhouse
 clickhouse_pass_original: password
 
 # Settings for ingress
 ingress:
   enable: true
-  enable_https: true
+  enable_https: false
   clickhouse:
     host: clickhouse.domain.com
     path: "/"
     tls_secret_name: clickhouse
   loghouse:
-    host: loghouse.domain.com
+    host: loghouse.dev1.cgdlp.io
     path: "/"
     tls_secret_name: loghouse
   tabix:
     host: tabix.domain.com
     path: "/"
     tls_secret_name: loghouse
-#  annotations:
-#  - 'kubernetes.io/ingress.class: traefik'
-#  - 'traefik.frontend.passHostHeader: "true"'
+  annotations:
+  - 'kubernetes.io/ingress.class: traefik'
+  - 'traefik.frontend.passHostHeader: "true"'
 
 # Enable tabix
 enable_tabix: false
@@ -63,7 +66,7 @@ partition_period: 1
 #   effect: 'NoSchedule'
 
 # If you not want install fluentd on master node
-install_master: false
+install_master: true
 
 imagePullPolicy: Always
 
@@ -90,7 +93,7 @@ fluentd:
       cpu: 1
       memory: 512Mi
     requests:
-      cpu: 0.5
+      cpu: 0.1
       memory: 256Mi
 loghouse:
   resources:
