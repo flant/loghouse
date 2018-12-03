@@ -14,22 +14,22 @@ clickhouse_pass_original: password
 # Settings for ingress
 ingress:
   enable: true
-  enable_https: false
+  enable_https: true
   clickhouse:
     host: clickhouse.domain.com
     path: "/"
     tls_secret_name: clickhouse
   loghouse:
-    host: loghouse.dev1.cgdlp.io
+    host: loghouse.domain.com
     path: "/"
     tls_secret_name: loghouse
   tabix:
     host: tabix.domain.com
     path: "/"
     tls_secret_name: loghouse
-  annotations:
-  - 'kubernetes.io/ingress.class: traefik'
-  - 'traefik.frontend.passHostHeader: "true"'
+#  annotations:
+#  - 'kubernetes.io/ingress.class: traefik'
+#  - 'traefik.frontend.passHostHeader: "true"'
 
 # Enable tabix
 enable_tabix: false
