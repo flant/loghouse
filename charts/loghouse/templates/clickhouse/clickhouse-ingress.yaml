@@ -27,6 +27,6 @@ spec:
   tls:
   - hosts:
     - {{ .Values.ingress.clickhouse.host }}
-    secretName: {{ .Values.ingress.clickhouse.tls_secret_name}}se
+    secretName: {{ .Values.ingress.clickhouse.tls_secret_name}}
 {{- end }}
 {{- end }}

@@ -11,12 +11,13 @@ CronJob api version
 
 
 {{/*
-Images version. This version can be set from cli: --set app.version=master.
+Images version. This version can be set from cli: --set version=latest or --set version=0.2.1
+Chart.Version is set to latest in master branch. helm package rewrite it to tag value for releases.
 */}}
 {{- define "app.version" -}}
-{{- if .Values.app.version -}}
-{{- .Values.app.version -}}
+{{- if .Values.version -}}
+{{- .Values.version -}}
 {{- else -}}
-{{- .Chart.AppVersion -}}
+{{- .Chart.Version -}}
 {{- end -}}
 {{- end -}}
