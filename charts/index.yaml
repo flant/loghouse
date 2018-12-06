@@ -1,8 +1,33 @@
 apiVersion: v1
 entries:
   loghouse:
+  - created: 2018-12-06T16:03:24.680754119Z
+    description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
+      logs for Kubernetes cluster.
+    digest: 111f2563ab344a03078527f3d0889c2825a039faaf5de1fd215d8da498abac5e
+    home: https://github.com/flant/loghouse
+    icon: https://cdn.rawgit.com/flant/loghouse/master/docs/logo.png
+    keywords:
+    - fluentd
+    - clickhouse
+    - tabix
+    - loghouse
+    - kubernetes
+    maintainers:
+    - email: dmitry.stolyarov@flant.com
+      name: Dmitry Stolyarov
+    - email: andrey.sidorov@flant.com
+      name: Andrey Sidorov
+    - email: sergey.gnuskov@flant.com
+      name: Sergey Gnuskov
+    - email: ivan.mikheykin@flant.com
+      name: Ivan Mikheykin
+    name: loghouse
+    urls:
+    - loghouse-0.2.4.tgz
+    version: 0.2.4
   - appVersion: 0.2.3
-    created: 2018-11-21T18:27:45.809169695Z
+    created: 2018-12-06T16:03:24.679671792Z
     description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
       logs for Kubernetes cluster.
     digest: 10c47ade9518025de7bea1a43b4556e4553dab3c447ca7aaac228af4d40f03a6
@@ -28,7 +53,7 @@ entries:
     - loghouse-0.2.3.tgz
     version: 0.2.3
   - appVersion: 0.2.3
-    created: 2018-11-21T18:27:45.811142169Z
+    created: 2018-12-06T16:03:24.681463418Z
     description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
       logs for Kubernetes cluster.
     digest: 07396f1c9ab8c676a15796eaf7700e142c684958c31535ee6671589493c8b68e
@@ -53,7 +78,7 @@ entries:
     urls:
     - loghouse-v0.2.3.tgz
     version: v0.2.3
-  - created: 2018-11-21T18:27:45.807577518Z
+  - created: 2018-12-06T16:03:24.677959677Z
     description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
       logs for Kubernetes cluster.
     digest: f3b4ec0561ebebf4310aec2f1120881ce1602a7f2944307037a0a97889e5d470
@@ -74,7 +99,7 @@ entries:
     urls:
     - loghouse-0.2.2.tgz
     version: 0.2.2
-  - created: 2018-11-21T18:27:45.806873418Z
+  - created: 2018-12-06T16:03:24.676535637Z
     description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
       logs for Kubernetes cluster.
     digest: a7dbd1728447d88c92ca052d9fe40ada4632f929466db236306a9948d6bc6485
@@ -95,7 +120,7 @@ entries:
     urls:
     - loghouse-0.2.1.tgz
     version: 0.2.1
-  - created: 2018-11-21T18:27:45.806203509Z
+  - created: 2018-12-06T16:03:24.674844981Z
     description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
       logs for Kubernetes cluster.
     digest: 2ea3f501064a65ce39acfd16e08fed1e9ade17abf06be1a110ae935003db7ea7
@@ -116,7 +141,7 @@ entries:
     urls:
     - loghouse-0.2.0.tgz
     version: 0.2.0
-  - created: 2018-11-21T18:27:45.805417595Z
+  - created: 2018-12-06T16:03:24.674207201Z
     description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
       logs for Kubernetes cluster.
     digest: 60a5043b8bfb42d812f140b63d9aedf1069cbb75c65d80111193bdbdd4c2b032
@@ -137,7 +162,7 @@ entries:
     urls:
     - loghouse-0.1.6.tgz
     version: 0.1.6
-  - created: 2018-11-21T18:27:45.804711311Z
+  - created: 2018-12-06T16:03:24.673453036Z
     description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
       logs for Kubernetes cluster.
     digest: 839734a9d29536ee33673f6fc2c501db090580342a573fa79713f82294843a0d
@@ -158,7 +183,7 @@ entries:
     urls:
     - loghouse-0.1.3.tgz
     version: 0.1.3
-  - created: 2018-11-21T18:27:45.803977209Z
+  - created: 2018-12-06T16:03:24.672802864Z
     description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
       logs for Kubernetes cluster.
     digest: d5ade4882a3f0de36c119c25a1eb60334267984a746bff123c6fc63832c8e20a
@@ -179,4 +204,4 @@ entries:
     urls:
     - loghouse-0.0.1.tgz
     version: 0.0.1
-generated: 2018-11-21T18:27:45.80307394Z
+generated: 2018-12-06T16:03:24.671937654Z
