@@ -30,6 +30,6 @@ spec:
   tls:
   - hosts:
     - {{ .Values.ingress.tabix.host }}
-    secretName: {{ .Values.tabix.tls_secret_name }}
+    secretName: {{ .Values.ingress.tabix.tls_secret_name }}
 {{- end }}
 {{- end }}

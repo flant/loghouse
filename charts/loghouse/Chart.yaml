@@ -1,6 +1,6 @@
 name: loghouse
-version: 0.2.3
-appVersion: 0.2.3
+# helm package override version on release. Do not change it in master.
+version: latest
 description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
              logs for Kubernetes cluster.
 keywords:
@@ -20,4 +20,3 @@ maintainers:
   email: sergey.gnuskov@flant.com
 - name: Ivan Mikheykin
   email: ivan.mikheykin@flant.com
-
