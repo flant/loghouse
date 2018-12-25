@@ -1,5 +1,6 @@
 window.available_keys = {};
 window.hidden_keys = [];
+window.preForValues = false;
 
 function commonTimestamp() {
   return moment().format('YYYY-MM-DD HH:mm:ss');
@@ -44,6 +45,7 @@ function queryOlder() {
           updateAvailableKeys();
           updateAvailableKeysStyles();
           updateSelectedKeysClasses();
+          updateValuesClasses($resultContainer);
           oldest = $resultContainer.find('div:last-child .logs-result__entry-timestamp').text();
           $resultContainer.data('entry-oldest', oldest);
         } else {
@@ -84,6 +86,7 @@ function queryNewer() {
           updateAvailableKeys();
           updateAvailableKeysStyles();
           updateSelectedKeysClasses();
+          updateValuesClasses($resultContainer);
           newest = $resultContainer.find('div:first-child .logs-result__entry-timestamp').text();
           $resultContainer.data('entry-newest', newest);
         } else {
@@ -279,6 +282,17 @@ function updateSelectedKeysUri() {
   history.pushState({}, 'Loghouse', uri);
 }
 
+function updateValuesClasses(res) {
+  if (!res) {
+    res = $('.logs-result__container');
+  } 
+  if (window.preForValues) {
+    res.find('.logs-result__entry-value').addClass('logs-result_values_pre');
+  } else {
+    res.find('.logs-result__entry-value').removeClass('logs-result_values_pre');
+  }
+}
+
 $(document).ready(function() {
 
   // Lib inits
@@ -382,6 +396,13 @@ $(document).ready(function() {
     $playBtn.removeClass('active').removeClass('disabled');
     queryNewerPause();
   });
+
+  // Pre for values
+  var $preForValuesBtn = $("#preForValues");
+  $preForValuesBtn.on('click', function() {
+    window.preForValues = !window.preForValues;
+    updateValuesClasses();
+  })
 
   // Breakpoint
   var $breakpointBtn = $('#breakpointBtn');

@@ -86,3 +86,7 @@
   color: #CC9999;
   background: #555;
 }
+
+.logs-result_values_pre {
+  white-space: pre;
+}
