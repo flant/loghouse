@@ -24,12 +24,12 @@ SearchParams.prototype.initEvents = function() {
       search_params.closeAll();
     }
   });
-  $(document).on('click', function() {
-    event.stopPropagation();
+  $(document).on('click', function(e) {
+    e.stopPropagation();
   });
   $.each(this.params, function(key, param) {
-    param.btn.on('click', function() {
-      event.stopPropagation();
+    param.btn.on('click', function(e) {
+      e.stopPropagation();
       if (param.is_open) {
         param.close();
       } else {
@@ -37,8 +37,8 @@ SearchParams.prototype.initEvents = function() {
         param.open();
       }
     });
-    param.popover.on('click', function() {
-      event.stopPropagation();
+    param.popover.on('click', function(e) {
+      e.stopPropagation();
     });
   });
 }
