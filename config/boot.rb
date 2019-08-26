@@ -18,6 +18,7 @@ require 'logs_tables'
 require 'loghouse_query'
 
 require 'clickhouse_time_zone_patch'
+require 'clickhouse_read_timeout_patch'
 require_relative 'clickhouse'
 
 require 'datepicker_presets'

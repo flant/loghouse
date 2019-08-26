@@ -20,7 +20,6 @@ task :create_logs_tables do
   end
 end
 
-
 task :insert_fixtures do
   tables_ranges = LogsTables.split_range_to_tables((LogsTables::PARTITION_PERIOD * 3).hours.ago.utc, Time.zone.now.utc)
 
