@@ -1,18 +1,9 @@
-FROM debian:jessie
+FROM nginx:stable-alpine
 
-ENV APP_HOME /usr/src/app
+ENV APP_HOME /usr/share/nginx/html
+ENV TMP_DIR /tmp/tabix
 ENV DEFAULT /etc/nginx/sites-enabled/default
-
-RUN apt-get update && apt-get install -y nginx-full nginx libssl-dev
-RUN apt-get install -y openssl
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+ENV TABIX_RELEASE 18.07.1
 
 WORKDIR $APP_HOME
-ADD ./docker $APP_HOME
-ADD ./build /var/www/html
-
-RUN rm $DEFAULT
-RUN mv default $DEFAULT
-
-
-CMD if [ ! -z "$PASSWORD" ]; then sh -c "echo -n '$USER:$(openssl passwd -crypt $PASSWORD)\n' >> /etc/nginx/.htpasswd" ; else mv -f $APP_HOME/default_no_pass $DEFAULT ; fi && ./start.sh
+RUN mkdir ${TMP_DIR} && wget https://github.com/tabixio/tabix/archive/${TABIX_RELEASE}.tar.gz -O ${TMP_DIR}/tabix.tar.gz && cd ${TMP_DIR} && tar -xvf tabix.tar.gz && rm -rf ${APP_HOME}/* && mv ${TMP_DIR}/tabix-${TABIX_RELEASE}/build/* ${APP_HOME} && rm -rf ${TMP_DIR}
