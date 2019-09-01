@@ -50,7 +50,9 @@ data:
     <yandex>
         <profiles>
             <default>
-                <max_memory_usage>10000000000</max_memory_usage>
+                <max_memory_usage>{{ mul .Values.clickhouse.memlimits 1000000 }}</max_memory_usage>
+                <max_memory_usage_for_user>{{ mul .Values.clickhouse.memlimits 1000000 }}</max_memory_usage_for_user>
+                <max_memory_usage_for_all_queries>{{ mul .Values.clickhouse.memlimits 1000000 }}</max_memory_usage_for_all_queries>
                 <use_uncompressed_cache>0</use_uncompressed_cache>
                 <load_balancing>random</load_balancing>
             </default>

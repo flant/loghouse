@@ -77,6 +77,8 @@ clickhouse:
   #node_selector:
   #  key: 'node-role/logging'
   #  value: 'clickhouse'
+  # Setup memory limit for clickhouse
+  memlimits: 7000
   server: clickhouse
   port: 9000
   user: default
