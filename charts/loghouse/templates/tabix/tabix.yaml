@@ -10,6 +10,9 @@ spec:
   replicas: 1
   strategy:
     type: Recreate
+  selector:
+    matchLabels:
+      component: tabix
   template:
     metadata:
       labels:
