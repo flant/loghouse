@@ -15,9 +15,10 @@ spec:
     metadata:
       labels:
         k8s-app: fluentd
-        kubernetes.io/cluster-service: "true"
+  #      kubernetes.io/cluster-service: "true"
       annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
+ #       scheduler.alpha.kubernetes.io/critical-pod: ''
+        checksum/config: {{ include (print $.Template.BasePath "/fluentd/fluentd-configmap.yaml") . | sha256sum }}
     spec:
       serviceAccountName: fluentd
       containers:
@@ -25,6 +26,8 @@ spec:
         image: flant/loghouse-fluentd:{{ template "app.version" $ }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         env:
+        - name: TD_AGENT_OPTIONS
+          value: -vv
         - name: FLUENTD_ARGS
           value: --no-supervisor -q
         - name: CLICKHOUSE_SERVER
