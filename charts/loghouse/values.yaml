@@ -41,6 +41,7 @@ enable_tabix: true
 
 # Select storage for loghouse data
 # If neither hostpath nor pvc section is defined emptyDir will be used
+# pvc takes precedence over hostpath
 storage:
 #  hostpath: /mnt/loghouse
 #  pvc:
