@@ -43,7 +43,7 @@ spec:
   - {{ .Values.ingress.clickhouse.host }}
   issuerRef:
     kind: ClusterIssuer
-    name: selfsigned
-  secretName: {{ .Values.ingress.clickhouse.tls_secret_name}}
+    name:  {{ .Values.ingress.clickhouse.tls_issuer }}
+  secretName: {{ .Values.ingress.clickhouse.tls_secret_name }}
 {{- end }}
 {{- end }}

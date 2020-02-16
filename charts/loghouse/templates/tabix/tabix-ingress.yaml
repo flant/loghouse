@@ -46,7 +46,7 @@ spec:
   - {{ .Values.ingress.tabix.host }}
   issuerRef:
     kind: ClusterIssuer
-    name: selfsigned
-  secretName: {{ .Values.ingress.tabix.tls_secret_name}}
+    name:  {{ .Values.ingress.clickhouse.tls_secret_name }}
+  secretName: {{ .Values.ingress.tabix.tls_secret_name }}
 {{- end }}
 {{- end }}
