@@ -70,15 +70,16 @@ spec:
           runAsUser: 101
           fsGroup: 101
       volumes:
+{{- if not .Values.storage.pvc }}
 {{- if .Values.storage.hostpath }}
       - name: data
         hostPath:
           path: {{ .Values.storage.hostpath }}
-{{- end }}
-{{- if .Values.storage.emptyDir }}
+{{- else }}
       - name: data
         emptyDir:
           sizeLimit: "0"
+{{- end }}
 {{- end }}
       - name: config-volume
         configMap:
@@ -92,11 +93,5 @@ spec:
   volumeClaimTemplates:
   - metadata:
       name: data
-    spec:
-      accessModes:
-      - {{ .Values.storage.pvc.accessMode }}
-      storageClassName: {{ .Values.storage.pvc.storageClassName }}
-      resources:
-        requests:
-          storage: {{ .Values.storage.pvc.size }}
+    {{ include "includeByName" (dict "root" .Values.storage.pvc "name" "spec") | indent 4 | trim }}
 {{- end }}

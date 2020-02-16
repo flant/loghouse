@@ -36,13 +36,18 @@ enable_tabix: true
 # Docker custom path to get logs with fluentd. If docker installed on separate disk add --set to mount this path.
 # docker_path: /data/docker
 
+# Select storage for loghouse data
+# If neither hostpath nor pvc section is defined emptyDir will be used
 storage:
-  emptyDir: false
-  pvc:
-    name: data
-    accessMode: ReadWriteOnce
-    size: 100Gi
-    storageClassName: rbd
+#  hostpath: /mnt/loghouse
+#  pvc:
+#    spec:
+#      accessModes:
+#      - ReadWriteOnce
+#      storageClassName: rbd
+#      resources:
+#        requests:
+#          storage: 100Gi
 
 # Custom partitioning, using LOGS_TABLES_PARTITION_PERIOD variable, in hours.
 # 24 must be divisible by this value for now, so tables always can start with 00 hours (it's skipped for 24). Default is 24, as it was.
