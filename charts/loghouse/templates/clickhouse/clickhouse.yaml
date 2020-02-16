@@ -66,6 +66,8 @@ spec:
           mountPath: /etc/clickhouse-server/
         - name: initdb
           mountPath: /docker-entrypoint-initdb.d/
+        - name: working-dir
+          mountPath: /nonexistent/
         securityContext:
           runAsUser: 101
           fsGroup: 101
@@ -81,6 +83,8 @@ spec:
           sizeLimit: "0"
 {{- end }}
 {{- end }}
+      - name: working-dir
+        emptyDir: {}
       - name: config-volume
         configMap:
           name: clickhouse-config
