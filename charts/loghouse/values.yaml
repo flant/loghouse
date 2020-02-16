@@ -10,9 +10,6 @@
 # result: YWRtaW46JGFwcjEkMzdxSEwvTVIkcEFvdzEzZDUwMkd5VFc2VDNlQmJiMAoK
 auth: YWRtaW46JGFwcjEkelhESkU5YTkkRkU0OFdnZlBMZlJJQjk0bVhXZVprMAoK
 
-# Password for default user in clickhouse
-clickhouse_pass_original: password
-
 # Settings for ingress
 ingress:
   enable: true
@@ -28,58 +25,46 @@ ingress:
   tabix:
     host: tabix.domain.com
     path: "/"
-    tls_secret_name: loghouse
+    tls_secret_name: tabix
 #  annotations:
 #  - 'kubernetes.io/ingress.class: traefik'
 #  - 'traefik.frontend.passHostHeader: "true"'
 
 # Enable tabix
-enable_tabix: false
+enable_tabix: true
 
 # Docker custom path to get logs with fluentd. If docker installed on separate disk add --set to mount this path.
 # docker_path: /data/docker
 
 storage:
-  emptyDir: true
-  # You can use some storageClass or hostpath for clickhouse data storage
-  # hostpath: /data
-  # OR:
-  # pvc:
-  #   name: clickhouse
-  #   accessMode: ReadWriteOnce
-  #   size: 20Gi
-  #   storageClassName: slow
+  emptyDir: false
+  pvc:
+    name: data
+    accessMode: ReadWriteOnce
+    size: 100Gi
+    storageClassName: rbd
 
 # Custom partitioning, using LOGS_TABLES_PARTITION_PERIOD variable, in hours.
 # 24 must be divisible by this value for now, so tables always can start with 00 hours (it's skipped for 24). Default is 24, as it was.
 partition_period: 1
 
-
-# If you want use nodeSelector for install clickhouse, loghouse on specific node
-# nodeSelector:
-#   key: 'node-role/logging'
-#   value: ''
-
-# If you want use taint for install only clickhouse, loghouse on specific node
-# tolerations:
-#   key: 'node-role/logging'
-#   operator: 'Exists'
-#   value: 'logging'
-#   effect: 'NoSchedule'
-
 # If you not want install fluentd on master node
-install_master: false
+install_master: true
 
 imagePullPolicy: Always
 
 clickhouse:
-  # use nodeSelector for clickhouse to limit clickhouse nodes.
-  #node_selector:
-  #  key: 'node-role/logging'
-  #  value: 'clickhouse'
+#  tolerations:
+#  - key: dedicated.flant.com
+#    operator: Equal
+#    value: logging
+#    effect: NoExecute
+#  nodeSelector:
+#    node-role.flant.com/logging: ""
   server: clickhouse
   port: 9000
   user: default
+#  password: H8BKuuQH51fsLvow
   db: logs
   table: logs
   resources:
@@ -88,28 +73,44 @@ clickhouse:
       memory: 8Gi
     requests:
       cpu: 1
-      memory: 4Gi
+      memory: 8Gi
+
 fluentd:
   resources:
     limits:
       cpu: 1
       memory: 512Mi
     requests:
-      cpu: 0.5
+      cpu: 0.1
       memory: 256Mi
+
 loghouse:
+#  tolerations:
+#  - key: dedicated.flant.com
+#    operator: Equal
+#    value: logging
+#    effect: NoExecute
+#  nodeSelector:
+#    node-role.flant.com/logging: ""
   resources:
     limits:
       cpu: 1
-      memory: 1Gi
+      memory: 2Gi
     requests:
-      cpu: 0.5
-      memory: 256Mi
+      cpu: 0.1
+      memory: 2Gi
 tabix:
+#  tolerations:
+#  - key: dedicated.flant.com
+#    operator: Equal
+#    value: logging
+#    effect: NoExecute
+#  nodeSelector:
+#    node-role.flant.com/logging: ""
   resources:
     limits:
-      memory: 512Mi
+      memory: 1Gi
       cpu: 0.5
     requests:
-      memory: 256Mi
-      cpu: 0.2
+      memory: 1Gi
+      cpu: 0.1

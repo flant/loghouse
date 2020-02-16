@@ -1,0 +1,10 @@
+kind: ConfigMap
+apiVersion: v1
+data:
+  01_create_database.sql: |-
+    CREATE DATABASE IF NOT EXISTS {{ .Values.clickhouse.db | quote }};
+metadata:
+  name: clickhouse-initdb
+  namespace: {{ .Release.Namespace }}
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile

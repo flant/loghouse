@@ -21,3 +21,10 @@ Chart.Version is set to latest in master branch. helm package rewrite it to tag 
 {{- .Chart.Version -}}
 {{- end -}}
 {{- end -}}
+
+{{- define "includeByName" -}}
+{{- $val := (pluck .name .root | first) -}}
+{{- if $val -}}
+{{- dict .name $val | toYaml -}}
+{{- end -}}
+{{- end -}}

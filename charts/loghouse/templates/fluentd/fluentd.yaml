@@ -31,10 +31,6 @@ spec:
           value: {{ .Values.clickhouse.server | quote }}
         - name: CLICKHOUSE_PORT
           value: {{ .Values.clickhouse.port | quote }}
-        - name: CLICKHOUSE_USER
-          value: {{ .Values.clickhouse.user | quote }}
-        - name: CLICKHOUSE_PASS
-          value: {{ .Values.clickhouse_pass_original | quote }}
         - name: CLICKHOUSE_DB
           value: {{ .Values.clickhouse.db | quote }}
         - name: K8S_LOGS_TABLE
@@ -43,6 +39,14 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
+        - name: CLICKHOUSE_PASS
+          valueFrom:
+            secretKeyRef:
+              name: clickhouse
+              key: CLICKHOUSE_PASSWORD
+        envFrom:
+        - secretRef:
+            name: clickhouse
         resources:
           limits:
             memory: {{ .Values.fluentd.resources.limits.memory }}

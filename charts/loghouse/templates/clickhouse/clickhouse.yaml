@@ -1,42 +1,35 @@
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: clickhouse-server
   namespace: {{ .Release.Namespace }}
 spec:
-  revisionHistoryLimit: 1
-  replicas: 1
-  strategy:
-    type: Recreate
   selector:
     matchLabels:
       component: clickhouse
+  replicas: 1
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         component: clickhouse
     spec:
-      securityContext:
-        runAsUser: 105
-        fsGroup: 106
       initContainers:
-      - name: config
-        image: alpine:3.6
+      - name: chown
+        image: busybox
         command:
-          - '/bin/sh'
-          - '-c'
-          - cd /etc/clickhouse-server;
-            ln -sf /etc/clickhouse-server-config/config.xml;
-            ln -sf /etc/clickhouse-server-config/users.xml
+        - chown
+        - -R
+        - 101:101
+        - /var/lib/clickhouse
         volumeMounts:
-        - mountPath: /etc/clickhouse-server/
-          name: config-directory
-        - mountPath: /etc/clickhouse-server-config/
-          name: config-volume
+        - name: data
+          mountPath: /var/lib/clickhouse/
       containers:
       - name: clickhouse
-        image: flant/loghouse-clickhouse:{{ template "app.version" $ }}
+        image: yandex/clickhouse-server:20.1
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         ports:
         - name: http
@@ -48,14 +41,13 @@ spec:
           value: {{ .Values.clickhouse.server | quote }}
         - name: CLICKHOUSE_PORT
           value: {{ .Values.clickhouse.port | quote }}
-        - name: CLICKHOUSE_USER
-          value: {{ .Values.clickhouse.user | quote }}
-        - name: CLICKHOUSE_PASS
-          value: {{ .Values.clickhouse_pass_original | quote }}
         - name: CLICKHOUSE_DB
           value: {{ .Values.clickhouse.db | quote }}
         - name: K8S_LOGS_TABLE
           value: {{ .Values.clickhouse.table | quote }}
+        envFrom:
+        - secretRef:
+            name: clickhouse
         livenessProbe:
           timeoutSeconds: 1
           initialDelaySeconds: 30
@@ -66,66 +58,45 @@ spec:
           initialDelaySeconds: 5
           tcpSocket:
             port: 9000
-        resources:
-          requests:
-            cpu: {{ .Values.clickhouse.resources.requests.cpu }}
-            memory: {{ .Values.clickhouse.resources.requests.memory }}
-          limits:
-            cpu: {{ .Values.clickhouse.resources.limits.cpu }}
-            memory: {{ .Values.clickhouse.resources.limits.memory }}
+        {{ include "includeByName" (dict "root" .Values.clickhouse "name" "resources") | indent 8 | trim }}
         volumeMounts:
-{{- if .Values.storage.hostpath }}
-          - name: hostpath
-            mountPath: /var/lib/clickhouse/
-{{- end }}
-{{- if .Values.storage.pvc }}
-          - name: {{ .Values.storage.pvc.name }}
-            mountPath: /var/lib/clickhouse/
-{{- end }}
-{{- if .Values.storage.emptyDir }}
-          - name: data
-            mountPath: /var/lib/clickhouse/
-{{- end }}
-          - mountPath: /etc/clickhouse-server/
-            name: config-directory
-          - mountPath: /etc/clickhouse-server-config/
-            name: config-volume
+        - name: data
+          mountPath: /var/lib/clickhouse/
+        - name: config-volume
+          mountPath: /etc/clickhouse-server/
+        - name: initdb
+          mountPath: /docker-entrypoint-initdb.d/
+        securityContext:
+          runAsUser: 101
+          fsGroup: 101
       volumes:
 {{- if .Values.storage.hostpath }}
-        - name: hostpath
-          hostPath:
-            path: {{ .Values.storage.hostpath }}
-{{- end }}
-{{- if .Values.storage.pvc }}
-        - name: {{ .Values.storage.pvc.name }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.storage.pvc.name }}
+      - name: data
+        hostPath:
+          path: {{ .Values.storage.hostpath }}
 {{- end }}
 {{- if .Values.storage.emptyDir }}
-        - name: data
-          emptyDir:
-            sizeLimit: "0"
+      - name: data
+        emptyDir:
+          sizeLimit: "0"
 {{- end }}
-        - name: config-volume
-          configMap:
-            name: clickhouse-config
-        - name: config-directory
-          emptyDir:
-            sizeLimit: "0"
-
-{{- if .Values.tolerations }}
-      tolerations:
-      - operator: {{ .Values.tolerations.operator | quote }}
-        key: {{ .Values.tolerations.key | quote }}
-{{- if .Values.tolerations.value }}
-        value: {{ .Values.tolerations.value | quote }}
+      - name: config-volume
+        configMap:
+          name: clickhouse-config
+      - name: initdb
+        configMap:
+          name: clickhouse-initdb
+      {{ include "includeByName" (dict "root" .Values.clickhouse "name" "nodeSelector") | indent 6 | trim }}
+      {{ include "includeByName" (dict "root" .Values.clickhouse "name" "tolerations") | indent 6 | trim }}
+{{- if .Values.storage.pvc }}
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - {{ .Values.storage.pvc.accessMode }}
+      storageClassName: {{ .Values.storage.pvc.storageClassName }}
+      resources:
+        requests:
+          storage: {{ .Values.storage.pvc.size }}
 {{- end }}
-{{- if .Values.tolerations.effect }}
-        effect: {{ .Values.tolerations.effect | quote }}
-{{- end }}
-{{- end }}
-{{- if .Values.clickhouse.node_selector }}
-      nodeSelector:
-        {{ .Values.clickhouse.node_selector.key }}: {{ .Values.clickhouse.node_selector.value }}
-{{- end }}
-

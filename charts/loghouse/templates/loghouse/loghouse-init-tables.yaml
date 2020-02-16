@@ -27,10 +27,6 @@ spec:
           value: {{ now | quote }}
         - name: CLICKHOUSE_URL
           value: "clickhouse:8123"
-        - name: CLICKHOUSE_USERNAME
-          value: {{ .Values.clickhouse.user | quote }}
-        - name: CLICKHOUSE_PASSWORD
-          value: {{ .Values.clickhouse_pass_original | quote }}
         - name: CLICKHOUSE_DATABASE
           value: {{ .Values.clickhouse.db | quote }}
         - name: CLICKHOUSE_LOGS_TABLE
@@ -39,3 +35,11 @@ spec:
           value: {{ .Values.partition_period | quote }}
         - name: RACK_ENV
           value: "production"
+        - name: CLICKHOUSE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: clickhouse
+              key: CLICKHOUSE_USER
+        envFrom:
+        - secretRef:
+            name: clickhouse

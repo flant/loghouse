@@ -27,13 +27,18 @@ spec:
                 value: {{ now | quote }}
               - name: CLICKHOUSE_URL
                 value: "clickhouse:8123"
-              - name: CLICKHOUSE_USERNAME
-                value: {{ .Values.clickhouse.user | quote }}
-              - name: CLICKHOUSE_PASSWORD
-                value: {{ .Values.clickhouse_pass_original | quote }}
               - name: CLICKHOUSE_DATABASE
                 value: {{ .Values.clickhouse.db | quote }}
               - name: LOGS_TABLES_PARTITION_PERIOD
                 value: {{ .Values.partition_period | quote }}
               - name: CLICKHOUSE_LOGS_TABLE
                 value: {{ .Values.clickhouse.table | quote }}
+              - name: CLICKHOUSE_USERNAME
+                valueFrom:
+                  secretKeyRef:
+                    name: clickhouse
+                    key: CLICKHOUSE_USER
+              envFrom:
+              - secretRef:
+                  name: clickhouse
+

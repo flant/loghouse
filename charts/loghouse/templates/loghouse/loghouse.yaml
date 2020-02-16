@@ -5,13 +5,13 @@ metadata:
   name: loghouse
   namespace: {{ .Release.Namespace }}
 spec:
+  selector:
+    matchLabels:
+      component: loghouse
   revisionHistoryLimit: 1
   replicas: 1
   strategy:
     type: Recreate
-  selector:
-    matchLabels:
-      component: loghouse
   template:
     metadata:
       labels:
@@ -51,10 +51,6 @@ spec:
           value: {{ now | quote }}
         - name: CLICKHOUSE_URL
           value: "clickhouse:8123"
-        - name: CLICKHOUSE_USERNAME
-          value: {{ .Values.clickhouse.user | quote }}
-        - name: CLICKHOUSE_PASSWORD
-          value: {{ .Values.clickhouse_pass_original | quote }}
         - name: CLICKHOUSE_DATABASE
           value: {{ .Values.clickhouse.db | quote }}
         - name: CLICKHOUSE_LOGS_TABLE
@@ -65,6 +61,14 @@ spec:
           value: "/config/user.conf"
         - name: RACK_ENV
           value: "production"
+        - name: CLICKHOUSE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: clickhouse
+              key: CLICKHOUSE_USER
+        envFrom:
+        - secretRef:
+            name: clickhouse
         volumeMounts:
         - name: user-config
           mountPath: /config
@@ -74,13 +78,7 @@ spec:
         readinessProbe:
           tcpSocket:
             port: 9292
-        resources:
-          requests:
-            memory: {{ .Values.loghouse.resources.requests.memory }}
-            cpu: {{ .Values.loghouse.resources.requests.cpu }}
-          limits:
-            memory: {{ .Values.loghouse.resources.limits.memory }}
-            cpu: {{ .Values.loghouse.resources.limits.cpu }}
+        {{ include "includeByName" (dict "root" .Values.loghouse "name" "resources") | indent 8 | trim }}
       volumes:
       - name: user-config
         configMap:
@@ -91,18 +89,5 @@ spec:
       - name: nginx-conf
         configMap:
           name: loghouse-nginx-conf
-{{- if .Values.tolerations }}
-      tolerations:
-      - operator: {{ .Values.tolerations.operator | quote }}
-        key: {{ .Values.tolerations.key | quote }}
-{{- if .Values.tolerations.value }}
-        value: {{ .Values.tolerations.value | quote }}
-{{- end }}
-{{- if .Values.tolerations.effect }}
-        effect: {{ .Values.tolerations.effect | quote }}
-{{- end }}
-{{- end }}
-{{- if .Values.nodeSelector }}
-      nodeSelector:
-        {{ .Values.nodeSelector.key }}: {{ .Values.nodeSelector.value }}
-{{- end }}
+      {{ include "includeByName" (dict "root" .Values.clickhouse "name" "nodeSelector") | indent 6 | trim }}
+      {{ include "includeByName" (dict "root" .Values.clickhouse "name" "tolerations") | indent 6 | trim }}
