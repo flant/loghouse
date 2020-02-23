@@ -70,10 +70,13 @@ clickhouse:
 #    effect: NoExecute
 #  nodeSelector:
 #    node-role.flant.com/logging: ""
+# Setup memory limit for clickhouse in MB
+#  memlimits: 7000
+# Setup clickhouse password
+#  password: supersecret
   server: clickhouse
   port: 9000
   user: default
-#  password: H8BKuuQH51fsLvow
   db: logs
   table: logs
   resources:

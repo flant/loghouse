@@ -1,5 +1,5 @@
 {{- if .Values.ingress.enable }}
-apiVersion: networking.k8s.io/v1beta1 
+apiVersion: {{ template "Ingress.apiVersion" $ }}
 kind: Ingress
 metadata:
   name: loghouse
