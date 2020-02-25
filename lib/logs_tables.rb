@@ -18,21 +18,14 @@ module LogsTables
 
   module_function
 
-  def create_partition_table(time = Tima.zone.now, force: false)
-    engine = "MergeTree(date, (#{TIMESTAMP_ATTRIBUTE}, #{NSEC_ATTRIBUTE}), 32768)"
-    table_name = partition_table_name(time)
-
-    create_table table_name, engine, force: force
-  end
-
   def create_merge_table(force: false)
-    engine = "Merge(#{DATABASE}, '^#{TABLE_NAME}')"
+    engine = "MergeTree() PARTITION BY (mdate, toHour(msec)) ORDER BY (msec) PRIMARY KEY (msec, namespace, container_name) SETTINGS index_granularity=32768"
     table_name = TABLE_NAME
 
     create_table table_name, engine, force: force
   end
 
-  def partition_table_name(time = Time.now.utc)
+  def partition_name(time = Time.now.utc)
     time = round_time_to_partition(time)
 
     "#{TABLE_NAME}#{time.strftime(PARTITION_PERIOD < 24 ? '%Y%m%d%H' : '%Y%m%d')}" # a little dirty

@@ -9,15 +9,6 @@ task :create_logs_tables do
   force = TRUE_VALUES.include?(ENV['FORCE'])
 
   LogsTables.create_merge_table(force: force)
-
-  time_to = 1.week.from_now.utc
-  time = LogsTables.round_time_to_partition(Time.zone.now)
-
-  while time <= time_to do
-    LogsTables.create_partition_table(time, force: force)
-
-    time = LogsTables.next_time_partition(time)
-  end
 end
 
 task :insert_fixtures do
