@@ -6,8 +6,6 @@ module LogsTables
   RETENTION_PERIOD    = ENV.fetch('LOGS_TABLES_RETENTION_PERIOD')   { '24' }.to_i
   HAS_BUFFER          = ENV.fetch('LOGS_TABLES_HAS_BUFFER')         { 'true' }
 
-  raise "24 must be divisible by PARTITION_PERIOD" unless (24 % PARTITION_PERIOD).zero?
-
   KUBERNETES_ATTRIBUTES = {
     source: 'String',
     namespace: 'String',
@@ -27,7 +25,7 @@ module LogsTables
   end
 
   def create_storage_table(force: false)
-    engine = "MergeTree() PARTITION BY (mdate, toHour(msec)) ORDER BY (msec) PRIMARY KEY (msec, namespace, container_name) TTL mdate + INTERVAL #{RETENTION_PERIOD} DAY DELETE SETTINGS index_granularity=32768"
+    engine = "MergeTree() PARTITION BY (date, toHour(#{TIMESTAMP_ATTRIBUTE})) ORDER BY (#{TIMESTAMP_ATTRIBUTE}, namespace, container_name) TTL date + INTERVAL #{RETENTION_PERIOD} DAY DELETE SETTINGS index_granularity=32768"
     table_name = TABLE_NAME
 
     create_table table_name, engine, force: force
