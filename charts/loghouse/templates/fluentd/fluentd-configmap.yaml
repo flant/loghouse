@@ -6,7 +6,7 @@ data:
     # Example:
     # {"log":"[info:2016-02-16T16:04:05.930-08:00] Some log text here\n","stream":"stdout","time":"2016-02-17T00:04:05.931087621Z"}
     <source>
-      type tail
+      @type tail
       path /var/log/containers/*.log
       pos_file /var/log/containers.log.pos
       time_format %Y-%m-%dT%H:%M:%S.%NZ
@@ -18,7 +18,7 @@ data:
   system.input.conf: |-
     # Logs from systemd-journal for interesting services.
     <source>
-      type systemd
+      @type systemd
       filters [{ "_SYSTEMD_UNIT": "docker.service" }]
       pos_file /var/log/gcp-journald-docker.pos
       read_from_head true
@@ -26,7 +26,7 @@ data:
     </source>
 
     <source>
-      type systemd
+      @type systemd
       filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
       pos_file /var/log/gcp-journald-kubelet.pos
       read_from_head true
@@ -36,7 +36,7 @@ data:
   forward.input.conf: |-
     # Takes the messages sent over TCP
     <source>
-      type forward
+      @type forward
     </source>
   monitoring.conf: |-
     # Prometheus Exporter Plugin
@@ -75,7 +75,7 @@ data:
   output.conf: |-
     # Enriches records with Kubernetes metadata
     <filter kubernetes.**>
-      type kubernetes_metadata
+      @type kubernetes_metadata
       merge_json_log false
     </filter>
 
@@ -142,7 +142,7 @@ data:
  
     <match **>
       @type exec
-      command bash /usr/local/bin/insert_ch.sh
+      command bash /usr/local/bin/insert_ch.sh {{ template "fluentdInsertTable" $ }}
       format json
       buffer_type memory
       buffer_chunk_limit 64m

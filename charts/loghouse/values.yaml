@@ -55,7 +55,7 @@ storage:
 
 # Custom partitioning, using LOGS_TABLES_PARTITION_PERIOD variable, in hours.
 # 24 must be divisible by this value for now, so tables always can start with 00 hours (it's skipped for 24). Default is 24, as it was.
-partition_period: 1
+retention_period: 1
 
 # If you not want install fluentd on master node
 install_master: true
@@ -74,11 +74,14 @@ clickhouse:
 #  memlimits: 7000
 # Setup clickhouse password
 #  password: supersecret
+  image: "yandex/clickhouse-server"
+  version: "20.1"
   server: clickhouse
   port: 9000
   user: default
   db: logs
   table: logs
+  has_buffer: true
   resources:
     limits:
       cpu: 4
@@ -88,6 +91,7 @@ clickhouse:
       memory: 8Gi
 
 fluentd:
+  image: "flant/loghouse-fluentd"
   resources:
     limits:
       cpu: 1
@@ -97,6 +101,7 @@ fluentd:
       memory: 256Mi
 
 loghouse:
+  image: "flant/loghouse-dashboard"
 #  tolerations:
 #  - key: dedicated.flant.com
 #    operator: Equal
@@ -109,9 +114,11 @@ loghouse:
       cpu: 1
       memory: 2Gi
     requests:
-      cpu: 0.1
+      cpu: 1
       memory: 2Gi
+
 tabix:
+  image: "flant/loghouse-tabix"
 #  tolerations:
 #  - key: dedicated.flant.com
 #    operator: Equal
@@ -121,8 +128,8 @@ tabix:
 #    node-role.flant.com/logging: ""
   resources:
     limits:
-      memory: 1Gi
+      memory: 64Mi
       cpu: 0.5
     requests:
-      memory: 1Gi
+      memory: 64Mi
       cpu: 0.1

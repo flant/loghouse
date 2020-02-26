@@ -3,7 +3,8 @@ module LogsTables
   TABLE_NAME          = ENV.fetch('CLICKHOUSE_LOGS_TABLE')          { 'logs' }
   TIMESTAMP_ATTRIBUTE = ENV.fetch('CLICKHOUSE_TIMESTAMP_ATTRIBUTE') { 'timestamp' }
   NSEC_ATTRIBUTE      = ENV.fetch('CLICKHOUSE_NSEC_ATTRIBUTE')      { 'nsec' }
-  PARTITION_PERIOD    = ENV.fetch('LOGS_TABLES_PARTITION_PERIOD')   { '24' }.to_i
+  RETENTION_PERIOD    = ENV.fetch('LOGS_TABLES_RETENTION_PERIOD')   { '24' }.to_i
+  HAS_BUFFER          = ENV.fetch('LOGS_TABLES_HAS_BUFFER')         { 'true' }
 
   raise "24 must be divisible by PARTITION_PERIOD" unless (24 % PARTITION_PERIOD).zero?
 
@@ -18,8 +19,15 @@ module LogsTables
 
   module_function
 
-  def create_merge_table(force: false)
-    engine = "MergeTree() PARTITION BY (mdate, toHour(msec)) ORDER BY (msec) PRIMARY KEY (msec, namespace, container_name) SETTINGS index_granularity=32768"
+  def create_buffer_table(force: false)
+    engine = "Buffer(#{DATABASE}, #{TABLE_NAME}, 16, 10, 60, 1000, 10000, 1048576, 10485760)"
+    table_name = "#{TABLE_NAME}_buffer"
+
+    create_table table_name, engine, force: force
+  end
+
+  def create_storage_table(force: false)
+    engine = "MergeTree() PARTITION BY (mdate, toHour(msec)) ORDER BY (msec) PRIMARY KEY (msec, namespace, container_name) TTL mdate + INTERVAL #{RETENTION_PERIOD} DAY DELETE SETTINGS index_granularity=32768"
     table_name = TABLE_NAME
 
     create_table table_name, engine, force: force

@@ -32,6 +32,18 @@ Ingress api version
 {{- end -}}
 
 {{/*
+Fluentd insert table
+*/}}
+{{- define "fluentdInsertTable" -}}
+{{- if and .Values.clickhouse.has_buffer -}}
+{{- printf "%s_buffer" .Values.clickhouse.table -}}
+{{- else -}}
+{{- .Values.clickhouse.table -}}
+{{- end -}}
+{{- end -}}
+
+
+{{/*
 Images version. This version can be set from cli: --set version=latest or --set version=0.2.1
 Chart.Version is set to latest in master branch. helm package rewrite it to tag value for releases.
 */}}

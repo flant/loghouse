@@ -1,16 +1,16 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Chart.Name }}-init-tables
+  name: {{ .Chart.Name }}-init-db
   namespace: {{ .Release.Namespace }}
   annotations:
-    "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/weight": "5"
+    "helm.sh/hook": post-install
+    "helm.sh/weight": "-5"
 spec:
   activeDeadlineSeconds: 600
   template:
     metadata:
-      name: {{ .Chart.Name }}-init-tables
+      name: {{ .Chart.Name }}-init-db
     spec:
       restartPolicy: OnFailure
       initContainers:
@@ -18,15 +18,19 @@ spec:
         image: alpine:3.6
         command: [ '/bin/sh', '-c', 'while ! nc -z clickhouse 8123; do sleep 1; done' ]
       containers:
-      - name: init-tables
-        image: {{ .Values.loghouse.image }}:{{ template "app.version" $ }}
+      - name: init
+        image: {{ .Values.fluentd.image }}:{{ template "app.version" $ }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
-        command: ['/bin/bash', '-l', '-c', 'rake create_logs_tables']
+        command: ['/bin/bash', '-l', '-c', 'clickhouse-client --host=${CLICKHOUSE_URL} --port=9000 --user=${CLICKHOUSE_USERNAME} --password=${CLICKHOUSE_PASSWORD} --query="CREATE DATABASE IF NOT EXISTS ${CLICKHOUSE_DATABASE};"']
         env:
         - name: KUBERNETES_DEPLOYED
           value: {{ now | quote }}
         - name: CLICKHOUSE_URL
-          value: "clickhouse:8123"
+          value: "clickhouse"
+        - name: CLICKHOUSE_USERNAME
+          value: {{ .Values.clickhouse.user | quote }}
+        - name: CLICKHOUSE_PASSWORD
+          value: {{ .Values.clickhouse_pass_original | quote }}
         - name: CLICKHOUSE_DATABASE
           value: {{ .Values.clickhouse.db | quote }}
         - name: CLICKHOUSE_LOGS_TABLE
@@ -37,11 +41,3 @@ spec:
           value: {{ .Values.clickhouse.has_buffer | quote }}
         - name: RACK_ENV
           value: "production"
-        - name: CLICKHOUSE_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: clickhouse
-              key: CLICKHOUSE_USER
-        envFrom:
-        - secretRef:
-            name: clickhouse

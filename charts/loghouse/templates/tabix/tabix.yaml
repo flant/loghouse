@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: tabix
-        image: flant/loghouse-tabix:{{ template "app.version" $ }}
+        image: {{ .Values.tabix.image }}:{{ template "app.version" $ }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         ports:
         - name: http

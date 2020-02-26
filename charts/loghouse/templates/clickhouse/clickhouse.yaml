@@ -9,8 +9,9 @@ spec:
     matchLabels:
       component: clickhouse
   replicas: 1
-  strategy:
-    type: Recreate
+  serviceName: clickhouse
+  updateStrategy:
+    type: OnDelete
   template:
     metadata:
       labels:
@@ -24,12 +25,14 @@ spec:
         - -R
         - 101:101
         - /var/lib/clickhouse
+        securityContext:
+          runAsUser: 0
         volumeMounts:
         - name: data
           mountPath: /var/lib/clickhouse/
       containers:
       - name: clickhouse
-        image: yandex/clickhouse-server:20.1
+        image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.version }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         ports:
         - name: http
@@ -68,9 +71,9 @@ spec:
           mountPath: /docker-entrypoint-initdb.d/
         - name: working-dir
           mountPath: /nonexistent/
-        securityContext:
-          runAsUser: 101
-          fsGroup: 101
+      securityContext:
+        runAsUser: 101
+        fsGroup: 101
       volumes:
 {{- if not .Values.storage.pvc }}
 {{- if .Values.storage.hostpath }}

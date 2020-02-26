@@ -8,14 +8,14 @@ Time.zone = Loghouse::TIME_ZONE
 task :create_logs_tables do
   force = TRUE_VALUES.include?(ENV['FORCE'])
 
-  LogsTables.create_merge_table(force: force)
+  LogsTables.create_storage_table(force: force)
+  LogsTables.create_buffer_table(force: force)
 end
 
 task :insert_fixtures do
   tables_ranges = LogsTables.split_range_to_tables((LogsTables::PARTITION_PERIOD * 3).hours.ago.utc, Time.zone.now.utc)
 
   tables_ranges.each do |table, fromto|
-    LogsTables.create_partition_table(fromto.first) unless ::Clickhouse.connection.exists_table(table)
 
     s = CSV.generate do |csv|
       csv << [LogsTables::TIMESTAMP_ATTRIBUTE, LogsTables::NSEC_ATTRIBUTE, *LogsTables::KUBERNETES_ATTRIBUTES.keys,
