@@ -41,7 +41,7 @@ class LoghouseQuery
       stop_at ||= start_time - LogsTables::PARTITION_PERIOD.hours * MAX_GREEDY_SEARCH_PERIODS
 
       while lim.positive? && (time >= stop_at)
-        table = LogsTables.partition_table_name(time)
+        table = LogsTables::TABLE_NAME
         break unless ::Clickhouse.connection.exists_table(table)
 
         sql = to_clickhouse(table, nil, start_time, lim)
@@ -62,7 +62,7 @@ class LoghouseQuery
       stop_at = Time.zone.now if stop_at > Time.zone.now
 
       while lim.positive? && (time <= stop_at)
-        table = LogsTables.partition_table_name(time)
+        table = LogsTables::TABLE_NAME
         break unless ::Clickhouse.connection.exists_table(table)
 
         sql = to_clickhouse(table, start_time, nil, lim)
