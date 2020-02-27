@@ -38,11 +38,10 @@ class LoghouseQuery
     def result_older(start_time, lim, stop_at = nil)
       result = []
       time = start_time
-      stop_at ||= start_time - LogsTables::PARTITION_PERIOD.hours * MAX_GREEDY_SEARCH_PERIODS
+      stop_at ||= start_time - LogsTables::RETENTION_PERIOD.hours * MAX_GREEDY_SEARCH_PERIODS
 
       while lim.positive? && (time >= stop_at)
         table = LogsTables::TABLE_NAME
-        break unless ::Clickhouse.connection.exists_table(table)
 
         sql = to_clickhouse(table, nil, start_time, lim)
 
@@ -58,12 +57,11 @@ class LoghouseQuery
     def result_newer(start_time, lim, stop_at = nil)
       result = []
       time = start_time
-      stop_at ||= start_time + LogsTables::PARTITION_PERIOD.hours * MAX_GREEDY_SEARCH_PERIODS
+      stop_at ||= start_time + LogsTables::RETENTION_PERIOD.hours * MAX_GREEDY_SEARCH_PERIODS
       stop_at = Time.zone.now if stop_at > Time.zone.now
 
       while lim.positive? && (time <= stop_at)
         table = LogsTables::TABLE_NAME
-        break unless ::Clickhouse.connection.exists_table(table)
 
         sql = to_clickhouse(table, start_time, nil, lim)
 

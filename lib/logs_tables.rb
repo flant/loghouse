@@ -5,7 +5,7 @@ module LogsTables
   NSEC_ATTRIBUTE      = ENV.fetch('CLICKHOUSE_NSEC_ATTRIBUTE')      { 'nsec' }
   RETENTION_PERIOD    = ENV.fetch('LOGS_TABLES_RETENTION_PERIOD')   { '14' }.to_i
   HAS_BUFFER          = ENV.fetch('LOGS_TABLES_HAS_BUFFER')         { 'true' }
-  PARTITION_PERIOD    = ENV.fetch('LOGS_TABLES_PARTITION_PERIOD')   { '24' }.to_i
+  PARTITION_PERIOD    = 1
 
   KUBERNETES_ATTRIBUTES = {
     source: 'String',
@@ -32,12 +32,6 @@ module LogsTables
     create_table table_name, engine, force: force
   end
 
-  def partition_name(time = Time.now.utc)
-    time = round_time_to_partition(time)
-
-    "#{TABLE_NAME}#{time.strftime(PARTITION_PERIOD < 24 ? '%Y%m%d%H' : '%Y%m%d')}" # a little dirty
-  end
-
   def round_time_to_partition(time)
     Time.at(time.to_i / PARTITION_PERIOD.hours * PARTITION_PERIOD.hours).utc
   end
@@ -48,24 +42,6 @@ module LogsTables
 
   def prev_time_partition(time)
     round_time_to_partition(time) - PARTITION_PERIOD.hours
-  end
-
-  def split_range_to_tables(time_from, time_to)
-    table_ranges = {}
-    time = round_time_to_partition time_from
-
-    while time <= time_to do
-      next_partition = next_time_partition(time)
-
-      to = [time_to, next_partition].min
-      from = [time_from, time].max
-
-      table_ranges[partition_table_name(time)] = [from, to]
-
-      time = next_partition
-    end
-
-    table_ranges
   end
 
   private
