@@ -53,9 +53,10 @@ storage:
 #        requests:
 #          storage: 100Gi
 
-# Custom partitioning, using LOGS_TABLES_PARTITION_PERIOD variable, in hours.
-# 24 must be divisible by this value for now, so tables always can start with 00 hours (it's skipped for 24). Default is 24, as it was.
-retention_period: 1
+# Clickhouse TTL using LOGS_TABLES_RETENTION_PERIOD variable, in days.
+# This setting automatically delete logs older then LOGS_TABLES_RETENTION_PERIOD.
+# Default is 14, as it was.
+retention_period: 14
 
 # If you not want install fluentd on master node
 install_master: true
