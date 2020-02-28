@@ -26,7 +26,7 @@ module LogsTables
   end
 
   def create_storage_table(force: false)
-    engine = "MergeTree() PARTITION BY (date, toHour(#{TIMESTAMP_ATTRIBUTE})) ORDER BY (#{TIMESTAMP_ATTRIBUTE}, namespace, container_name) TTL date + INTERVAL #{RETENTION_PERIOD} DAY DELETE SETTINGS index_granularity=32768"
+    engine = "MergeTree() PARTITION BY (date, toHour(#{TIMESTAMP_ATTRIBUTE})) ORDER BY (#{TIMESTAMP_ATTRIBUTE}, #{NSEC_ATTRIBUTE}, namespace, container_name) TTL date + INTERVAL #{RETENTION_PERIOD} DAY DELETE SETTINGS index_granularity=32768"
     table_name = TABLE_NAME
 
     create_table table_name, engine, force: force
@@ -72,7 +72,7 @@ module LogsTables
       (
         `date` Date MATERIALIZED toDate(#{TIMESTAMP_ATTRIBUTE}),
         `#{TIMESTAMP_ATTRIBUTE}` DateTime,
-        `#{NSEC_ATTRIBUTE}` UInt32,
+        `#{NSEC_ATTRIBUTE}` UInt64,
     #{KUBERNETES_ATTRIBUTES.map { |att, type| "    `#{att}` #{type}" }.join(",\n") },
         `labels` Nested (names String, values String),
         `string_fields` Nested (names String, values String),
