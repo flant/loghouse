@@ -1,3 +1,4 @@
+{{- if not .Values.clickhouse.external }}
 {{- if .Values.doDbDeploy -}}
 kind: ConfigMap
 apiVersion: v1
@@ -9,4 +10,5 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
-{{- end -}}
+{{- end }}
+{{- end }}

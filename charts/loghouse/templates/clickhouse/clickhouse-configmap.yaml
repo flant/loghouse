@@ -1,3 +1,4 @@
+{{- if not .Values.clickhouse.external }}
 kind: ConfigMap
 apiVersion: v1
 data:
@@ -86,3 +87,4 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
+{{- end }}

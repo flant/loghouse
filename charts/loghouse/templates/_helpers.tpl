@@ -35,7 +35,7 @@ Ingress api version
 Fluentd insert table
 */}}
 {{- define "fluentdInsertTable" -}}
-{{- if and .Values.clickhouse.has_buffer -}}
+{{- if and .Values.clickhouse.hasBuffer -}}
 {{- printf "%s_buffer" .Values.clickhouse.table -}}
 {{- else -}}
 {{- .Values.clickhouse.table -}}

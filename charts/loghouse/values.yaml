@@ -79,14 +79,20 @@ clickhouse:
 #  memlimits: 7000
 # Setup clickhouse password
 #  password: supersecret
+# Use external clickhouse
+#  externalEndpoints:
+#  - 10.0.0.1
+#  - 10.0.0.2
+#  - 10.0.0.3
   image: "yandex/clickhouse-server"
   version: "20.1"
+  external: false
   server: clickhouse
   port: 9000
   user: default
   db: logs
   table: logs
-  has_buffer: true
+  hasBuffer: true
   resources:
     limits:
       cpu: 4

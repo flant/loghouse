@@ -13,7 +13,7 @@ env:
 - name: LOGS_TABLES_RETENTION_PERIOD
   value: {{ .Values.retention_period | quote }}
 - name: LOGS_TABLES_HAS_BUFFER
-  value: {{ .Values.clickhouse.has_buffer | quote }}
+  value: {{ .Values.clickhouse.hasBuffer | quote }}
 - name: PERMISSONS_FILE_PATH
   value: "/config/user.conf"
 - name: RACK_ENV

@@ -1,3 +1,4 @@
+{{- if not .Values.clickhouse.external }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -105,4 +106,5 @@ spec:
   - metadata:
       name: data
     {{ include "includeByName" (dict "root" .Values.storage.pvc "name" "spec") | indent 4 | trim }}
+{{- end }}
 {{- end }}
