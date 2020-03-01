@@ -7,9 +7,28 @@ Time.zone = Loghouse::TIME_ZONE
 
 task :create_logs_tables do
   force = TRUE_VALUES.include?(ENV['FORCE'])
+  do_db_deploy = TRUE_VALUES.include?(ENV['DO_DB_DEPLOY'])
 
-  LogsTables.create_storage_table(force: force)
-  LogsTables.create_buffer_table(force: force)
+  return unless do_db_deploy
+
+  db_version = 0
+
+  if ::Clickhouse.connection.exists_table(LogsTables::DB_VERSION_TABLE)
+    db_version = ::Clickhouse.connection.query("SELECT MAX(version) AS version FROM #{LogsTables::DB_VERSION_TABLE}")[0][0]
+
+  if LogsTables::DB_VERSION != db_version
+    log "Got db version #{db_version}. Expected version #{LogsTables::DB_VERSION}", 6
+
+    case db_version
+    when 0..2
+      LogsTables.create_storage_table(true)
+      LogsTables.create_buffer_table(force: force)
+      ::Clickhouse.connection.execute "INSERT INTO #{LogsTables::DB_VERSION_TABLE} VALUES (NOW(), #{LogsTables::DB_VERSION})"
+    when 3
+      ::Clickhouse.connection.execute "ALTER TABLE #{LogsTables::TABLE_NAME} MODIFY TTL date + toIntervalDay(#{LogsTables::RETENTION_PERIOD})"
+    else
+      log "Unknown version #{db_version}. Nothing to do."
+    end
 end
 
 task :insert_fixtures do

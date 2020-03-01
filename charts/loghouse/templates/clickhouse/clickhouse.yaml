@@ -67,8 +67,10 @@ spec:
           mountPath: /var/lib/clickhouse/
         - name: config-volume
           mountPath: /etc/clickhouse-server/
+{{- if .Values.doDbDeploy }}
         - name: initdb
           mountPath: /docker-entrypoint-initdb.d/
+{{- end }}
         - name: working-dir
           mountPath: /nonexistent/
       securityContext:
@@ -91,9 +93,11 @@ spec:
       - name: config-volume
         configMap:
           name: clickhouse-config
+{{- if .Values.doDbDeploy }}
       - name: initdb
         configMap:
           name: clickhouse-initdb
+{{- end }}
       {{ include "includeByName" (dict "root" .Values.clickhouse "name" "nodeSelector") | indent 6 | trim }}
       {{ include "includeByName" (dict "root" .Values.clickhouse "name" "tolerations") | indent 6 | trim }}
 {{- if .Values.storage.pvc }}

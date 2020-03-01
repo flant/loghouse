@@ -6,6 +6,8 @@ module LogsTables
   RETENTION_PERIOD    = ENV.fetch('LOGS_TABLES_RETENTION_PERIOD')   { '14' }.to_i
   HAS_BUFFER          = ENV.fetch('LOGS_TABLES_HAS_BUFFER')         { 'true' }
   PARTITION_PERIOD    = 1
+  DB_VERSION          = 3
+  DB_VERSION_TABLE    = "migrations"          
 
   KUBERNETES_ATTRIBUTES = {
     source: 'String',
@@ -22,14 +24,22 @@ module LogsTables
     engine = "Buffer(#{DATABASE}, #{TABLE_NAME}, 16, 10, 60, 1000, 10000, 1048576, 10485760)"
     table_name = "#{TABLE_NAME}_buffer"
 
-    create_table table_name, engine, force: force
+    create_table table_name, create_table_sql(table_name, engine), force: force
   end
 
   def create_storage_table(force: false)
     engine = "MergeTree() PARTITION BY (date, toHour(#{TIMESTAMP_ATTRIBUTE})) ORDER BY (#{TIMESTAMP_ATTRIBUTE}, #{NSEC_ATTRIBUTE}, namespace, container_name) TTL date + INTERVAL #{RETENTION_PERIOD} DAY DELETE SETTINGS index_granularity=32768"
     table_name = TABLE_NAME
 
-    create_table table_name, engine, force: force
+    create_table table_name, create_table_sql(table_name, engine), force: force
+  end
+
+  def create_migration_table(force: false)
+    engine = "MergeTree() PARTITION BY (date) ORDER BY (date)"
+    table_name = DB_VERSION_TABLE
+    sql = "CREATE TABLE IF NOT EXISTS migrations (timestamp DateTime, version UInt32) ENGINE = #{engine}"
+
+    create_table table_name, sql, force: force
   end
 
   def round_time_to_partition(time)
@@ -48,7 +58,7 @@ module LogsTables
 
   module_function
 
-  def create_table(table_name, engine, force: false)
+  def create_table(table_name, sql_code, force: false)
     log "Creating table #{table_name}"
 
     if ::Clickhouse.connection.exists_table(table_name)
@@ -61,7 +71,7 @@ module LogsTables
       ::Clickhouse.connection.drop_table(table_name)
     end
 
-    ::Clickhouse.connection.execute create_table_sql(table_name, engine)
+    ::Clickhouse.connection.execute sql_code
 
     log "Table #{table_name} created"
   end

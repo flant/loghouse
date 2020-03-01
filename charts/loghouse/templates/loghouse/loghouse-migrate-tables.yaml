@@ -1,17 +1,15 @@
+{{- $uniq_id := uuidv4 -}}
 {{- if .Values.doDbDeploy }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ .Chart.Name }}-init-db
+  name: {{ .Chart.Name }}-migrate-tables-{{ $uniq_id }}
   namespace: {{ .Release.Namespace }}
-  annotations:
-    "helm.sh/hook": post-install
-    "helm.sh/weight": "-5"
 spec:
   activeDeadlineSeconds: 600
   template:
     metadata:
-      name: {{ .Chart.Name }}-init-db
+      name: {{ .Chart.Name }}-migrate-tables
     spec:
       restartPolicy: OnFailure
       initContainers:
