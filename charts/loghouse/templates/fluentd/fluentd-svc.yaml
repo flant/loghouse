@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fluentd
+  namespace: {{ .Release.Namespace }}
+  labels:
+    prometheus-custom-target: fluentd
+spec:
+  selector:
+    k8s-app: fluentd
+  ports:
+  - name: tcp-logs
+    port: 5170
+    targetPort: 5170
+    protocol: TCP
+  - name: udp-logs
+    port: 5160
+    targetPort: 5160
+    protocol: UDP
+  - name: http-metrics
+    port: 5160
+    targetPort: 5160
+    protocol: TCP

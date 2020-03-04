@@ -18,6 +18,8 @@ spec:
         kubernetes.io/cluster-service: "true"
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "24231"
     spec:
       serviceAccountName: fluentd
       containers:

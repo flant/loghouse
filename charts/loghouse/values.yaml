@@ -89,6 +89,7 @@ clickhouse:
   external: false
   server: clickhouse
   port: 9000
+  httpPort: 8123
   user: default
   db: logs
   table: logs

@@ -5,7 +5,13 @@ env:
 - name: DO_DB_DEPLOY
   value: {{ .Values.doDbDeploy | quote }}
 - name: CLICKHOUSE_URL
-  value: "clickhouse:8123"
+  value: {{ printf "%s:%s" .Values.clickhouse.server .Values.clickhouse.httpPort }}
+- name: CLICKHOUSE_SERVER
+  value: {{ .Values.clickhouse.server | quote }}
+- name: CLICKHOUSE_PORT
+  value: {{ .Values.clickhouse.port | quote }}
+- name: CLICKHOUSE_HTTP_PORT
+  value: {{ .Values.clickhouse.httpPort | quote }}
 - name: CLICKHOUSE_DATABASE
   value: {{ .Values.clickhouse.db | quote }}
 - name: CLICKHOUSE_LOGS_TABLE

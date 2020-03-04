@@ -2,19 +2,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: clickhouse
+  name: {{ .Values.clickhouse.server }}
   namespace: {{ .Release.Namespace }}
 spec:
   selector:
     component: clickhouse
   ports:
   - name: http
-    port: 8123
-    targetPort: 8123
+    port: {{ .Values.clickhouse.httpPort }}
+    targetPort: {{ .Values.clickhouse.httpPort }}
     protocol: TCP
   - name: native
-    port: 9000
-    targetPort: 9000
+    port: {{ .Values.clickhouse.port }}
+    targetPort: {{ .Values.clickhouse.port }}
     protocol: TCP
 {{- if .Values.clickhouse.external }}
 ---
@@ -30,11 +30,11 @@ subsets:
 {{- end }}
   ports:
   - name: http
-    port: 8123
-    targetPort: 8123
+    port: {{ .Values.clickhouse.httpPort }}
+    targetPort: {{ .Values.clickhouse.httpPort }}
     protocol: TCP
   - name: native
-    port: 9000
-    targetPort: 9000
+    port: {{ .Values.clickhouse.port }}
+    targetPort: {{ .Values.clickhouse.port }}
     protocol: TCP
 {{- end }}
