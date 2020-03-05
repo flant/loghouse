@@ -18,6 +18,10 @@ spec:
       labels:
         component: tabix
     spec:
+{{- if .Values.tabix.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.tabix.imagePullSecrets | indent 6 }}
+{{- end }}
       containers:
       - name: tabix
         image: {{ .Values.tabix.image }}:{{ template "app.version" $ }}

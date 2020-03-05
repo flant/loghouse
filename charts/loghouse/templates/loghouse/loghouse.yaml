@@ -57,6 +57,10 @@ spec:
           tcpSocket:
             port: 9292
         {{ include "includeByName" (dict "root" .Values.loghouse "name" "resources") | indent 8 | trim }}
+{{- if .Values.loghouse.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.loghouse.imagePullSecrets | indent 6 }}
+{{- end }}
       volumes:
       - name: user-config
         configMap:

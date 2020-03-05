@@ -3,6 +3,8 @@ kind: ConfigMap
 apiVersion: v1
 data:
   net.input.conf: |-
+    # Example
+    # '{"time":"2016-02-17T00:04:05.931087621Z", "labels": {"app": "test", "version": 3} ,"log": {"level": "info", "message": "Some log text here"}}'
     <source>
       @type tcp
       tag net.tcp
@@ -14,6 +16,7 @@ data:
       source_hostname_key client_host
       source_address_key client_addr
     </source>
+
     <source>
       @type udp
       tag net.udp

@@ -77,6 +77,10 @@ spec:
       securityContext:
         runAsUser: 101
         fsGroup: 101
+{{- if .Values.clickhouse.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.clickhouse.imagePullSecrets | indent 6 }}
+{{- end }}
       volumes:
 {{- if not .Values.storage.pvc }}
 {{- if .Values.storage.hostpath }}

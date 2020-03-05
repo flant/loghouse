@@ -90,6 +90,10 @@ spec:
       - key: "node-role.kubernetes.io/master"
         operator: "Exists"
 {{- end }}
+{{- if .Values.fluentd.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.fluentd.imagePullSecrets | indent 6 }}
+{{- end }}
       volumes:
       - name: varlog
         hostPath:

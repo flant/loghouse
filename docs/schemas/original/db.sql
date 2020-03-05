@@ -38,7 +38,7 @@ CREATE TABLE queries_v1
 )
 ENGINE = TinyLog;
 
-CREATE TABLE logs.migrations
+CREATE TABLE migrations
 (
     `timestamp` DateTime, 
     `version` UInt32

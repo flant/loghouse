@@ -94,6 +94,9 @@ clickhouse:
   db: logs
   table: logs
   hasBuffer: true
+# You should create registry secret
+# if you install images from private registry
+  imagePullSecrets:
   resources:
     limits:
       cpu: 4
@@ -104,6 +107,7 @@ clickhouse:
 
 fluentd:
   image: "flant/loghouse-fluentd"
+  imagePullSecrets:
   resources:
     limits:
       cpu: 1
@@ -121,6 +125,7 @@ loghouse:
 #    effect: NoExecute
 #  nodeSelector:
 #    node-role.flant.com/logging: ""
+  imagePullSecrets:
   resources:
     limits:
       cpu: 1
@@ -138,6 +143,7 @@ tabix:
 #    effect: NoExecute
 #  nodeSelector:
 #    node-role.flant.com/logging: ""
+  imagePullSecrets:
   resources:
     limits:
       memory: 64Mi
