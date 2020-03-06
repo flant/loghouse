@@ -197,10 +197,12 @@ data:
 
     <match **>
       @type exec
+      @id load2clickhouse
       command bash /usr/local/bin/insert_ch.sh {{ template "fluentdInsertTable" $ }}
       format json
       <buffer>
         @type memory
+        @id buffer2clickhouse
         chunk_limit_size 64m
         queue_limit_length 32
         flush_at_shutdown true
