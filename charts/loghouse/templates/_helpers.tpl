@@ -42,6 +42,18 @@ Fluentd insert table
 {{- end -}}
 {{- end -}}
 
+{{/*
+Fix clickhouse httpport
+*/}}
+{{- define "clickhouseHttpService" -}}
+{{- $httpPort := .Values.clickhouse.httpPort }}
+{{- $type := printf "%T" $httpPort }}
+{{- if eq $type "float64" -}}
+{{ printf "%s:%.0f" .Values.clickhouse.server $httpPort | quote }}
+{{- else -}}
+{{- printf "%s:%d" .Values.clickhouse.server $httpPort | quote -}}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Images version. This version can be set from cli: --set version=latest or --set version=0.2.1

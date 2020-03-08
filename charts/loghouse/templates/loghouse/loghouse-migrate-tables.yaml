@@ -6,20 +6,24 @@ metadata:
   name: {{ .Chart.Name }}-migrate-tables-{{ $uniq_id }}
   namespace: {{ .Release.Namespace }}
 spec:
-  activeDeadlineSeconds: 600
+  activeDeadlineSeconds: 3600
   template:
     metadata:
       name: {{ .Chart.Name }}-migrate-tables
     spec:
       restartPolicy: OnFailure
+{{- if .Values.loghouse.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.loghouse.imagePullSecrets | indent 6 }}
+{{- end }}
       initContainers:
       - name: wait-clickhouse
         image: alpine:3.6
-        command: [ '/bin/sh', '-c', 'while ! nc -z clickhouse 8123; do sleep 1; done' ]
+        command: [ '/bin/sh', '-c', 'while ! nc -z clickhouse 8123; do sleep 1; done; sleep 120;' ]
       containers:
       - name: init
         image: {{ .Values.fluentd.image }}:{{ template "app.version" $ }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         command: ['/bin/bash', '-l', '-c', 'clickhouse-client --host=${CLICKHOUSE_URL} --port=9000 --user=${CLICKHOUSE_USER} --password=${CLICKHOUSE_PASSWORD} --query="CREATE DATABASE IF NOT EXISTS ${CLICKHOUSE_DATABASE};"']
-{{ include "loghouse_envs" . | indent 6 }}
+{{ include "loghouse_envs" . | indent 8 }}
 {{- end }}

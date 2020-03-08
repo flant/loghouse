@@ -5,7 +5,7 @@ env:
 - name: DO_DB_DEPLOY
   value: {{ .Values.doDbDeploy | quote }}
 - name: CLICKHOUSE_URL
-  value: {{ printf "%s:%s" .Values.clickhouse.server .Values.clickhouse.httpPort }}
+  value: {{ template "clickhouseHttpService" $ }}
 - name: CLICKHOUSE_SERVER
   value: {{ .Values.clickhouse.server | quote }}
 - name: CLICKHOUSE_PORT

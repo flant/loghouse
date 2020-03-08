@@ -23,6 +23,7 @@ task :create_logs_tables do
   when 0..2
     LogsTables.create_storage_table(force: true)
     LogsTables.create_buffer_table(force: force)
+    LogsTables.create_migration_table(force: force)
     ::Clickhouse.connection.execute "INSERT INTO #{LogsTables::DB_VERSION_TABLE} VALUES (NOW(), #{LogsTables::DB_VERSION})"
   when 3
     ::Clickhouse.connection.execute "ALTER TABLE #{LogsTables::TABLE_NAME} MODIFY TTL date + toIntervalDay(#{LogsTables::RETENTION_PERIOD})"
