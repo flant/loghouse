@@ -35,7 +35,7 @@ module LogsTables
   end
 
   def create_migration_table(force: false)
-    engine = "MergeTree() PARTITION BY (date) ORDER BY (date)"
+    engine = "MergeTree() PARTITION BY (timestamp) ORDER BY (timestamp)"
     table_name = DB_VERSION_TABLE
     sql = "CREATE TABLE IF NOT EXISTS migrations (timestamp DateTime, version UInt32) ENGINE = #{engine}"
 
