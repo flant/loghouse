@@ -24,6 +24,6 @@ spec:
       - name: init
         image: {{ .Values.fluentd.image }}:{{ template "app.version" $ }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
-        command: ['/bin/bash', '-l', '-c', 'clickhouse-client --host=${CLICKHOUSE_URL} --port=9000 --user=${CLICKHOUSE_USER} --password=${CLICKHOUSE_PASSWORD} --query="CREATE DATABASE IF NOT EXISTS ${CLICKHOUSE_DATABASE};"']
+        command: ['/bin/bash', '/usr/local/bin/migrate-tables.sh']
 {{ include "loghouse_envs" . | indent 8 }}
 {{- end }}
