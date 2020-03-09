@@ -1,0 +1,11 @@
+{{- if .Values.storage.pvc }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "Deployment.apiVersion" $ }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    volume.beta.kubernetes.io/mount-options: "discard"
+{{ include "includeByName" (dict "root" .Values.storage.pvc "name" "spec") | trim }}
+{{- end }}

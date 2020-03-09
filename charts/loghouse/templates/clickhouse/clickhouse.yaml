@@ -92,6 +92,10 @@ spec:
         emptyDir:
           sizeLimit: "0"
 {{- end }}
+{{- else }}
+      - name: data
+        persistentVolumeClaim:
+          claimName: {{ template "clickhousePvcName" $ }}
 {{- end }}
       - name: working-dir
         emptyDir: {}
@@ -105,10 +109,4 @@ spec:
 {{- end }}
       {{ include "includeByName" (dict "root" .Values.clickhouse "name" "nodeSelector") | indent 6 | trim }}
       {{ include "includeByName" (dict "root" .Values.clickhouse "name" "tolerations") | indent 6 | trim }}
-{{- if .Values.storage.pvc }}
-  volumeClaimTemplates:
-  - metadata:
-      name: data
-    {{ include "includeByName" (dict "root" .Values.storage.pvc "name" "spec") | indent 4 | trim }}
-{{- end }}
 {{- end }}

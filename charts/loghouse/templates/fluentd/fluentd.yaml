@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+apiVersion: {{ template "Daemonset.apiVersion" $ }}
 kind: DaemonSet
 metadata:
   name: fluentd

@@ -21,6 +21,18 @@ Deployment api version
 {{- end -}}
 
 {{/*
+Daemonset api version
+*/}}
+{{- define "Daemonset.apiVersion" -}}
+{{- if semverCompare ">=1.16" .Capabilities.KubeVersion.GitVersion -}}
+"apps/v1"
+{{- else -}}
+"extensions/v1beta1"
+{{- end -}}
+{{- end -}}
+
+
+{{/*
 Ingress api version
 */}}
 {{- define "Ingress.apiVersion" -}}
@@ -71,5 +83,16 @@ Chart.Version is set to latest in master branch. helm package rewrite it to tag 
 {{- $val := (pluck .name .root | first) -}}
 {{- if $val -}}
 {{- dict .name $val | toYaml -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+PVC name
+*/}}
+{{- define "clickhousePvcName" -}}
+{{- if .Values.storage.pvc.pvcname -}}
+{{- .Values.storage.pvc.pvcname | quote -}}
+{{- else }}
+"clickhouse"
 {{- end -}}
 {{- end -}}
