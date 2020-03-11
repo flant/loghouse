@@ -19,6 +19,6 @@ spec:
     targetPort: 5160
     protocol: UDP
   - name: http-metrics
-    port: 5160
-    targetPort: 5160
+    port: 24231
+    targetPort: 24231
     protocol: TCP
