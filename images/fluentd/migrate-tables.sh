@@ -11,6 +11,7 @@ case $DB_VERSION in
       echo $table_name
       $CLICKHOUSE_CLIENT "INSERT INTO ${CLICKHOUSE_LOGS_TABLE} SELECT * FROM ${table_name}"
       $CLICKHOUSE_CLIENT "DROP TABLE IF EXISTS ${table_name}"
+      sleep 15
     done
     ;;
   *)

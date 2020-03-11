@@ -206,7 +206,7 @@ data:
         chunk_limit_size 64m
         queue_limit_length 32
         flush_at_shutdown true
-        flush_interval 5s
+        flush_interval 15s
         flush_thread_count 4
       </buffer>
     </match>
