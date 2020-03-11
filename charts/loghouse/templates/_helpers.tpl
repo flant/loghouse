@@ -90,8 +90,8 @@ Chart.Version is set to latest in master branch. helm package rewrite it to tag 
 PVC name
 */}}
 {{- define "clickhousePvcName" -}}
-{{- if .Values.storage.pvc.pvcname -}}
-{{- .Values.storage.pvc.pvcname | quote -}}
+{{- if .Values.storage.pvc.name -}}
+{{- .Values.storage.pvc.name | quote -}}
 {{- else }}
 "clickhouse"
 {{- end -}}

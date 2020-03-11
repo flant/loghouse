@@ -45,13 +45,10 @@ enable_tabix: true
 storage:
 #  hostpath: /mnt/loghouse
 #  pvc:
-#    spec:
-#      accessModes:
-#      - ReadWriteOnce
-#      storageClassName: rbd
-#      resources:
-#        requests:
-#          storage: 100Gi
+#    name: clickhouse
+#    accessMode: ReadWriteOnce
+#    size: 20Gi
+#    storageClassName: slow
 
 # Clickhouse TTL using LOGS_TABLES_RETENTION_PERIOD variable, in days.
 # This setting automatically delete logs older then LOGS_TABLES_RETENTION_PERIOD.
