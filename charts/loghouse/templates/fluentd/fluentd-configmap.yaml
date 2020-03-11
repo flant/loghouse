@@ -142,7 +142,7 @@ data:
         timestamp              ${time}
         # static fields
         source                 "net"
-        namespace              {{ .Release.Namespace | quote }}
+        namespace              {{ printf "%s-netlog" .Release.Namespace | quote }}
         host                   ${record["client_addr"]}
         pod_name               ${record["client_host"]}
         container_name         "net"
