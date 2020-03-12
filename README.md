@@ -34,7 +34,9 @@ Loghouse-dashboard UI demo in action (~3 Mb):
 
 # Installation
 
-To install loghouse, you need to have [Helm](https://github.com/kubernetes/helm) in your Kubernetes cluster. The whole process is as simple as these two steps:
+To install loghouse, you need to have [Helm](https://github.com/kubernetes/helm) in your Kubernetes cluster. Also, our chart expecting that you install [cert-manager](https://github.com/jetstack/cert-manager) to your cluser. 
+
+The whole process is as simple as these two steps:
 
 1. Add loghouse charts:
 ```
@@ -77,6 +79,16 @@ Web UI is composed of two components:
 
 * **frontend** — nginx with basic authorization. This authorization is used to limit user's access with logs from given Kubernetes namespaces only;
 * **backend** — Ruby application displaying logs from ClickHouse.
+
+# Upgdading
+
+Helm chart was rewrited. All kubernetes API for objects was updated. Helm hook policy was updated too. So, for update you need to remove some conflicting object.
+
+```
+kubectl -n loghouse delete jobs,ing --all
+```
+
+**Warning!** Database schema was changed. Create backup before upgrade. Migration task will be started after upgrade.
 
 # Roadmap
 

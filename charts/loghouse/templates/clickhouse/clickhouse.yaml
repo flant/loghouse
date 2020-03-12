@@ -32,6 +32,15 @@ spec:
         - name: data
           mountPath: /var/lib/clickhouse/
       containers:
+      - name: clickhouse-exporter
+        image: {{ .Values.clickhouse_exporter.image }}:{{ .Values.clickhouse_exporter.version }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        ports:
+        - name: http-metrics
+          containerPort: 9116
+        envFrom:
+        - secretRef:
+            name: clickhouse
       - name: clickhouse
         image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.version }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}

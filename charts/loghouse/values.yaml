@@ -18,17 +18,17 @@ ingress:
     host: clickhouse.domain.com
     path: "/"
     tls_secret_name: clickhouse
-    tls_issuer: letsencrypt
+#    tls_issuer: letsencrypt
   loghouse:
     host: loghouse.domain.com
     path: "/"
     tls_secret_name: loghouse
-    tls_issuer: letsencrypt
+#    tls_issuer: letsencrypt
   tabix:
     host: tabix.domain.com
     path: "/"
     tls_secret_name: tabix
-    tls_issuer: letsencrypt
+#    tls_issuer: letsencrypt
 #  annotations:
 #  - 'kubernetes.io/ingress.class: traefik'
 #  - 'traefik.frontend.passHostHeader: "true"'
@@ -101,6 +101,10 @@ clickhouse:
     requests:
       cpu: 1
       memory: 8Gi
+
+clickhouse_exporter:
+  image: "f1yegor/clickhouse-exporter"
+  version: "latest"
 
 fluentd:
   image: "flant/loghouse-fluentd"
