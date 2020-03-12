@@ -21,14 +21,14 @@ module LogsTables
   module_function
 
   def create_buffer_table(force: false)
-    engine = "Buffer(#{DATABASE}, #{TABLE_NAME}, 16, 10, 60, 1000, 10000, 1048576, 10485760)"
+    engine = "Buffer(#{DATABASE}, #{TABLE_NAME}, 16, 30, 60, 100, 10000, 1048576, 10485760)"
     table_name = "#{TABLE_NAME}_buffer"
 
     create_table table_name, create_table_sql(table_name, engine), force: force
   end
 
   def create_storage_table(force: false)
-    engine = "MergeTree() PARTITION BY (date, toHour(#{TIMESTAMP_ATTRIBUTE})) ORDER BY (#{TIMESTAMP_ATTRIBUTE}, #{NSEC_ATTRIBUTE}, namespace, container_name) TTL date + INTERVAL #{RETENTION_PERIOD} DAY DELETE SETTINGS index_granularity=32768"
+    engine = "MergeTree() PARTITION BY (date) ORDER BY (#{TIMESTAMP_ATTRIBUTE}, #{NSEC_ATTRIBUTE}, namespace, container_name) TTL date + INTERVAL #{RETENTION_PERIOD} DAY DELETE SETTINGS index_granularity=32768"
     table_name = TABLE_NAME
 
     create_table table_name, create_table_sql(table_name, engine), force: force

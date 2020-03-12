@@ -53,7 +53,7 @@ storage:
 # Clickhouse TTL using LOGS_TABLES_RETENTION_PERIOD variable, in days.
 # This setting automatically delete logs older then LOGS_TABLES_RETENTION_PERIOD.
 # Default is 14, as it was.
-retention_period: 14
+retention_period: 7
 
 # Create db and default table structure in clickhouse
 doDbDeploy: true

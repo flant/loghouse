@@ -58,10 +58,11 @@ spec:
           tcpSocket:
             port: 9000
         readinessProbe:
+          httpGet:
+            path: /
+            port: 8123
           timeoutSeconds: 1
           initialDelaySeconds: 5
-          tcpSocket:
-            port: 9000
         {{ include "includeByName" (dict "root" .Values.clickhouse "name" "resources") | indent 8 | trim }}
         volumeMounts:
         - name: data
