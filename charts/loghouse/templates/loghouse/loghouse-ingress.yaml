@@ -33,7 +33,7 @@ spec:
   - hosts:
     - {{ .Values.ingress.loghouse.host }}
     secretName: {{ .Values.ingress.loghouse.tls_secret_name}}
-{{- if .Values.ingress.clickhouse.tls_issuer }}
+{{- if .Values.ingress.loghouse.tls_issuer }}
 ---
 apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
