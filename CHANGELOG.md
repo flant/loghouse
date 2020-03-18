@@ -20,6 +20,6 @@
   - Clickhouse version
   - Fluentd version
 ## Fixed
-  - Broken docker fluentd in latest version
+  - Broken docker image for fluentd with latest tag
   - Fix obsolete k8s api's versions
   - Old ruby gems in log viewer
