@@ -1,6 +1,6 @@
 {{- if not .Values.clickhouse.external }}
 ---
-apiVersion: apps/v1
+apiVersion: {{ template "StatefulSet.apiVersion" $ }}
 kind: StatefulSet
 metadata:
   name: clickhouse-server
@@ -17,6 +17,16 @@ spec:
     metadata:
       labels:
         component: clickhouse
+{{- if or .Values.clickhouse.podAnnotations .Values.clickhouse.prometheusEnabled }}
+    annotations:
+{{- range $key, $value := .Values.clickhouse.podAnnotations }}
+      {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- if .Values.clickhouse.prometheusEnabled }}
+      prometheus.io/scrape: "true"
+      prometheus.io/port: {{ .Values.clickhouse.exporterPort | quote }}
+{{- end }}
+{{- end }}
     spec:
       initContainers:
       - name: chown
@@ -32,23 +42,28 @@ spec:
         - name: data
           mountPath: /var/lib/clickhouse/
       containers:
+{{- if .Values.clickhouse.prometheusEnabled }}
       - name: clickhouse-exporter
-        image: {{ .Values.clickhouse_exporter.image }}:{{ .Values.clickhouse_exporter.version }}
+        image: {{ .Values.clickhouse.exporter_image }}:{{ .Values.clickhouse.exporter_version }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
+        args:
+        - "-telemetry.address"
+        - {{ template "clickhouseExporterBind" $ }}
         ports:
         - name: http-metrics
-          containerPort: 9116
+          containerPort: {{ .Values.clickhouse.exporterPort }}
         envFrom:
         - secretRef:
             name: clickhouse
+{{- end }}
       - name: clickhouse
         image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.version }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         ports:
         - name: http
-          containerPort: 8123
+          containerPort: {{ .Values.clickhouse.httpPort }}
         - name: native
-          containerPort: 9000
+          containerPort: {{ .Values.clickhouse.port }}
         env:
         - name: CLICKHOUSE_SERVER
           value: {{ .Values.clickhouse.server | quote }}
@@ -65,11 +80,11 @@ spec:
           timeoutSeconds: 1
           initialDelaySeconds: 30
           tcpSocket:
-            port: 9000
+            port: {{ .Values.clickhouse.port }}
         readinessProbe:
           httpGet:
             path: /
-            port: 8123
+            port: {{ .Values.clickhouse.httpPort }}
           timeoutSeconds: 1
           initialDelaySeconds: 5
         {{ include "includeByName" (dict "root" .Values.clickhouse "name" "resources") | indent 8 | trim }}

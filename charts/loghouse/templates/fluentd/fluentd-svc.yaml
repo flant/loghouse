@@ -4,21 +4,25 @@ kind: Service
 metadata:
   name: fluentd
   namespace: {{ .Release.Namespace }}
+{{- if .Values.fluentd.svcLabels }}
   labels:
-    prometheus-custom-target: fluentd
+{{- range $key, $value := .Values.fluentd.svcLabels }}
+    {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end }}
 spec:
   selector:
     k8s-app: fluentd
   ports:
   - name: tcp-logs
-    port: 5170
-    targetPort: 5170
+    port: {{ .Values.fluentd.tcpPort }}
+    targetPort: {{ .Values.fluentd.tcpPort }}
     protocol: TCP
   - name: udp-logs
-    port: 5160
-    targetPort: 5160
+    port: {{ .Values.fluentd.udpPort }}
+    targetPort: {{ .Values.fluentd.udpPort }}
     protocol: UDP
   - name: http-metrics
-    port: 24231
-    targetPort: 24231
+    port: {{ .Values.fluentd.exporterPort }}
+    targetPort: {{ .Values.fluentd.exporterPort }}
     protocol: TCP

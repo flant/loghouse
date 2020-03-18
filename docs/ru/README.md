@@ -56,7 +56,7 @@
 
 # Обновление
 
-Helm chart претерпел некоторые изменения. Мы изменили работу с хуками, а так же обновили версии API у объектов Kubernetes. Чтобы обновиться с предыдущей версии надо удалить активные job, а так же ingress. Сделать это можно вот такой командой
+При переходе на версию **0.3** Helm chart претерпел некоторые изменения. Мы изменили работу с хуками, а так же обновили версии API у объектов Kubernetes. Чтобы обновиться с предыдущей версии надо удалить активные job, а так же ingress. Сделать это можно вот такой командой
 ```
 kubectl -n loghouse delete jobs,ing --all
 ```
@@ -65,15 +65,15 @@ kubectl -n loghouse delete jobs,ing --all
 
 # Архитектура
 
-![loghouse architecture](https://cdn.rawgit.com/flant/loghouse/master/docs/architecture.png)
+![loghouse architecture](docs/architecture.png)
 
 На каждый узел кластера Kubernetes устанавливается под с fluentd для сбора логов. Технически для этого в Kubernetes создается DaemonSet, который имеет tolerations для всех возможных taints и попадает на все узлы кластера. Каталоги с логами со всех хост-систем монтируются в поды fluentd из этого DaemonSet, где за ними «наблюдает» служба fluentd. Для всех логов Docker-контейнеров применяется фильтр [kubernetes_metadata](https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter), который собирает дополнительную информацию о контейнерах из Kubernetes API. После этого данные преобразуются с помощью фильтра [record_modifier](https://github.com/repeatedly/fluent-plugin-record-modifier). После преобразования данных они попадают в fluentd output plugin, который вызывает расположенную в контейнере с fluentd консольную утилиту [clickhouse-client](https://clickhouse.yandex/docs/en/interfaces/cli.html) для записи данных в ClickHouse.
 
 **Примечание про формат логов**: Если лог имеет формат JSON, то он форматируется по типу значений, т.е. каждое поле попадает в одну из таблиц: string_fields, number_fields, boolean_fields, null_fields и labels (последняя — это лейблы контейнеров для удобной фильтрации и поиска) для возможности использования встроенных в ClickHouse функций для работы с этими типами данных. В случае, если лог не в формате JSON, он просто попадает в таблицу string_fields.
 
-На данный момент поддерживается запись в единственный экземпляр СУБД ClickHouse — Deployment, который по умолчанию попадает на случайный узел K8s (можно задать nodeSelector и tolerations для выбора конкретного узла). ClickHouse хранит свои данные в hostPath или в Persistent Volumes Claim (PVC), созданном с помощью выбранного storageClass.
+На данный момент поддерживается запись в единственный экземпляр СУБД ClickHouse — StatefulSet, который по умолчанию попадает на случайный узел K8s (можно задать nodeSelector и tolerations для выбора конкретного узла). ClickHouse хранит свои данные в hostPath или в Persistent Volumes Claim (PVC), созданном с помощью выбранного storageClass. Расширенная работа с clickhouse и схемы базы описаны [тут](docs/schemas/README.md)
 
-Веб-интерфейс loghouse ([скриншот](http://screenshot.flant.ru/asidorovj/04/81/0481900cca291c45718bd6dbae66c64b98fa0b32.png)) состоит из двух компонентов:
+Веб-интерфейс loghouse ([скриншот](docs/loghouse_interface.png)) состоит из двух компонентов:
 
 * **frontend** — nginx с базовой авторизацией. На основе данной авторизации можно выдавать права доступа на отображение логов для определенного пользователя, ограниченные конкретными пространствами имен Kubernetes;
 * **backend** — приложение на Ruby, которое выполняет всю работу по выводу логов из ClickHouse.

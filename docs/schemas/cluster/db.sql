@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS logs_rpl
 ON CLUSTER production
 (
-    `date` Date MATERIALIZED toDate(timestamp), 
+    `date` Date DEFAULT toDate(NOW()), 
     `timestamp` DateTime, 
     `nsec` UInt32, 
     `source` String, 
@@ -21,7 +21,7 @@ ON CLUSTER production
     `null_fields.names` Array(String)
 )
 ENGINE = ReplicatedMergeTree('/clickhouse/tables/logs/{shard}/logs_rpl', '{replica}')
-PARTITION BY (date, toHour(timestamp))
+PARTITION BY (date)
 ORDER BY (timestamp, nsec, namespace, container_name)
 TTL date + toIntervalDay(14)
 SETTINGS index_granularity = 32768;

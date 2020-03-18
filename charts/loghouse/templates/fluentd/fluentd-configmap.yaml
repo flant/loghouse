@@ -15,6 +15,7 @@ data:
       </parse>
       source_hostname_key client_host
       source_address_key client_addr
+      port {{ .Values.fluentd.tcpPort }}
     </source>
 
     <source>
@@ -27,6 +28,7 @@ data:
       </parse>
       source_hostname_key client_host
       source_address_key client_addr
+      port {{ .Values.fluentd.udpPort }}
     </source>
   containers.input.conf: |-
     # Example:
@@ -61,13 +63,14 @@ data:
     <source>
       @type forward
     </source>
+{{- if .Values.fluentd.prometheusEnabled }}
   monitoring.conf: |-
     # Prometheus Exporter Plugin
     # input plugin that exports metrics
     <source>
       @type prometheus
       bind 0.0.0.0
-      port 24231
+      port {{ .Values.fluentd.exporterPort }}
       metrics_path /metrics
     </source>
 
@@ -98,6 +101,7 @@ data:
         host ${hostname}
       </labels>
     </source>
+{{- end }}
   output.conf: |-
     # Enriches records with Kubernetes metadata
     <filter kubernetes.**>

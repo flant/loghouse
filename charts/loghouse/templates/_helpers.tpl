@@ -23,14 +23,24 @@ Deployment api version
 {{/*
 Daemonset api version
 */}}
-{{- define "Daemonset.apiVersion" -}}
-{{- if semverCompare ">=1.16" .Capabilities.KubeVersion.GitVersion -}}
+{{- define "DaemonSet.apiVersion" -}}
+{{- if .Capabilities.APIVersions.Has "apps/v1" -}}
 "apps/v1"
 {{- else -}}
 "extensions/v1beta1"
 {{- end -}}
 {{- end -}}
 
+{{/*
+Statefulset api version
+*/}}
+{{- define "StatefulSet.apiVersion" -}}
+{{- if .Capabilities.APIVersions.Has "apps/v1" -}}
+"apps/v1"
+{{- else -}}
+"extensions/v1beta1"
+{{- end -}}
+{{- end -}}
 
 {{/*
 Ingress api version
@@ -64,6 +74,19 @@ Fix clickhouse httpport
 {{ printf "%s:%.0f" .Values.clickhouse.server $httpPort | quote }}
 {{- else -}}
 {{- printf "%s:%d" .Values.clickhouse.server $httpPort | quote -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Fix clickhouse exporterPort
+*/}}
+{{- define "clickhouseExporterBind" -}}
+{{- $exporterPort := .Values.clickhouse.exporterPort }}
+{{- $type := printf "%T" $exporterPort }}
+{{- if eq $type "float64" -}}
+{{ printf ":%.0f" $exporterPort | quote }}
+{{- else -}}
+{{- printf ":%d" $exporterPort | quote }}
 {{- end -}}
 {{- end -}}
 

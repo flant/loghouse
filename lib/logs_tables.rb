@@ -80,9 +80,9 @@ module LogsTables
     <<~EOS
       CREATE TABLE #{table_name}
       (
-        `date` Date MATERIALIZED toDate(#{TIMESTAMP_ATTRIBUTE}),
+        `date` Date DEFAULT toDate(NOW()),
         `#{TIMESTAMP_ATTRIBUTE}` DateTime,
-        `#{NSEC_ATTRIBUTE}` UInt64,
+        `#{NSEC_ATTRIBUTE}` UInt32,
     #{KUBERNETES_ATTRIBUTES.map { |att, type| "    `#{att}` #{type}" }.join(",\n") },
         `labels` Nested (names String, values String),
         `string_fields` Nested (names String, values String),

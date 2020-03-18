@@ -1,6 +1,6 @@
 CREATE TABLE logs
 (
-    `date` Date MATERIALIZED toDate(timestamp), 
+    `date` Date DEFAULT toDate(NOW()), 
     `timestamp` DateTime, 
     `nsec` UInt32, 
     `source` String, 
@@ -20,7 +20,7 @@ CREATE TABLE logs
     `null_fields.names` Array(String)
 )
 ENGINE = MergeTree()
-PARTITION BY (date, toHour(timestamp))
+PARTITION BY (date)
 ORDER BY (timestamp, nsec, namespace, container_name)
 TTL date + toIntervalDay(14)
 SETTINGS index_granularity = 32768;

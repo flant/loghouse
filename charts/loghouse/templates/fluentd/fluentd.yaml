@@ -1,4 +1,4 @@
-apiVersion: {{ template "Daemonset.apiVersion" $ }}
+apiVersion: {{ template "DaemonSet.apiVersion" $ }}
 kind: DaemonSet
 metadata:
   name: fluentd
@@ -16,10 +16,16 @@ spec:
       labels:
         k8s-app: fluentd
         kubernetes.io/cluster-service: "true"
+{{- if or .Values.fluentd.podAnnotations .Values.fluentd.prometheusEnabled }}
       annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
+{{- range $key, $value := .Values.fluentd.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- if .Values.fluentd.prometheusEnabled }}
         prometheus.io/scrape: "true"
-        prometheus.io/port: "24231"
+        prometheus.io/port: {{ .Values.fluentd.exporterPort | quote }}
+{{- end }}
+{{- end }}
     spec:
       serviceAccountName: fluentd
       containers:
@@ -56,6 +62,15 @@ spec:
           requests:
             memory: {{ .Values.fluentd.resources.requests.memory }}
             cpu: {{ .Values.fluentd.resources.requests.cpu }}
+        ports:
+{{- if .Values.fluentd.prometheusEnabled }}
+        - name: http-metrics
+          containerPort: {{ .Values.clickhouse.exporterPort }}
+{{- end }}
+        - name: tcp-logs
+          containerPort: {{ .Values.fluentd.tcpPort }}
+        - name: udp-logs
+          containerPort: {{ .Values.fluentd.udpPort }}
         volumeMounts:
 {{- if .Values.docker_path }}
         - name: dockerpath

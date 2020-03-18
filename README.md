@@ -67,20 +67,20 @@ Web UI (loghouse-dashboard) will be reachable via address specified in values.ya
 
 # Architecture
 
-![loghouse architecture](https://cdn.rawgit.com/flant/loghouse/master/docs/architecture.png)
+![loghouse architecture](docs/architecture.png)
 
 A pod with fluentd collecting logs will be installed on each node of your Kubernetes cluster. Technically, it is implemented by means of DaemonSet having tolerations for all possible taints, so it includes all the nodes available. Logs directories from all hosts are mounted to fluentd pods and watched by fluentd. [Kubernetes_metadata](https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter) filter is applied for all the Docker containers' logs to get additional information about containers via Kubernetes API. Another filter, [record_modifier](https://github.com/repeatedly/fluent-plugin-record-modifier), is then used to "prepare" all the data we have. And the last step is passing this data to fluentd output plugin executing [clickhouse-client](https://clickhouse.yandex/docs/en/interfaces/cli.html) CLI tool to insert new entries into ClickHouse DBMS.
 
 **Note on logs format**: If log entry is in JSON, it will be formatted according to its values' types, i.e. each field will be stored in corresponding table: string_fields, number_fields, boolean_fields, null_fields or labels (the last one is used for containers labels to make further filtering and lookups easy). ClickHouse built-in functions will be used to process these data types. If log entry isn't in JSON, it will be stored in string_fields table.
 
-Currently, ClickHouse DBMS is deployed as a single instance via Deployment which brings this instance to a random K8s node (this behaviour can be changed by using nodeSelector and tolerations to choose a specific node). ClickHouse stores its data in hostPath volume or Persistent Volumes Claim (PVC) created with any storageClass you prefer.
+Currently, ClickHouse DBMS is deployed as a single instance via Deployment which brings this instance to a random K8s node (this behaviour can be changed by using nodeSelector and tolerations to choose a specific node). ClickHouse stores its data in hostPath volume or Persistent Volumes Claim (PVC) created with any storageClass you prefer. You can find extended schemas for clickhouse [here](docs/schemas/README.md)
 
-Web UI is composed of two components:
+Web UI ([screenshot](docs/loghouse_interface.png)) is composed of two components:
 
 * **frontend** — nginx with basic authorization. This authorization is used to limit user's access with logs from given Kubernetes namespaces only;
 * **backend** — Ruby application displaying logs from ClickHouse.
 
-# Upgdading
+# Upgrading
 
 Helm chart was rewrited. All kubernetes API for objects was updated. Helm hook policy was updated too. So, for update you need to remove some conflicting object.
 

@@ -83,14 +83,21 @@ clickhouse:
 #  - 10.0.0.3
   image: "yandex/clickhouse-server"
   version: "20.1"
+  exporter_image: "flant/clickhouse-exporter"
+  exporter_version: "0.1.0"
   external: false
   server: clickhouse
   port: 9000
   httpPort: 8123
+  exporterPort: 9116
+  prometheusEnabled: true
   user: default
   db: logs
   table: logs
   hasBuffer: true
+  svcLabels:
+    prometheus-custom-target: clickhouse
+  podAnnotations: {}
 # You should create registry secret
 # if you install images from private registry
   imagePullSecrets:
@@ -102,13 +109,17 @@ clickhouse:
       cpu: 1
       memory: 8Gi
 
-clickhouse_exporter:
-  image: "f1yegor/clickhouse-exporter"
-  version: "latest"
-
 fluentd:
   image: "flant/loghouse-fluentd"
+  tcpPort: 5170
+  udpPort: 5160
+  exporterPort: 24231
+  prometheusEnabled: true
   imagePullSecrets:
+  svcLabels:
+    prometheus-custom-target: fluentd
+  podAnnotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ''
   resources:
     limits:
       cpu: 1

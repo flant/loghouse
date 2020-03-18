@@ -4,8 +4,12 @@ kind: Service
 metadata:
   name: {{ .Values.clickhouse.server }}
   namespace: {{ .Release.Namespace }}
+{{- if .Values.clickhouse.svcLabels }}
   labels:
-    prometheus-custom-target: clickhouse
+{{- range $key, $value := .Values.clickhouse.svcLabels }}
+    {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end }}
 spec:
   selector:
     component: clickhouse
@@ -18,10 +22,12 @@ spec:
     port: {{ .Values.clickhouse.port }}
     targetPort: {{ .Values.clickhouse.port }}
     protocol: TCP
+{{- if .Values.clickhouse.prometheusEnabled }}
   - name: http-metrics
-    port: 9116
-    targetPort: 9116
+    port: {{ .Values.clickhouse.exporterPort }}
+    targetPort: {{ .Values.clickhouse.exporterPort }}
     protocol: TCP
+{{- end }}
 {{- if .Values.clickhouse.external }}
 ---
 kind: Endpoints
