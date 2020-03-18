@@ -95,12 +95,14 @@ data:
     </source>
 
     # input plugin that collects metrics for in_tail plugin
-    <source>
-      @type prometheus_tail_monitor
-      <labels>
-        host ${hostname}
-      </labels>
-    </source>
+    # This section disabled due to metrics count - tail plugin 
+    # generate too many metrics
+    #<source>
+    #  @type prometheus_tail_monitor
+    #  <labels>
+    #    host ${hostname}
+    #  </labels>
+    #</source>
 {{- end }}
   output.conf: |-
     # Enriches records with Kubernetes metadata

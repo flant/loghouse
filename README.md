@@ -10,7 +10,6 @@ Ready to use log management solution for Kubernetes. Efficiently store big amoun
 Status is **alpha**. However we (Flant) use it in our production Kubernetes deployments since September, 2017.
 
 Some data may be dropped in alpha's updates. Be careful, when updating! All info will be published in release notes.
-**Data's structure will be stable in beta version** (planned on 2019).
 
 Loghouse-dashboard UI demo in action (~3 Mb):
 
@@ -82,7 +81,7 @@ Web UI ([screenshot](docs/loghouse_interface.png)) is composed of two components
 
 # Upgrading
 
-Helm chart was rewrited. All kubernetes API for objects was updated. Helm hook policy was updated too. So, for update you need to remove some conflicting object.
+Helm chart was rewrited. All kubernetes API for objects was updated. Helm hook policy was updated too. So, for update to **0.3** you need to remove some conflicting objects.
 
 ```
 kubectl -n loghouse delete jobs,ing --all

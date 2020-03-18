@@ -5,6 +5,12 @@ metadata:
   name: clickhouse
   namespace: {{ .Release.Namespace }}
   annotations:
+{{- if or .Values.ingress.clickhouse.annotations .Values.ingress.clickhouse.ingressClass }}
+    kubernetes.io/ingress.class: {{ .Values.ingress.clickhouse.ingressClass | quote }}
+{{- range $key, $value := .Values.ingress.clickhouse.annotations }}
+    {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- else }}
     kubernetes.io/ingress.class: "nginx"
 {{- if .Values.ingress.enable_https }}
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
@@ -12,6 +18,7 @@ metadata:
 {{- else }}
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+{{- end }}
 {{- end }}
 spec:
   rules:
@@ -39,11 +46,19 @@ spec:
     - domains:
       - {{ .Values.ingress.clickhouse.host }}
       http01:
-        ingressClass: nginx
+{{- if .Values.ingress.clickhouse.ingressClass }}
+        ingressClass: {{ .Values.ingress.clickhouse.ingressClass | quote }}
+{{- else }}
+        ingressClass: "nginx"
+{{- end }}
   dnsNames:
   - {{ .Values.ingress.clickhouse.host }}
   issuerRef:
+{{- if .Values.ingress.clickhouse.tls_issuer_kind }}
+    kind: {{ .Values.ingress.clickhouse.tls_issuer_kind }}
+{{- else }}
     kind: ClusterIssuer
+{{- end }}
     name:  {{ .Values.ingress.clickhouse.tls_issuer }}
   secretName: {{ .Values.ingress.clickhouse.tls_secret_name }}
 {{- end }}

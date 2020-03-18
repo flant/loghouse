@@ -5,6 +5,12 @@ metadata:
   name: tabix
   namespace: {{ .Release.Namespace }}
   annotations:
+{{- if or .Values.ingress.tabix.annotations .Values.ingress.tabix.ingressClass }}
+    kubernetes.io/ingress.class: {{ .Values.ingress.tabix.ingressClass | quote }}
+{{- range $key, $value := .Values.ingress.tabix.annotations }}
+    {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- else }}
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/auth-type: basic
     nginx.ingress.kubernetes.io/auth-secret: basic-auth
@@ -15,6 +21,7 @@ metadata:
 {{- else }}
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
+{{- end }}
 {{- end }}
 spec:
   rules:
@@ -42,12 +49,20 @@ spec:
     - domains:
       - {{ .Values.ingress.tabix.host }}
       http01:
-        ingressClass: nginx
+{{- if .Values.ingress.tabix.ingressClass }}
+        ingressClass: {{ .Values.ingress.tabix.ingressClass | quote }}
+{{- else }}
+        ingressClass: "nginx"
+{{- end }}
   dnsNames:
   - {{ .Values.ingress.tabix.host }}
   issuerRef:
+{{- if .Values.ingress.tabix.tls_issuer_kind }}
+    kind: {{ .Values.ingress.tabix.tls_issuer_kind }}
+{{- else }}
     kind: ClusterIssuer
-    name:  {{ .Values.ingress.clickhouse.tls_secret_name }}
+{{- end }}
+    name:  {{ .Values.ingress.tabix.tls_secret_name }}
   secretName: {{ .Values.ingress.tabix.tls_secret_name }}
 {{- end }}
 {{- end }}

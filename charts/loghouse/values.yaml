@@ -18,20 +18,25 @@ ingress:
     host: clickhouse.domain.com
     path: "/"
     tls_secret_name: clickhouse
-#    tls_issuer: letsencrypt
+#   ingressClass: nginx
+#   tls_issuer: letsencrypt
+#   tls_issuer_kind: ClusterIssuer
   loghouse:
     host: loghouse.domain.com
     path: "/"
     tls_secret_name: loghouse
-#    tls_issuer: letsencrypt
+#   ingressClass: nginx
+#   tls_issuer: letsencrypt
+#   tls_issuer_kind: ClusterIssuer
   tabix:
     host: tabix.domain.com
     path: "/"
     tls_secret_name: tabix
-#    tls_issuer: letsencrypt
-#  annotations:
-#  - 'kubernetes.io/ingress.class: traefik'
-#  - 'traefik.frontend.passHostHeader: "true"'
+#   ingressClass: nginx
+#   tls_issuer: letsencrypt
+#   tls_issuer_kind: ClusterIssuer
+#   annotations:
+#     - 'traefik.frontend.passHostHeader: "true"'
 
 # Enable tabix
 enable_tabix: true

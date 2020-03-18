@@ -5,9 +5,10 @@ metadata:
   name: loghouse
   namespace: {{ .Release.Namespace }}
   annotations:
-{{- if .Values.ingress.annotations }}
-{{- range .Values.ingress.annotations }}
-    {{ . }}
+{{- if or .Values.ingress.loghouse.annotations .Values.ingress.loghouse.ingressClass }}
+    kubernetes.io/ingress.class: {{ .Values.ingress.loghouse.ingressClass | quote }}
+{{- range $key, $value := .Values.ingress.loghouse.annotations }}
+    {{ $key }}: {{ $value | quote }}
 {{- end }}
 {{- else }}
     kubernetes.io/ingress.class: "nginx"
@@ -45,12 +46,20 @@ spec:
     - domains:
       - {{ .Values.ingress.loghouse.host }} 
       http01:
-        ingressClass: nginx
+{{- if .Values.ingress.loghouse.ingressClass }}
+        ingressClass: {{ .Values.ingress.loghouse.ingressClass | quote }}
+{{- else }}
+        ingressClass: "nginx"
+{{- end }}
   dnsNames:
   - {{ .Values.ingress.loghouse.host }} 
   issuerRef:
+{{- if .Values.ingress.loghouse.tls_issuer_kind }}
+    kind: {{ .Values.ingress.loghouse.tls_issuer_kind }}
+{{- else }}
     kind: ClusterIssuer
-    name:  {{ .Values.ingress.clickhouse.tls_issuer }}
+{{- end }}
+    name:  {{ .Values.ingress.loghouse.tls_issuer }}
   secretName: {{ .Values.ingress.loghouse.tls_secret_name }}
 {{- end }}
 {{- end }}
