@@ -5,13 +5,16 @@ metadata:
   name: clickhouse
   namespace: {{ .Release.Namespace }}
   annotations:
-{{- if or .Values.ingress.clickhouse.annotations .Values.ingress.clickhouse.ingressClass }}
+{{- if .Values.ingress.clickhouse.ingressClass }}
     kubernetes.io/ingress.class: {{ .Values.ingress.clickhouse.ingressClass | quote }}
+{{- else }}
+    kubernetes.io/ingress.class: "nginx"
+{{- end }}
+{{- if .Values.ingress.clickhouse.annotations }}
 {{- range $key, $value := .Values.ingress.clickhouse.annotations }}
     {{ $key }}: {{ $value | quote }}
 {{- end }}
 {{- else }}
-    kubernetes.io/ingress.class: "nginx"
 {{- if .Values.ingress.enable_https }}
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"

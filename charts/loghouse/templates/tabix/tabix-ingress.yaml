@@ -5,16 +5,16 @@ metadata:
   name: tabix
   namespace: {{ .Release.Namespace }}
   annotations:
-{{- if or .Values.ingress.tabix.annotations .Values.ingress.tabix.ingressClass }}
+{{- if .Values.ingress.tabix.ingressClass }}
     kubernetes.io/ingress.class: {{ .Values.ingress.tabix.ingressClass | quote }}
+{{- else }}
+    kubernetes.io/ingress.class: "nginx"
+{{- end }}
+{{- if .Values.ingress.tabix.annotations }}
 {{- range $key, $value := .Values.ingress.tabix.annotations }}
     {{ $key }}: {{ $value | quote }}
 {{- end }}
 {{- else }}
-    kubernetes.io/ingress.class: "nginx"
-    nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: basic-auth
-    nginx.ingress.kubernetes.io/auth-realm: "Authrentication Required"
 {{- if .Values.ingress.enable_https }}
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"

@@ -5,13 +5,16 @@ metadata:
   name: loghouse
   namespace: {{ .Release.Namespace }}
   annotations:
-{{- if or .Values.ingress.loghouse.annotations .Values.ingress.loghouse.ingressClass }}
+{{- if .Values.ingress.loghouse.ingressClass }}
     kubernetes.io/ingress.class: {{ .Values.ingress.loghouse.ingressClass | quote }}
+{{- else }}
+    kubernetes.io/ingress.class: "nginx"
+{{- end }}
+{{- if .Values.ingress.loghouse.annotations }}
 {{- range $key, $value := .Values.ingress.loghouse.annotations }}
     {{ $key }}: {{ $value | quote }}
 {{- end }}
 {{- else }}
-    kubernetes.io/ingress.class: "nginx"
 {{- if .Values.ingress.enable_https }}
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"

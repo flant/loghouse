@@ -21,6 +21,8 @@ ingress:
 #   ingressClass: nginx
 #   tls_issuer: letsencrypt
 #   tls_issuer_kind: ClusterIssuer
+#   annotations:
+#     - traefik.frontend.passHostHeader: "true"
   loghouse:
     host: loghouse.domain.com
     path: "/"
@@ -28,15 +30,17 @@ ingress:
 #   ingressClass: nginx
 #   tls_issuer: letsencrypt
 #   tls_issuer_kind: ClusterIssuer
+#   annotations:
+#     - traefik.frontend.passHostHeader: "true"
   tabix:
     host: tabix.domain.com
     path: "/"
     tls_secret_name: tabix
-#   ingressClass: nginx
+#   ingressClass: traefik
 #   tls_issuer: letsencrypt
 #   tls_issuer_kind: ClusterIssuer
 #   annotations:
-#     - 'traefik.frontend.passHostHeader: "true"'
+#     - traefik.frontend.passHostHeader: "true"
 
 # Enable tabix
 enable_tabix: true
