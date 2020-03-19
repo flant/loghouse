@@ -47,14 +47,14 @@ data:
     # Logs from systemd-journal for interesting services.
     <source>
       @type systemd
-      filters [{ "_SYSTEMD_UNIT": "docker.service" }]
+      matches [{ "_SYSTEMD_UNIT": "docker.service" }]
       read_from_head true
       tag docker
     </source>
 
     <source>
       @type systemd
-      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
+      matches [{ "_SYSTEMD_UNIT": "kubelet.service" }]
       read_from_head true
       tag kubelet
     </source>
@@ -62,6 +62,7 @@ data:
     # Takes the messages sent over TCP
     <source>
       @type forward
+      port {{ .Values.fluentd.forwardPort }}
     </source>
 {{- if .Values.fluentd.prometheusEnabled }}
   monitoring.conf: |-
@@ -95,7 +96,7 @@ data:
     </source>
 
     # input plugin that collects metrics for in_tail plugin
-    # This section disabled due to metrics count - tail plugin 
+    # This section disabled due to metrics count - tail plugin
     # generate too many metrics
     #<source>
     #  @type prometheus_tail_monitor
@@ -108,6 +109,11 @@ data:
     # Enriches records with Kubernetes metadata
     <filter kubernetes.**>
       @type kubernetes_metadata
+      cache_size 100000
+      cache_ttl 3600
+      # Watch api disabled due to implementation problems
+      # https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter/issues/88#issuecomment-514433183
+      watch false
     </filter>
 
     <filter kubernetes.**>
@@ -208,7 +214,6 @@ data:
       format json
       <buffer>
         @type memory
-        @id buffer2clickhouse
         chunk_limit_size 64m
         queue_limit_length 32
         flush_at_shutdown true

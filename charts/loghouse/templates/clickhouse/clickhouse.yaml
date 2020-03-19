@@ -18,13 +18,13 @@ spec:
       labels:
         component: clickhouse
 {{- if or .Values.clickhouse.podAnnotations .Values.clickhouse.prometheusEnabled }}
-    annotations:
+      annotations:
 {{- range $key, $value := .Values.clickhouse.podAnnotations }}
-      {{ $key }}: {{ $value | quote }}
+        {{ $key }}: {{ $value | quote }}
 {{- end }}
 {{- if .Values.clickhouse.prometheusEnabled }}
-      prometheus.io/scrape: "true"
-      prometheus.io/port: {{ .Values.clickhouse.exporterPort | quote }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ .Values.clickhouse.exporterPort | quote }}
 {{- end }}
 {{- end }}
     spec:

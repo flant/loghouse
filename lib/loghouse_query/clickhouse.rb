@@ -112,9 +112,27 @@ class LoghouseQuery
       namespaces.map { |ns| "namespace = '#{ns}'" }.join(' OR ')
     end
 
+    def partitions_list(from, to)
+      if from.nil?
+        from = to
+      end
+
+      if to.nil?
+        to = from
+      end
+
+      dates = [from]
+      while dates.last < (to - 1.day)
+        dates << (dates.last + 1.day)
+      end
+      return "date in ('#{(dates.map { |element| element.utc.strftime('%Y-%m-%d') }).join("' , '")}')"
+    end
+
     def to_clickhouse_where(from = nil, to = nil)
       where_parts = []
       where_parts << Query.new(parsed_query[:query]).to_s if parsed_query
+
+      where_parts << partitions_list(from,to) if from or to
 
       where_parts << time_comparation(from, '>') if from
       where_parts << time_comparation(to, '<') if to

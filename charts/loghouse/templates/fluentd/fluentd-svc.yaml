@@ -18,6 +18,10 @@ spec:
     port: {{ .Values.fluentd.tcpPort }}
     targetPort: {{ .Values.fluentd.tcpPort }}
     protocol: TCP
+  - name: forward-logs
+    port: {{ .Values.fluentd.forwardPort }}
+    targetPort: {{ .Values.fluentd.forwardPort }}
+    protocol: TCP
   - name: udp-logs
     port: {{ .Values.fluentd.udpPort }}
     targetPort: {{ .Values.fluentd.udpPort }}

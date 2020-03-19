@@ -123,6 +123,7 @@ fluentd:
   tcpPort: 5170
   udpPort: 5160
   exporterPort: 24231
+  forwardPort: 24224
   prometheusEnabled: true
   imagePullSecrets:
   svcLabels:
