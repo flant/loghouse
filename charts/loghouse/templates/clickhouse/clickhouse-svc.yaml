@@ -10,6 +10,12 @@ metadata:
     {{ $key }}: {{ $value | quote }}
 {{- end }}
 {{- end }}
+{{- if .Values.clickhouse.svcAnnotations }}
+  annotations:
+{{- range $key, $value := .Values.clickhouse.svcAnnotations }}
+    {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end }}
 spec:
   selector:
     component: clickhouse

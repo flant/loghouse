@@ -44,7 +44,7 @@ spec:
       containers:
 {{- if .Values.clickhouse.prometheusEnabled }}
       - name: clickhouse-exporter
-        image: {{ .Values.clickhouse.exporter_image }}:{{ .Values.clickhouse.exporter_version }}
+        image: {{ .Values.clickhouse.exporter.image }}:{{ .Values.clickhouse.exporter.version }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         args:
         - "-telemetry.address"
@@ -55,6 +55,7 @@ spec:
         envFrom:
         - secretRef:
             name: clickhouse
+        {{ include "includeByName" (dict "root" .Values.clickhouse.exporter "name" "resources") | indent 8 | trim }}
 {{- end }}
       - name: clickhouse
         image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.version }}

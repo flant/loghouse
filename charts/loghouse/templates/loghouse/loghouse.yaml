@@ -39,6 +39,7 @@ spec:
         - name: nginx-conf
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
+        {{ include "includeByName" (dict "root" .Values.loghouse.frontend "name" "resources") | indent 8 | trim }}
       - name: backend
         image: {{ .Values.loghouse.image }}:{{ template "app.version" $ }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}

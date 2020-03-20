@@ -82,7 +82,7 @@ clickhouse:
 #  nodeSelector:
 #    node-role.flant.com/logging: ""
 # Setup memory limit for clickhouse in MB
-#  memlimits: 7000
+  memlimits: 6500
 # Setup clickhouse password
 #  password: supersecret
 # Use external clickhouse
@@ -92,8 +92,6 @@ clickhouse:
 #  - 10.0.0.3
   image: "yandex/clickhouse-server"
   version: "20.1"
-  exporter_image: "flant/clickhouse-exporter"
-  exporter_version: "0.1.0"
   external: false
   server: clickhouse
   port: 9000
@@ -104,8 +102,8 @@ clickhouse:
   db: logs
   table: logs
   hasBuffer: true
-  svcLabels:
-    prometheus-custom-target: clickhouse
+  svcLabels: {}
+  svcAnnotations: {}
   podAnnotations: {}
 # You should create registry secret
 # if you install images from private registry
@@ -117,6 +115,16 @@ clickhouse:
     requests:
       cpu: 1
       memory: 8Gi
+  exporter:
+    image: "flant/clickhouse-exporter"
+    version: "0.1.0"
+    resources:
+      limits:
+        cpu: 100m
+        memory: 32Mi
+      requests:
+        cpu: 100m
+        memory: 32Mi
 
 fluentd:
   image: "flant/loghouse-fluentd"
@@ -126,10 +134,9 @@ fluentd:
   forwardPort: 24224
   prometheusEnabled: true
   imagePullSecrets:
-  svcLabels:
-    prometheus-custom-target: fluentd
-  podAnnotations:
-    scheduler.alpha.kubernetes.io/critical-pod: ''
+  svcLabels: {}
+  svcAnnotations: {}
+  podAnnotations: {}
   resources:
     limits:
       cpu: 1
@@ -155,6 +162,14 @@ loghouse:
     requests:
       cpu: 1
       memory: 2Gi
+  frontend:
+    resources:
+      limits:
+        cpu: 1
+        memory: 64Mi
+      requests:
+        cpu: 100m
+        memory: 64Mi
 
 tabix:
   image: "flant/loghouse-tabix"
