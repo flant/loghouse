@@ -24,11 +24,6 @@ env:
   value: "/config/user.conf"
 - name: RACK_ENV
   value: "production"
-- name: CLICKHOUSE_USERNAME
-  valueFrom:
-    secretKeyRef:
-      name: clickhouse
-      key: CLICKHOUSE_USER
 envFrom:
 - secretRef:
     name: clickhouse
