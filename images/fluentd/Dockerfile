@@ -30,7 +30,7 @@ RUN BUILD_DEPS="make gcc g++ libc6-dev ruby-dev" \
     && echo $repository | tee /etc/apt/sources.list.d/clickhouse.list \
     && apt-key adv --keyserver keyserver.ubuntu.com --recv E0C56BD4 \
     && apt-get update \
-    && apt-get install patch tzdata clickhouse-common-static=$version clickhouse-client=$version \
+    && apt-get install -y patch tzdata clickhouse-common-static=$version clickhouse-client=$version \
     && apt-get purge -y --auto-remove \
                      -o APT::AutoRemove::RecommendsImportant=false \
                      $BUILD_DEPS \

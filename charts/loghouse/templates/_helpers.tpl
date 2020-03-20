@@ -1,48 +1,4 @@
 {{/*
-CronJob api version
-*/}}
-{{- define "CronJob.apiVersion" -}}
-{{- if semverCompare ">=1.8" .Capabilities.KubeVersion.GitVersion -}}
-"batch/v1beta1"
-{{- else -}}
-"batch/v2alpha1"
-{{- end -}}
-{{- end -}}
-
-{{/*
-Deployment api version
-*/}}
-{{- define "Deployment.apiVersion" -}}
-{{- if .Capabilities.APIVersions.Has "apps/v1" -}}
-"apps/v1"
-{{- else -}}
-"apps/v1beta2"
-{{- end -}}
-{{- end -}}
-
-{{/*
-Daemonset api version
-*/}}
-{{- define "DaemonSet.apiVersion" -}}
-{{- if .Capabilities.APIVersions.Has "apps/v1" -}}
-"apps/v1"
-{{- else -}}
-"extensions/v1beta1"
-{{- end -}}
-{{- end -}}
-
-{{/*
-Statefulset api version
-*/}}
-{{- define "StatefulSet.apiVersion" -}}
-{{- if .Capabilities.APIVersions.Has "apps/v1" -}}
-"apps/v1"
-{{- else -}}
-"extensions/v1beta1"
-{{- end -}}
-{{- end -}}
-
-{{/*
 Ingress api version
 */}}
 {{- define "Ingress.apiVersion" -}}

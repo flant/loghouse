@@ -1,6 +1,6 @@
 {{- if not .Values.clickhouse.external }}
 ---
-apiVersion: {{ template "StatefulSet.apiVersion" $ }}
+apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: clickhouse-server
