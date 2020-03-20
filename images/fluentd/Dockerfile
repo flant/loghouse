@@ -23,7 +23,6 @@ RUN BUILD_DEPS="make gcc g++ libc6-dev ruby-dev" \
                      ruby \
                      wget \
                      gnupg \
-                     dateutils \
     && echo 'gem: --no-document' >> /etc/gemrc \
     && gem install --file Gemfile \
     && cd /tmp \

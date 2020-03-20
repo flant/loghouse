@@ -39,7 +39,7 @@ spec:
           value: {{ .Values.clickhouse.server | quote }}
         - name: CLICKHOUSE_PORT
           value: {{ .Values.clickhouse.port | quote }}
-        - name: CLICKHOUSE_DB
+        - name: CLICKHOUSE_DATABASE
           value: {{ .Values.clickhouse.db | quote }}
         - name: K8S_LOGS_TABLE
           value: {{ .Values.clickhouse.table | quote }}
