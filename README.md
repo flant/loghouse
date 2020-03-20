@@ -87,7 +87,7 @@ Helm chart was rewrited. All kubernetes API for objects was updated. Helm hook p
 kubectl -n loghouse delete jobs,ing --all
 ```
 
-**Warning!** Database schema was changed. Create backup before upgrade. Migration task will be started after upgrade.
+**Warning!** Database schema was changed. Please, create a backup of clickhouse data before upgrade. Note that the migration task will automatically start at the end of the upgrade process.
 
 # Roadmap
 
