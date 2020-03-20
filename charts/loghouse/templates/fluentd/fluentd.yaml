@@ -83,8 +83,8 @@ spec:
         - name: config-volume
           mountPath: /etc/fluent/config.d
       terminationGracePeriodSeconds: 30
-      {{ include "includeByName" (dict "root" .Values.clickhouse "name" "nodeSelector") | indent 6 | trim }}
-      {{ include "includeByName" (dict "root" .Values.clickhouse "name" "tolerations") | indent 6 | trim }}
+      {{ include "includeByName" (dict "root" .Values.fluentd "name" "nodeSelector") | indent 6 | trim }}
+      {{ include "includeByName" (dict "root" .Values.fluentd "name" "tolerations") | indent 6 | trim }}
 {{- if .Values.fluentd.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.fluentd.imagePullSecrets | indent 6 }}
