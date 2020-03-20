@@ -128,6 +128,11 @@ clickhouse:
 
 fluentd:
   image: "flant/loghouse-fluentd"
+#  tolerations:
+#  - key: "node-role.kubernetes.io/master"
+#    operator: "Exists"
+#  nodeSelector:
+#    node-role.flant.com/logging: ""
   tcpPort: 5170
   udpPort: 5160
   exporterPort: 24231

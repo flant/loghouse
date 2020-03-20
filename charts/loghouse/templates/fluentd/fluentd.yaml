@@ -88,23 +88,8 @@ spec:
         - name: config-volume
           mountPath: /etc/fluent/config.d
       terminationGracePeriodSeconds: 30
-      tolerations:
-      - key: "node-role/logging"
-        operator: "Exists"
-      - key: "node-role/system"
-        operator: "Exists"
-      - key: "node-role/monitoring"
-        operator: "Exists"
-      - key: "node-role/ingress"
-        operator: "Exists"
-      - key: "node-role/frontend"
-        operator: "Exists"
-      - key: "dedicated"
-        operator: "Exists"
-{{- if .Values.install_master }}
-      - key: "node-role.kubernetes.io/master"
-        operator: "Exists"
-{{- end }}
+      {{ include "includeByName" (dict "root" .Values.clickhouse "name" "nodeSelector") | indent 6 | trim }}
+      {{ include "includeByName" (dict "root" .Values.clickhouse "name" "tolerations") | indent 6 | trim }}
 {{- if .Values.fluentd.imagePullSecrets }}
       imagePullSecrets:
 {{ toYaml .Values.fluentd.imagePullSecrets | indent 6 }}
