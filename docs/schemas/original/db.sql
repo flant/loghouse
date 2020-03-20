@@ -1,6 +1,6 @@
 CREATE TABLE logs
 (
-    `date` Date DEFAULT toDate(NOW()), 
+    `date` Date MATERIALIZED toDate(timestamp),
     `timestamp` DateTime, 
     `nsec` UInt32, 
     `source` String, 

@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS logs_rpl
 ON CLUSTER production
 (
-    `date` Date DEFAULT toDate(NOW()), 
+    `date` Date MATERIALIZED toDate(timestamp),
     `timestamp` DateTime, 
     `nsec` UInt32, 
     `source` String, 

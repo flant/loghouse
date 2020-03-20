@@ -72,7 +72,7 @@ A pod with fluentd collecting logs will be installed on each node of your Kubern
 
 **Note on logs format**: If log entry is in JSON, it will be formatted according to its values' types, i.e. each field will be stored in corresponding table: string_fields, number_fields, boolean_fields, null_fields or labels (the last one is used for containers labels to make further filtering and lookups easy). ClickHouse built-in functions will be used to process these data types. If log entry isn't in JSON, it will be stored in string_fields table.
 
-Currently, ClickHouse DBMS is deployed as a single instance via Deployment which brings this instance to a random K8s node (this behaviour can be changed by using nodeSelector and tolerations to choose a specific node). ClickHouse stores its data in hostPath volume or Persistent Volumes Claim (PVC) created with any storageClass you prefer. You can find extended schemas for clickhouse [here](docs/schemas/README.md)
+Currently, ClickHouse DBMS is deployed as a single instance via StatefulSet which brings this instance to a random K8s node (this behaviour can be changed by using nodeSelector and tolerations to choose a specific node). ClickHouse stores its data in hostPath volume or Persistent Volumes Claim (PVC) created with any storageClass you prefer. You can find extended schemas for clickhouse [here](docs/schemas/README.md)
 
 Web UI ([screenshot](docs/loghouse_interface.png)) is composed of two components:
 

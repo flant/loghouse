@@ -70,7 +70,7 @@ kubectl -n loghouse delete jobs,ing --all
 
 **Примечание про формат логов**: Если лог имеет формат JSON, то он форматируется по типу значений, т.е. каждое поле попадает в одну из таблиц: string_fields, number_fields, boolean_fields, null_fields и labels (последняя — это лейблы контейнеров для удобной фильтрации и поиска) для возможности использования встроенных в ClickHouse функций для работы с этими типами данных. В случае, если лог не в формате JSON, он просто попадает в таблицу string_fields.
 
-На данный момент поддерживается запись в единственный экземпляр СУБД ClickHouse — StatefulSet, который по умолчанию попадает на случайный узел K8s (можно задать nodeSelector и tolerations для выбора конкретного узла). ClickHouse хранит свои данные в hostPath или в Persistent Volumes Claim (PVC), созданном с помощью выбранного storageClass. Расширенная работа с clickhouse и схемы базы описаны [тут](docs/schemas/README.md)
+На данный момент поддерживается запись в единственный экземпляр СУБД ClickHouse — StatefulSet, который по умолчанию попадает на случайный узел K8s (можно задать nodeSelector и tolerations для выбора конкретного узла). ClickHouse хранит свои данные в hostPath или в Persistent Volumes Claim (PVC), созданном с помощью выбранного storageClass. Вы можете попробовать альтернативные для clickhouse. Примеры схем есть в [документации](docs/schemas/README.md)
 
 Веб-интерфейс loghouse ([скриншот](docs/loghouse_interface.png)) состоит из двух компонентов:
 
