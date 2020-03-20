@@ -47,14 +47,9 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
-        - name: CLICKHOUSE_PASS
-          valueFrom:
-            secretKeyRef:
-              name: clickhouse
-              key: CLICKHOUSE_PASSWORD
         envFrom:
         - secretRef:
-            name: clickhouse
+            name: clickhouse-credentilas
         resources:
           limits:
             memory: {{ .Values.fluentd.resources.limits.memory }}

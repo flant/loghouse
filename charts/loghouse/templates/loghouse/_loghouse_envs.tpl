@@ -26,5 +26,5 @@ env:
   value: "production"
 envFrom:
 - secretRef:
-    name: clickhouse
+    name: clickhouse-credentilas
 {{- end }}

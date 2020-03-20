@@ -76,7 +76,7 @@ spec:
           value: {{ .Values.clickhouse.table | quote }}
         envFrom:
         - secretRef:
-            name: clickhouse
+            name: clickhouse-credentilas
         livenessProbe:
           timeoutSeconds: 1
           initialDelaySeconds: 30
