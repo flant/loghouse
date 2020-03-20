@@ -4,7 +4,7 @@ This is example sql schemas for clickhouse. More information in [clickhouse offi
 
 ## Clickhouse typical schemas
 
-There is 2 typical setups:
+There are 2 typical setups:
 * [Original Loghouse schema](original/README.md).
 * [Cluster Loghouse schema](cluster/README.md).
 
