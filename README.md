@@ -33,7 +33,7 @@ Loghouse-dashboard UI demo in action (~3 Mb):
 
 # Installation
 
-To install loghouse, you need to have [Helm](https://github.com/kubernetes/helm) in your Kubernetes cluster. Also, our chart expecting that you install [cert-manager](https://github.com/jetstack/cert-manager) to your cluser. 
+To install loghouse, you need to use [Helm](https://github.com/kubernetes/helm). Also, it is considered that [cert-manager](https://github.com/jetstack/cert-manager) is already installed in your cluster. 
 
 The whole process is as simple as these two steps:
 
