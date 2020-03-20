@@ -81,7 +81,7 @@ Web UI ([screenshot](docs/loghouse_interface.png)) is composed of two components
 
 # Upgrading
 
-Helm chart was rewrited. All kubernetes API for objects was updated. Helm hook policy was updated too. So, for update to **0.3** you need to remove some conflicting objects.
+Helm chart was rewritten. All API versions were updated. Helm hook policy was updated too. So, to make an update to **0.3** you need to remove some conflicting objects.
 
 ```
 kubectl -n loghouse delete jobs,ing --all
