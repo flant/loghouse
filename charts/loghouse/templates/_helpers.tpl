@@ -75,3 +75,115 @@ PVC name
 "clickhouse"
 {{- end -}}
 {{- end -}}
+
+{{/*
+Clickhouse max memory
+*/}}
+{{- define "clickhouseMaxMemory" -}}
+{{- if .Values.clickhouse.resources.limits.memory -}}
+{{- $memLimit := .Values.clickhouse.resources.limits.memory -}}
+{{- $memUnit := (regexFind "[EPTGMK]i?|e" $memLimit) -}}
+{{- $memMultiplier := (regexFind "[0-9]+" $memLimit) -}}
+{{- if eq $memUnit "Ki" -}}
+{{- $clickhouseMemLimit := (sub (mul ($memMultiplier) 1024) 268435456) -}}
+{{- if not (regexFind "-" (toString $clickhouseMemLimit)) -}}
+{{- $clickhouseMemLimit -}}
+{{- else -}}
+0
+{{- end -}}
+{{- else if eq $memUnit "K" -}}
+{{- $clickhouseMemLimit := (sub (mul ($memMultiplier) 1000) 268435456) -}}
+{{- if not (regexFind "-" (toString $clickhouseMemLimit)) -}}
+{{- $clickhouseMemLimit -}}
+{{- else -}}
+0
+{{- end -}}
+{{- else if eq $memUnit "Mi" -}}
+{{- $clickhouseMemLimit := (sub (mul ($memMultiplier) 1048576) 268435456) -}}
+{{- if not (regexFind "-" (toString $clickhouseMemLimit)) -}}
+{{- $clickhouseMemLimit -}}
+{{- else -}}
+{{- 0 -}}
+{{- end -}}
+{{- else if eq $memUnit "M" -}}
+{{- $clickhouseMemLimit := (sub (mul ($memMultiplier) 1000000) 268435456) -}}
+{{- if not (regexFind "-" (toString $clickhouseMemLimit)) -}}
+{{- $clickhouseMemLimit -}}
+{{- else -}}
+{{- 0 -}}
+{{- end -}}
+{{- else if eq $memUnit "Gi" -}}
+{{- $clickhouseMemLimit := (sub (mul ($memMultiplier) 1073741824) 268435456) -}}
+{{- if not (regexFind "-" (toString $clickhouseMemLimit)) -}}
+{{- $clickhouseMemLimit -}}
+{{- else -}}
+0
+{{- end -}}
+{{- else if eq $memUnit "G" -}}
+{{- $clickhouseMemLimit := (sub (mul ($memMultiplier) 1000000000) 268435456) -}}
+{{- if not (regexFind "-" (toString $clickhouseMemLimit)) -}}
+{{- $clickhouseMemLimit -}}
+{{- else -}}
+0
+{{- end -}}
+{{- else if eq $memUnit "Ti" -}}
+{{- $clickhouseMemLimit := (sub (mul ($memMultiplier) 1099511627776) 268435456) -}}
+{{- if not (regexFind "-" (toString $clickhouseMemLimit)) -}}
+{{- $clickhouseMemLimit -}}
+{{- else -}}
+0
+{{- end -}}
+{{- else if eq $memUnit "T" -}}
+{{- $clickhouseMemLimit := (sub (mul ($memMultiplier) 1000000000000) 268435456) -}}
+{{- if not (regexFind "-" (toString $clickhouseMemLimit)) -}}
+{{- $clickhouseMemLimit -}}
+{{- else -}}
+0
+{{- end -}}
+{{- else if eq $memUnit "Pi" -}}
+{{- $clickhouseMemLimit := (sub (mul ($memMultiplier) 1125899906842624) 268435456) -}}
+{{- if not (regexFind "-" (toString $clickhouseMemLimit)) -}}
+{{- $clickhouseMemLimit -}}
+{{- else -}}
+0
+{{- end -}}
+{{- else if eq $memUnit "P" -}}
+{{- $clickhouseMemLimit := (sub (mul ($memMultiplier) 1000000000000000) 268435456) -}}
+{{- if not (regexFind "-" (toString $clickhouseMemLimit)) -}}
+{{- $clickhouseMemLimit -}}
+{{- else -}}
+0
+{{- end -}}
+{{- else if eq $memUnit "Ei" -}}
+{{- $clickhouseMemLimit := (sub (mul ($memMultiplier) 1152921504606846976) 268435456) -}}
+{{- if not (regexFind "-" (toString $clickhouseMemLimit)) -}}
+{{- $clickhouseMemLimit -}}
+{{- else -}}
+0
+{{- end -}}
+{{- else if eq $memUnit "E" -}}
+{{- $clickhouseMemLimit := (sub (mul ($memMultiplier) 1000000000000000000) 268435456) -}}
+{{- if not (regexFind "-" (toString $clickhouseMemLimit)) -}}
+{{- $clickhouseMemLimit -}}
+{{- else -}}
+0
+{{- end -}}
+{{- else if eq $memUnit "e" -}}
+{{- $clickhouseMemLimit := 0 -}}
+{{- if not (regexFind "-" (toString $clickhouseMemLimit)) -}}
+{{- $clickhouseMemLimit -}}
+{{- else -}}
+0
+{{- end -}}
+{{- else -}}
+{{- $clickhouseMemLimit := (sub $memLimit 268435456) -}}
+{{- if not (regexFind "-" (toString $clickhouseMemLimit)) -}}
+{{- $clickhouseMemLimit -}}
+{{- else -}}
+0
+{{- end -}}
+{{- end -}}
+{{- else -}}
+0
+{{- end -}}
+{{- end -}}

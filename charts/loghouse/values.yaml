@@ -81,8 +81,6 @@ clickhouse:
 #    effect: NoExecute
 #  nodeSelector:
 #    node-role.flant.com/logging: ""
-# Setup memory limit for clickhouse in MB
-  memlimits: 6500
 # Setup clickhouse password
 #  password: supersecret
 # Use external clickhouse
@@ -108,6 +106,9 @@ clickhouse:
 # You should create registry secret
 # if you install images from private registry
   imagePullSecrets:
+# Our chart convert memory limit to clickhouse max memory limit
+# It wants 256Mi for system use. So, specify 512Mi limit or more
+# Memory limit in "129e6" format does no supperted, sorry 
   resources:
     limits:
       cpu: 4
