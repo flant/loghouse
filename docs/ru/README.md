@@ -26,7 +26,7 @@
 
 # Установка
 
-loghouse устанавливается с помощью [Helm](https://github.com/kubernetes/helm). Так же в кластере уже должен быть установлен [cert-manager](https://github.com/jetstack/cert-manager), чтобы выпускать сертификаты.
+loghouse устанавливается с помощью [Helm](https://github.com/kubernetes/helm). Минимальная поддерживаемая версия kubernetes **>=1.9**. Так же в кластере уже должен быть установлен [cert-manager](https://github.com/jetstack/cert-manager), чтобы выпускать сертификаты.
 
 Для установки выполните два шага:
 
