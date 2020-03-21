@@ -54,7 +54,7 @@ spec:
           containerPort: {{ .Values.clickhouse.exporterPort }}
         envFrom:
         - secretRef:
-            name: clickhouse
+            name: clickhouse-credentilas
         {{ include "includeByName" (dict "root" .Values.clickhouse.exporter "name" "resources") | indent 8 | trim }}
 {{- end }}
       - name: clickhouse
