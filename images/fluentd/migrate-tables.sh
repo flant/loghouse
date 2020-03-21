@@ -8,7 +8,7 @@ case $DB_VERSION in
   0|1|2|3)
     echo "Start migration to new schema"
     for table_name in `$CLICKHOUSE_CLIENT "SHOW TABLES" | grep -P "^${CLICKHOUSE_LOGS_TABLE}\d+"`; do
-      echo $table_name
+      echo "Processing ${table_name}..."
       $CLICKHOUSE_CLIENT "INSERT INTO ${CLICKHOUSE_LOGS_TABLE} SELECT * FROM ${table_name}"
       $CLICKHOUSE_CLIENT "DROP TABLE IF EXISTS ${table_name}"
     done
