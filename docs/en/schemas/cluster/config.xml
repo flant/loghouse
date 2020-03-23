@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<yandex>
+    <!-- Port for communication between replicas. Used for data exchange. -->
+    <interserver_http_port>9009</interserver_http_port>
+
+    <!-- Configuration of clusters that could be used in Distributed tables.
+         https://clickhouse.yandex/docs/en/table_engines/distributed/
+      -->
+    <remote_servers incl="clickhouse_remote_servers" >
+        <logs>
+            <shard>
+                <weight>1</weight>
+                <internal_replication>true</internal_replication>
+                <replica>
+                    <host>clickhouse1</host>
+                    <port>9000</port>
+                </replica>
+                <replica>
+                    <host>clickhouse2</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+            <shard>
+                <weight>1</weight>
+                <internal_replication>true</internal_replication>
+                <replica>
+                    <host>clickhouse3</host>
+                    <port>9000</port>
+                </replica>
+                <replica>
+                    <host>clickhouse4</host>
+                    <port>9000</port>
+                </replica>
+            </shard>
+        </logs>
+    </remote_servers>
+
+    <!-- If element has 'incl' attribute, then for it's value will be used corresponding substitution from another file.
+         By default, path to file with substitutions is /etc/metrika.xml. It could be changed in config in 'include_from' element.
+         Values for substitutions are specified in /yandex/name_of_substitution elements in that file.
+      -->
+
+    <!-- ZooKeeper is used to store metadata about replicas, when using Replicated tables.
+         Optional. If you don't use replicated tables, you could omit that.
+
+         See https://clickhouse.yandex/docs/en/table_engines/replication/
+      -->
+    <zookeeper>
+      <node index="1">
+        <host>zookeeper1</host>
+        <port>2181</port>
+      </node>
+      <node index="2">
+        <host>zookeeper2</host>
+        <port>2181</port>
+      </node>
+      <node index="3">
+        <host>zookeeper3</host>
+        <port>2181</port>
+      </node>
+    </zookeeper>
+
+    <!-- Substitutions for parameters of replicated tables.
+          Optional. If you don't use replicated tables, you could omit that.
+
+         See https://clickhouse.yandex/docs/en/table_engines/replication/#creating-replicated-tables
+      -->
+    <macros>
+        <replica>clickhouse1</replica>
+        <shard>1</shard>
+    </macros>
+</yandex>

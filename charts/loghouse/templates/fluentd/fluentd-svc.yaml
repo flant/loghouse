@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fluentd
+  namespace: {{ .Release.Namespace }}
+{{- if .Values.fluentd.svcLabels }}
+  labels:
+{{- range $key, $value := .Values.fluentd.svcLabels }}
+    {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end }}
+spec:
+  selector:
+    k8s-app: fluentd
+  ports:
+  - name: tcp-logs
+    port: {{ .Values.fluentd.tcpPort }}
+    targetPort: {{ .Values.fluentd.tcpPort }}
+    protocol: TCP
+  - name: forward-logs
+    port: {{ .Values.fluentd.forwardPort }}
+    targetPort: {{ .Values.fluentd.forwardPort }}
+    protocol: TCP
+  - name: udp-logs
+    port: {{ .Values.fluentd.udpPort }}
+    targetPort: {{ .Values.fluentd.udpPort }}
+    protocol: UDP
+  - name: http-metrics
+    port: {{ .Values.fluentd.exporterPort }}
+    targetPort: {{ .Values.fluentd.exporterPort }}
+    protocol: TCP

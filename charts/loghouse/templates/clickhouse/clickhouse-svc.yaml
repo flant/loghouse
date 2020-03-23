@@ -2,17 +2,57 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: clickhouse
+  name: {{ .Values.clickhouse.server }}
   namespace: {{ .Release.Namespace }}
+{{- if .Values.clickhouse.svcLabels }}
+  labels:
+{{- range $key, $value := .Values.clickhouse.svcLabels }}
+    {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end }}
+{{- if .Values.clickhouse.svcAnnotations }}
+  annotations:
+{{- range $key, $value := .Values.clickhouse.svcAnnotations }}
+    {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- end }}
 spec:
   selector:
     component: clickhouse
   ports:
   - name: http
-    port: 8123
-    targetPort: 8123
+    port: {{ .Values.clickhouse.httpPort }}
+    targetPort: {{ .Values.clickhouse.httpPort }}
     protocol: TCP
   - name: native
-    port: 9000
-    targetPort: 9000
+    port: {{ .Values.clickhouse.port }}
+    targetPort: {{ .Values.clickhouse.port }}
     protocol: TCP
+{{- if .Values.clickhouse.prometheusEnabled }}
+  - name: http-metrics
+    port: {{ .Values.clickhouse.exporterPort }}
+    targetPort: {{ .Values.clickhouse.exporterPort }}
+    protocol: TCP
+{{- end }}
+{{- if .Values.clickhouse.external }}
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: clickhouse
+  namespace: {{ .Release.Namespace }}
+subsets:
+- addresses:
+{{- range $ip := .Values.clickhouse.externalEndpoints }}
+  - ip: {{ $ip }}
+{{- end }}
+  ports:
+  - name: http
+    port: {{ .Values.clickhouse.httpPort }}
+    targetPort: {{ .Values.clickhouse.httpPort }}
+    protocol: TCP
+  - name: native
+    port: {{ .Values.clickhouse.port }}
+    targetPort: {{ .Values.clickhouse.port }}
+    protocol: TCP
+{{- end }}

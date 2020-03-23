@@ -1,3 +1,4 @@
+{{- if .Values.doDbDeploy }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -6,6 +7,7 @@ metadata:
   annotations:
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/weight": "5"
+    "helm.sh/hook-delete-policy": hook-succeeded
 spec:
   activeDeadlineSeconds: 600
   template:
@@ -13,29 +15,18 @@ spec:
       name: {{ .Chart.Name }}-init-tables
     spec:
       restartPolicy: OnFailure
+{{- if .Values.loghouse.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.loghouse.imagePullSecrets | indent 6 }}
+{{- end }}
       initContainers:
       - name: wait-clickhouse
         image: alpine:3.6
         command: [ '/bin/sh', '-c', 'while ! nc -z clickhouse 8123; do sleep 1; done' ]
       containers:
       - name: init-tables
-        image: flant/loghouse-dashboard:{{ template "app.version" $ }}
+        image: {{ .Values.loghouse.image }}:{{ template "app.version" $ }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         command: ['/bin/bash', '-l', '-c', 'rake create_logs_tables']
-        env:
-        - name: KUBERNETES_DEPLOYED
-          value: {{ now | quote }}
-        - name: CLICKHOUSE_URL
-          value: "clickhouse:8123"
-        - name: CLICKHOUSE_USERNAME
-          value: {{ .Values.clickhouse.user | quote }}
-        - name: CLICKHOUSE_PASSWORD
-          value: {{ .Values.clickhouse_pass_original | quote }}
-        - name: CLICKHOUSE_DATABASE
-          value: {{ .Values.clickhouse.db | quote }}
-        - name: CLICKHOUSE_LOGS_TABLE
-          value: {{ .Values.clickhouse.table | quote }}
-        - name: LOGS_TABLES_PARTITION_PERIOD
-          value: {{ .Values.partition_period | quote }}
-        - name: RACK_ENV
-          value: "production"
+{{ include "loghouse_envs" . | indent 8 }}
+{{- end }}

@@ -16,13 +16,21 @@ spec:
       labels:
         k8s-app: fluentd
         kubernetes.io/cluster-service: "true"
+{{- if or .Values.fluentd.podAnnotations .Values.fluentd.prometheusEnabled }}
       annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
+{{- range $key, $value := .Values.fluentd.podAnnotations }}
+        {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- if .Values.fluentd.prometheusEnabled }}
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ .Values.fluentd.exporterPort | quote }}
+{{- end }}
+{{- end }}
     spec:
       serviceAccountName: fluentd
       containers:
       - name: fluentd
-        image: flant/loghouse-fluentd:{{ template "app.version" $ }}
+        image: {{ .Values.fluentd.image }}:{{ template "app.version" $ }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         env:
         - name: FLUENTD_ARGS
@@ -31,11 +39,7 @@ spec:
           value: {{ .Values.clickhouse.server | quote }}
         - name: CLICKHOUSE_PORT
           value: {{ .Values.clickhouse.port | quote }}
-        - name: CLICKHOUSE_USER
-          value: {{ .Values.clickhouse.user | quote }}
-        - name: CLICKHOUSE_PASS
-          value: {{ .Values.clickhouse_pass_original | quote }}
-        - name: CLICKHOUSE_DB
+        - name: CLICKHOUSE_DATABASE
           value: {{ .Values.clickhouse.db | quote }}
         - name: K8S_LOGS_TABLE
           value: {{ .Values.clickhouse.table | quote }}
@@ -43,6 +47,9 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: spec.nodeName
+        envFrom:
+        - secretRef:
+            name: clickhouse-credentilas
         resources:
           limits:
             memory: {{ .Values.fluentd.resources.limits.memory }}
@@ -50,6 +57,15 @@ spec:
           requests:
             memory: {{ .Values.fluentd.resources.requests.memory }}
             cpu: {{ .Values.fluentd.resources.requests.cpu }}
+        ports:
+{{- if .Values.fluentd.prometheusEnabled }}
+        - name: http-metrics
+          containerPort: {{ .Values.clickhouse.exporterPort }}
+{{- end }}
+        - name: tcp-logs
+          containerPort: {{ .Values.fluentd.tcpPort }}
+        - name: udp-logs
+          containerPort: {{ .Values.fluentd.udpPort }}
         volumeMounts:
 {{- if .Values.docker_path }}
         - name: dockerpath
@@ -67,22 +83,11 @@ spec:
         - name: config-volume
           mountPath: /etc/fluent/config.d
       terminationGracePeriodSeconds: 30
-      tolerations:
-      - key: "node-role/logging"
-        operator: "Exists"
-      - key: "node-role/system"
-        operator: "Exists"
-      - key: "node-role/monitoring"
-        operator: "Exists"
-      - key: "node-role/ingress"
-        operator: "Exists"
-      - key: "node-role/frontend"
-        operator: "Exists"
-      - key: "dedicated"
-        operator: "Exists"
-{{- if .Values.install_master }}
-      - key: "node-role.kubernetes.io/master"
-        operator: "Exists"
+      {{ include "includeByName" (dict "root" .Values.fluentd "name" "nodeSelector") | indent 6 | trim }}
+      {{ include "includeByName" (dict "root" .Values.fluentd "name" "tolerations") | indent 6 | trim }}
+{{- if .Values.fluentd.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.fluentd.imagePullSecrets | indent 6 }}
 {{- end }}
       volumes:
       - name: varlog

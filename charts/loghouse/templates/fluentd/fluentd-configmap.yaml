@@ -2,11 +2,39 @@
 kind: ConfigMap
 apiVersion: v1
 data:
+  net.input.conf: |-
+    # Example
+    # '{"time":"2016-02-17T00:04:05.931087621Z", "labels": {"app": "test", "version": 3} ,"log": {"level": "info", "message": "Some log text here"}}'
+    <source>
+      @type tcp
+      tag net.tcp
+      <parse>
+        @type json
+        time_key time
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+      source_hostname_key client_host
+      source_address_key client_addr
+      port {{ .Values.fluentd.tcpPort }}
+    </source>
+
+    <source>
+      @type udp
+      tag net.udp
+      <parse>
+        @type json
+        time_key time
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+      source_hostname_key client_host
+      source_address_key client_addr
+      port {{ .Values.fluentd.udpPort }}
+    </source>
   containers.input.conf: |-
     # Example:
     # {"log":"[info:2016-02-16T16:04:05.930-08:00] Some log text here\n","stream":"stdout","time":"2016-02-17T00:04:05.931087621Z"}
     <source>
-      type tail
+      @type tail
       path /var/log/containers/*.log
       pos_file /var/log/containers.log.pos
       time_format %Y-%m-%dT%H:%M:%S.%NZ
@@ -18,31 +46,33 @@ data:
   system.input.conf: |-
     # Logs from systemd-journal for interesting services.
     <source>
-      type systemd
-      filters [{ "_SYSTEMD_UNIT": "docker.service" }]
-      pos_file /var/log/gcp-journald-docker.pos
+      @type systemd
+      matches [{ "_SYSTEMD_UNIT": "docker.service" }]
       read_from_head true
       tag docker
     </source>
 
     <source>
-      type systemd
-      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
-      pos_file /var/log/gcp-journald-kubelet.pos
+      @type systemd
+      matches [{ "_SYSTEMD_UNIT": "kubelet.service" }]
       read_from_head true
       tag kubelet
     </source>
-
   forward.input.conf: |-
     # Takes the messages sent over TCP
     <source>
-      type forward
+      @type forward
+      port {{ .Values.fluentd.forwardPort }}
     </source>
+{{- if .Values.fluentd.prometheusEnabled }}
   monitoring.conf: |-
     # Prometheus Exporter Plugin
     # input plugin that exports metrics
     <source>
       @type prometheus
+      bind 0.0.0.0
+      port {{ .Values.fluentd.exporterPort }}
+      metrics_path /metrics
     </source>
 
     <source>
@@ -66,17 +96,24 @@ data:
     </source>
 
     # input plugin that collects metrics for in_tail plugin
-    <source>
-      @type prometheus_tail_monitor
-      <labels>
-        host ${hostname}
-      </labels>
-    </source>
+    # This section disabled due to metrics count - tail plugin
+    # generate too many metrics
+    #<source>
+    #  @type prometheus_tail_monitor
+    #  <labels>
+    #    host ${hostname}
+    #  </labels>
+    #</source>
+{{- end }}
   output.conf: |-
     # Enriches records with Kubernetes metadata
     <filter kubernetes.**>
-      type kubernetes_metadata
-      merge_json_log false
+      @type kubernetes_metadata
+      cache_size 100000
+      cache_ttl 3600
+      # Watch api disabled due to implementation problems
+      # https://github.com/fabric8io/fluent-plugin-kubernetes_metadata_filter/issues/88#issuecomment-514433183
+      watch false
     </filter>
 
     <filter kubernetes.**>
@@ -93,8 +130,8 @@ data:
         container_name         ${record["kubernetes"]["container_name"]}
         stream                 ${record["stream"]}
         # dynamic fields
-        labels.names           ${record["kubernetes"]["labels"].keys}
-        labels.values          ${record["kubernetes"]["labels"].values}
+        labels.names           ${record["kubernetes"].key?("labels") ? record["kubernetes"]["labels"].keys : []}
+        labels.values          ${record["kubernetes"].key?("labels") ? record["kubernetes"]["labels"].values : []}
         string_fields.names    ${record["_json_log_"] ? record["_json_log_"].select{|_, v| !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.keys : ["log"]}
         string_fields.values   ${record["_json_log_"] ? record["_json_log_"].select{|_, v| !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.values.map(&:to_s) : [record["log"]]}
 
@@ -107,7 +144,37 @@ data:
         null_fields.names      ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.nil?}.keys : []}
       </record>
       remove_keys kubernetes, docker, master_url, time, log, _json_log_
-     </filter>
+    </filter>
+
+    <filter net.**>
+      @type record_modifier
+      <record>
+        _json_log_             ${ log = record["log"]; if log.is_a?(Hash); begin; log; rescue JSON::ParserError; end; end }
+        _labels_               ${ if record.key?("labels"); labels = record["labels"]; if labels.is_a?(Hash); begin; labels; rescue JSON::ParserError; end; end; end }
+        timestamp              ${time}
+        # static fields
+        source                 "net"
+        namespace              {{ printf "%s" .Release.Namespace | quote }}
+        host                   ${record["client_addr"]}
+        pod_name               ${record["client_host"]}
+        container_name         "net"
+        stream                 "net"
+        # dynamic fields
+        labels.names           ${record["_labels_"] ? record["_labels_"].keys.map(&:to_s) : []}
+        labels.values          ${record["_labels_"] ? record["_labels_"].values.map(&:to_s) : []}
+        string_fields.names    ${record["_json_log_"] ? record["_json_log_"].select{|_, v| !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.keys : ["log"]}
+        string_fields.values   ${record["_json_log_"] ? record["_json_log_"].select{|_, v| !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.values.map(&:to_s) : [record["log"]]}
+
+        number_fields.names    ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.is_a?(Numeric)}.keys : []}
+        number_fields.values   ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.is_a?(Numeric)}.values : []}
+
+        boolean_fields.names   ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.is_a?(TrueClass) || v.is_a?(FalseClass)}.keys : []}
+        boolean_fields.values  ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.is_a?(TrueClass) || v.is_a?(FalseClass)}.values.map{|v| v ? 1 : 0} : []}
+
+        null_fields.names      ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.nil?}.keys : []}
+      </record>
+      remove_keys time, log, _json_log_, client_addr, client_host, _labels_, labels
+    </filter>
 
     <filter docker.**>
       @type record_modifier
@@ -137,21 +204,23 @@ data:
 
     <filter **>
       @type record_modifier
-      whitelist_keys timestamp, nsec, source, namespace, host, pod_name, container_name, stream, labels.names, labels.values, string_fields.names, string_fields.values, number_fields.names, number_fields.values, boolean_fields.names, boolean_fields.values, null_fields.names 
+      whitelist_keys timestamp, nsec, source, namespace, host, pod_name, container_name, stream, labels.names, labels.values, string_fields.names, string_fields.values, number_fields.names, number_fields.values, boolean_fields.names, boolean_fields.values, null_fields.names
     </filter>
- 
+
     <match **>
       @type exec
-      command bash /usr/local/bin/insert_ch.sh
+      @id load2clickhouse
+      command bash /usr/local/bin/insert_ch.sh {{ template "fluentdInsertTable" $ }}
       format json
-      buffer_type memory
-      buffer_chunk_limit 64m
-      buffer_queue_limit 32
-      flush_at_shutdown true
-      flush_interval 1s
-      num_threads 4
+      <buffer>
+        @type memory
+        chunk_limit_size 64m
+        queue_limit_length 32
+        flush_at_shutdown true
+        flush_interval 15s
+        flush_thread_count 4
+      </buffer>
     </match>
-
 metadata:
   name: fluentd-config
   namespace: {{ .Release.Namespace }}

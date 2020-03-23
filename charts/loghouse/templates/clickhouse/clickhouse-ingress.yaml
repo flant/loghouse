@@ -1,18 +1,27 @@
 {{- if (and .Values.ingress.enable .Values.enable_tabix) }}
-apiVersion: extensions/v1beta1
+apiVersion: {{ template "Ingress.apiVersion" $ }}
 kind: Ingress
 metadata:
   name: clickhouse
   namespace: {{ .Release.Namespace }}
   annotations:
-    kubernetes.io/ingress.class: "nginx"
-{{- if .Values.ingress.enable_https }}
-    kubernetes.io/tls-acme: "true"
-    ingress.kubernetes.io/force-ssl-redirect: "true"
-    ingress.kubernetes.io/ssl-redirect: "true"
+{{- if .Values.ingress.clickhouse.ingressClass }}
+    kubernetes.io/ingress.class: {{ .Values.ingress.clickhouse.ingressClass | quote }}
 {{- else }}
-    ingress.kubernetes.io/force-ssl-redirect: "false"
-    ingress.kubernetes.io/ssl-redirect: "false"
+    kubernetes.io/ingress.class: "nginx"
+{{- end }}
+{{- if .Values.ingress.clickhouse.annotations }}
+{{- range $key, $value := .Values.ingress.clickhouse.annotations }}
+    {{ $key }}: {{ $value | quote }}
+{{- end }}
+{{- else }}
+{{- if .Values.ingress.enable_https }}
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+{{- else }}
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+{{- end }}
 {{- end }}
 spec:
   rules:
@@ -28,5 +37,33 @@ spec:
   - hosts:
     - {{ .Values.ingress.clickhouse.host }}
     secretName: {{ .Values.ingress.clickhouse.tls_secret_name}}
+{{- if .Values.ingress.clickhouse.tls_issuer }}
+---
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: {{ .Values.ingress.clickhouse.tls_secret_name}}
+spec:
+  acme:
+    config:
+    - domains:
+      - {{ .Values.ingress.clickhouse.host }}
+      http01:
+{{- if .Values.ingress.clickhouse.ingressClass }}
+        ingressClass: {{ .Values.ingress.clickhouse.ingressClass | quote }}
+{{- else }}
+        ingressClass: "nginx"
+{{- end }}
+  dnsNames:
+  - {{ .Values.ingress.clickhouse.host }}
+  issuerRef:
+{{- if .Values.ingress.clickhouse.tls_issuer_kind }}
+    kind: {{ .Values.ingress.clickhouse.tls_issuer_kind }}
+{{- else }}
+    kind: ClusterIssuer
+{{- end }}
+    name:  {{ .Values.ingress.clickhouse.tls_issuer }}
+  secretName: {{ .Values.ingress.clickhouse.tls_secret_name }}
+{{- end }}
 {{- end }}
 {{- end }}

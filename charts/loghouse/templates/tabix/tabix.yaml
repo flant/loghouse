@@ -6,21 +6,25 @@ metadata:
   name: tabix
   namespace: {{ .Release.Namespace }}
 spec:
+  selector:
+    matchLabels:
+      component: tabix
   revisionHistoryLimit: 1
   replicas: 1
   strategy:
     type: Recreate
-  selector:
-    matchLabels:
-      component: tabix
   template:
     metadata:
       labels:
         component: tabix
     spec:
+{{- if .Values.tabix.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.tabix.imagePullSecrets | indent 6 }}
+{{- end }}
       containers:
       - name: tabix
-        image: flant/loghouse-tabix:{{ template "app.version" $ }}
+        image: {{ .Values.tabix.image }}:{{ template "app.version" $ }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         ports:
         - name: http
@@ -35,26 +39,7 @@ spec:
           initialDelaySeconds: 5
           tcpSocket:
             port: 80
-        resources:
-          requests:
-            cpu: {{ .Values.tabix.resources.requests.cpu }}
-            memory: {{ .Values.tabix.resources.requests.memory }}
-          limits:
-            cpu: {{ .Values.tabix.resources.limits.cpu }}
-            memory: {{ .Values.tabix.resources.limits.memory }}
-{{- if .Values.tolerations }}
-      tolerations:
-      - operator: {{ .Values.tolerations.operator | quote }}
-        key: {{ .Values.tolerations.key | quote }}
-{{- if .Values.tolerations.value }}
-        value: {{ .Values.tolerations.value | quote }}
-{{- end }}
-{{- if .Values.tolerations.effect }}
-        effect: {{ .Values.tolerations.effect | quote }}
-{{- end }}
-{{- end }}
-{{- if .Values.nodeSelector }}
-      nodeSelector:
-        {{ .Values.nodeSelector.key }}: {{ .Values.nodeSelector.value }}
-{{- end }}
+        {{ include "includeByName" (dict "root" .Values.tabix "name" "resources") | indent 8 | trim }}
+      {{ include "includeByName" (dict "root" .Values.tabix "name" "nodeSelector") | indent 6 | trim }}
+      {{ include "includeByName" (dict "root" .Values.tabix "name" "tolerations") | indent 6 | trim }}
 {{- end }}

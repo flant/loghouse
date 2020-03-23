@@ -3,9 +3,11 @@ module LogsTables
   TABLE_NAME          = ENV.fetch('CLICKHOUSE_LOGS_TABLE')          { 'logs' }
   TIMESTAMP_ATTRIBUTE = ENV.fetch('CLICKHOUSE_TIMESTAMP_ATTRIBUTE') { 'timestamp' }
   NSEC_ATTRIBUTE      = ENV.fetch('CLICKHOUSE_NSEC_ATTRIBUTE')      { 'nsec' }
-  PARTITION_PERIOD    = ENV.fetch('LOGS_TABLES_PARTITION_PERIOD')   { '24' }.to_i
-
-  raise "24 must be divisible by PARTITION_PERIOD" unless (24 % PARTITION_PERIOD).zero?
+  RETENTION_PERIOD    = ENV.fetch('LOGS_TABLES_RETENTION_PERIOD')   { '14' }.to_i
+  HAS_BUFFER          = ENV.fetch('LOGS_TABLES_HAS_BUFFER')         { 'true' }
+  PARTITION_PERIOD    = 1
+  DB_VERSION          = 3
+  DB_VERSION_TABLE    = "migrations"          
 
   KUBERNETES_ATTRIBUTES = {
     source: 'String',
@@ -18,24 +20,26 @@ module LogsTables
 
   module_function
 
-  def create_partition_table(time = Tima.zone.now, force: false)
-    engine = "MergeTree(date, (#{TIMESTAMP_ATTRIBUTE}, #{NSEC_ATTRIBUTE}), 32768)"
-    table_name = partition_table_name(time)
+  def create_buffer_table(force: false)
+    engine = "Buffer(#{DATABASE}, #{TABLE_NAME}, 16, 30, 60, 100, 10000, 1048576, 10485760)"
+    table_name = "#{TABLE_NAME}_buffer"
 
-    create_table table_name, engine, force: force
+    create_table table_name, create_table_sql(table_name, engine), force: force
   end
 
-  def create_merge_table(force: false)
-    engine = "Merge(#{DATABASE}, '^#{TABLE_NAME}')"
+  def create_storage_table(force: false)
+    engine = "MergeTree() PARTITION BY (date) ORDER BY (#{TIMESTAMP_ATTRIBUTE}, #{NSEC_ATTRIBUTE}, namespace, container_name) TTL date + INTERVAL #{RETENTION_PERIOD} DAY DELETE SETTINGS index_granularity=32768"
     table_name = TABLE_NAME
 
-    create_table table_name, engine, force: force
+    create_table table_name, create_table_sql(table_name, engine), force: force
   end
 
-  def partition_table_name(time = Time.now.utc)
-    time = round_time_to_partition(time)
+  def create_migration_table(force: false)
+    engine = "MergeTree() PARTITION BY (timestamp) ORDER BY (timestamp)"
+    table_name = DB_VERSION_TABLE
+    sql = "CREATE TABLE IF NOT EXISTS migrations (timestamp DateTime, version UInt32) ENGINE = #{engine}"
 
-    "#{TABLE_NAME}#{time.strftime(PARTITION_PERIOD < 24 ? '%Y%m%d%H' : '%Y%m%d')}" # a little dirty
+    create_table table_name, sql, force: force
   end
 
   def round_time_to_partition(time)
@@ -50,29 +54,11 @@ module LogsTables
     round_time_to_partition(time) - PARTITION_PERIOD.hours
   end
 
-  def split_range_to_tables(time_from, time_to)
-    table_ranges = {}
-    time = round_time_to_partition time_from
-
-    while time <= time_to do
-      next_partition = next_time_partition(time)
-
-      to = [time_to, next_partition].min
-      from = [time_from, time].max
-
-      table_ranges[partition_table_name(time)] = [from, to]
-
-      time = next_partition
-    end
-
-    table_ranges
-  end
-
   private
 
   module_function
 
-  def create_table(table_name, engine, force: false)
+  def create_table(table_name, sql_code, force: false)
     log "Creating table #{table_name}"
 
     if ::Clickhouse.connection.exists_table(table_name)
@@ -85,7 +71,7 @@ module LogsTables
       ::Clickhouse.connection.drop_table(table_name)
     end
 
-    ::Clickhouse.connection.execute create_table_sql(table_name, engine)
+    ::Clickhouse.connection.execute sql_code
 
     log "Table #{table_name} created"
   end
@@ -94,7 +80,7 @@ module LogsTables
     <<~EOS
       CREATE TABLE #{table_name}
       (
-        `date` Date MATERIALIZED toDate(#{TIMESTAMP_ATTRIBUTE}),
+        `date` Date MATERIALIZED toDate(timestamp),
         `#{TIMESTAMP_ATTRIBUTE}` DateTime,
         `#{NSEC_ATTRIBUTE}` UInt32,
     #{KUBERNETES_ATTRIBUTES.map { |att, type| "    `#{att}` #{type}" }.join(",\n") },
