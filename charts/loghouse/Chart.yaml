@@ -1,6 +1,6 @@
 name: loghouse
 # helm package override version on release. Do not change it in master.
-version: 0.3
+version: 0.3.0
 description: Loghouse (Fluentd, Clickhouse, Tabix, Loghouse) for collect and prepare
              logs for Kubernetes cluster.
 keywords:
