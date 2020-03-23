@@ -7,9 +7,7 @@ ___
 
 Ready to use log management solution for Kubernetes. Efficiently store big amounts of your logs (in [ClickHouse](https://github.com/yandex/ClickHouse) database), process them using a simple query language and monitor them online through web UI. Easy and quick to deploy in an already functioning Kubernetes cluster.
 
-Status is **alpha**. However we (Flant) use it in our production Kubernetes deployments since September, 2017.
-
-Some data may be dropped in alpha's updates. Be careful, when updating! All info will be published in release notes. **Data's structure will be stable in beta version.**
+Status is **alpha**. However we (Flant) use it in our production Kubernetes deployments since September, 2017. Data structure might change during alpha releases, so please be careful when updating (all relevant information is published in corresponding release notes). Data structure will become stable in beta version.
 
 Loghouse-dashboard UI demo in action (~3 Mb):
 
@@ -30,6 +28,8 @@ Loghouse-dashboard UI demo in action (~3 Mb):
   * Save your queries to use in future.
   * Basic permissions (limiting entries shown for users by specifying Kubernetes namespaces).
   * Exporting current query's results to CSV (more formats will be supported).
+* fluentd monitoring via Prometheus with Grafana dashboards for ClickHouse and fluentd.
+
 
 # Installation
 
@@ -72,27 +72,27 @@ A pod with fluentd collecting logs will be installed on each node of your Kubern
 
 **Note on logs format**: If log entry is in JSON, it will be formatted according to its values' types, i.e. each field will be stored in corresponding table: string_fields, number_fields, boolean_fields, null_fields or labels (the last one is used for containers labels to make further filtering and lookups easy). ClickHouse built-in functions will be used to process these data types. If log entry isn't in JSON, it will be stored in string_fields table.
 
-Currently, ClickHouse DBMS is deployed as a single instance via StatefulSet which brings this instance to a random K8s node (this behaviour can be changed by using nodeSelector and tolerations to choose a specific node). ClickHouse stores its data in hostPath volume or Persistent Volumes Claim (PVC) created with any storageClass you prefer. You can find extended schemas for clickhouse [here](docs/en/schemas/README.md)
+By default, ClickHouse DBMS is deployed as a single instance via StatefulSet which brings this instance to a random K8s node (this behaviour can be changed by using nodeSelector and tolerations to choose a specific node). ClickHouse stores its data in hostPath volume or Persistent Volumes Claim (PVC) created with any storageClass you prefer. You can find other deployment options for ClickHouse (i.e. using an external ClickHouse instance) [here](docs/en/schemas/README.md).
 
 Web UI ([screenshot](docs/loghouse_interface.png)) is composed of two components:
 
 * **frontend** — nginx with basic authorization. This authorization is used to limit user's access with logs from given Kubernetes namespaces only;
 * **backend** — Ruby application displaying logs from ClickHouse.
 
-Clickhouse and Fluentd components have optional Prometheus exporters. Default dashboards for Grafana you can find [here](docs/en/grafana)
+ClickHouse and Fluentd components have optional Prometheus exporters. You can find our default dashboards for Grafana [here](docs/en/grafana).
 
 # Upgrading
 
-Helm chart was rewritten. All API versions were updated. Helm hook policy was updated too. So, to make an update to **0.3** you need to remove some conflicting objects.
+In **v0.3.0**, Helm chart for loghouse has been rewritten. All API versions as well as Helm hook policy have been updated. To upgrade your loghouse installation to v0.3.0, you have to remove conflicting objects:
 
 ```
 kubectl -n loghouse delete jobs,ing --all
 ```
 
-**Warning!** Database schema was changed. Please, create a backup of clickhouse data before upgrade. Note that the migration task will automatically start at the end of the upgrade process.
+**Warning!** Database schema has been also changed. Please, prepare a backup of ClickHouse data before upgrading. Note that the migration task will be automatically started at the end of the upgrade process.
 
 # Roadmap
 
-We're going to add another deployment options (having ClickHouse instances on each K8s node or having a ClickHouse cluster), migrate frontend to AngularJS and backend to Golang, add command-line interface (CLI) and much more.
+We're going to add logs filtering, another deployment options (having ClickHouse instances on each K8s node), migrate frontend to AngularJS and backend to Golang, add command-line interface (CLI) and much more.
 
-More details will be available soon in our [issues](https://github.com/flant/loghouse/issues).
+More details will be available in our [issues](https://github.com/flant/loghouse/issues).
