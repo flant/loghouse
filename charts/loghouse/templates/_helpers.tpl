@@ -80,9 +80,9 @@ PVC name
 Convert pod limits to config bytes
 */}}
 {{- define "toBytes" -}}
-{{- $units := dict "K" 1000 "Ki" 1024 "M" 1000000 "Mi" 1048576 "G" 1000000000 "Gi" 1073741824 "T" 1000000000000 "Ti" 1099511627776 "P" 1000000000000000 "Pi" 1125899906842624 "E" 1125899906842624 "Ei" 1152921504606846976 -}}
-{{- $memUnit := regexFind "[EPTGMK]i?|e" . -}}
-{{- $memBase := regexFind "[0-9]+" . -}}
+{{- $units := dict "" 1 "e" 0 "K" 1000 "Ki" 1024 "M" 1000000 "Mi" 1048576 "G" 1000000000 "Gi" 1073741824 "T" 1000000000000 "Ti" 1099511627776 "P" 1000000000000000 "Pi" 1125899906842624 "E" 1125899906842624 "Ei" 1152921504606846976 -}}
+{{- $memUnit := regexFind "[EPTGMK]i?|e" (toString (int64 .)) -}}
+{{- $memBase := regexFind "[0-9]+" (toString (int64 .)) -}}
 {{- $memMultiplier := pluck $memUnit $units | first | default 0 -}}
 {{- $memVal := (sub (mul $memBase $memMultiplier) 134217728) }}
 {{- if not (regexFind "-" (toString $memVal)) -}}
