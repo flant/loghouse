@@ -1,12 +1,15 @@
 class LoghouseQuery
   module CSV
     def csv_result(shown_keys = nil)
+      Log.log "Start csv function", 6
       sql = to_clickhouse(LogsTables::TABLE_NAME, parsed_time_from, parsed_time_to)
-      Log.log "Got data from clickhouse", 6
       res = LogEntry.from_result_set ::Clickhouse.connection.query(sql)
+
+      Log.log "Got data from clickhouse", 6
 
       return "" if res.blank?
 
+      Log.log "Star data convertion", 6
       res = res.map do |r|
         x = { 'timestamp' => r.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") }
         LogsTables::KUBERNETES_ATTRIBUTES.keys.each { |k| x[k.to_s] = r.send(k) }
