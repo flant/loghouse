@@ -1,5 +1,5 @@
 {{- $uniq_id := uuidv4 -}}
-{{- if .Values.doDbDeploy }}
+{{- if .Values.do_db_migrate }}
 apiVersion: batch/v1
 kind: Job
 metadata:

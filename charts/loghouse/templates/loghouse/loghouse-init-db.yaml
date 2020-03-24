@@ -1,4 +1,4 @@
-{{- if .Values.doDbDeploy }}
+{{- if .Values.do_db_deploy }}
 apiVersion: batch/v1
 kind: Job
 metadata:

@@ -1,5 +1,5 @@
 {{- if not .Values.clickhouse.external }}
-{{- if .Values.doDbDeploy -}}
+{{- if .Values.do_db_deploy -}}
 kind: ConfigMap
 apiVersion: v1
 data:

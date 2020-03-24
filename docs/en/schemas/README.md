@@ -32,5 +32,5 @@ clickhouse:
 
 For clickhouse cluster set this variable in values.yaml
 ```
-doDbDeploy: false
+do_db_deploy: false
 ```

@@ -65,7 +65,10 @@ storage:
 retention_period: 7
 
 # Create db and default table structure in clickhouse
-doDbDeploy: true
+do_db_deploy: true
+
+# Migrate data from old table format to new one
+do_db_migrate: true
 
 # If you not want install fluentd on master node
 install_master: true

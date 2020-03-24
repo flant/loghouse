@@ -80,15 +80,16 @@ PVC name
 Convert pod limits to config bytes
 */}}
 {{- define "toBytes" -}}
-{{- $units := dict "" 1 "e" 0 "K" 1000 "Ki" 1024 "M" 1000000 "Mi" 1048576 "G" 1000000000 "Gi" 1073741824 "T" 1000000000000 "Ti" 1099511627776 "P" 1000000000000000 "Pi" 1125899906842624 "E" 1125899906842624 "Ei" 1152921504606846976 -}}
-{{- $rawValueConverter := (dict "float64" (toString (int64 .))) -}}
-{{- $type := printf "%T" . }}
-{{- $rawMemValue := pluck $type $rawValueConverter | first | default . -}}
-{{- $memUnit := regexFind "[EPTGMK]i?|e" $rawMemValue -}}
-{{- $memBase := regexFind "[0-9]+" $rawMemValue -}}
-{{- $memMultiplier := pluck $memUnit $units | first | default 0 -}}
-{{- $memVal := (mul $memBase $memMultiplier) }}
-{{- $memVal -}}
+{{- $units := dict "" 1 "K" 1000 "Ki" 1024 "M" 1000000 "Mi" 1048576 "G" 1000000000 "Gi" 1073741824 "T" 1000000000000 "Ti" 1099511627776 "P" 1000000000000000 "Pi" 1125899906842624 "E" 1125899906842624 "Ei" 1152921504606846976 -}}
+{{- if ne (printf "%T" .) "string" }}
+{{- int64 . -}}
+{{- else if regexMatch "[e][+-]" . }}
+{{- int64 (float64 .) -}}
+{{- else }}
+{{- $memBase := regexFind "[0-9]+" . -}}
+{{- $memMultiplier := pluck (regexFind "[EPTGMK]i?" .) $units | first | default 0 -}}
+{{- mul $memBase $memMultiplier -}}
+{{- end -}}
 {{- end -}}
 
 {{/*
