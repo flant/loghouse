@@ -27,7 +27,7 @@ Fix clickhouse httpport
 {{- $httpPort := .Values.clickhouse.httpPort }}
 {{- $type := printf "%T" $httpPort }}
 {{- if eq $type "float64" -}}
-{{ printf "%s:%.0f" .Values.clickhouse.server $httpPort | quote }}
+{{- printf "%s:%.0f" .Values.clickhouse.server $httpPort | quote -}}
 {{- else -}}
 {{- printf "%s:%d" .Values.clickhouse.server $httpPort | quote -}}
 {{- end -}}
@@ -81,10 +81,23 @@ Convert pod limits to config bytes
 */}}
 {{- define "toBytes" -}}
 {{- $units := dict "" 1 "e" 0 "K" 1000 "Ki" 1024 "M" 1000000 "Mi" 1048576 "G" 1000000000 "Gi" 1073741824 "T" 1000000000000 "Ti" 1099511627776 "P" 1000000000000000 "Pi" 1125899906842624 "E" 1125899906842624 "Ei" 1152921504606846976 -}}
-{{- $memUnit := regexFind "[EPTGMK]i?|e" (toString (int64 .)) -}}
-{{- $memBase := regexFind "[0-9]+" (toString (int64 .)) -}}
+{{- $rawValueConverter := (dict "float64" (toString (int64 .))) -}}
+{{- $type := printf "%T" . }}
+{{- $rawMemValue := pluck $type $rawValueConverter | first | default . -}}
+{{- $memUnit := regexFind "[EPTGMK]i?|e" $rawMemValue -}}
+{{- $memBase := regexFind "[0-9]+" $rawMemValue -}}
 {{- $memMultiplier := pluck $memUnit $units | first | default 0 -}}
-{{- $memVal := (sub (mul $memBase $memMultiplier) 134217728) }}
+{{- $memVal := (mul $memBase $memMultiplier) }}
+{{- $memVal -}}
+{{- end -}}
+
+{{/*
+Calculate result for app limits
+*/}}
+{{- define "toBytesNotBelow" -}}
+{{- $memLimit := (include "toBytes" (pluck "limit" . | first | default 0)) -}}
+{{- $memReserve := (include "toBytes" (pluck "reserve" . | first | default 0)) -}}
+{{- $memVal := (sub $memLimit $memReserve) }}
 {{- if not (regexFind "-" (toString $memVal)) -}}
 {{- $memVal -}}
 {{- else -}}

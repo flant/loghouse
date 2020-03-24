@@ -110,6 +110,7 @@ clickhouse:
 # It wants 120Mi for system use. So, specify 2Gi limit or more
 # Memory limit in "129e6" format does no supperted, sorry 
   resources:
+    reserveMemory: 128Mi
     limits:
       cpu: 4
       memory: 8Gi
