@@ -48,9 +48,9 @@ data:
     <yandex>
         <profiles>
             <default>
-                <max_memory_usage>{{ template "clickhouseMaxMemory" $ }}</max_memory_usage>
-                <max_memory_usage_for_user>{{ template "clickhouseMaxMemory" $ }}</max_memory_usage_for_user>
-                <max_memory_usage_for_all_queries>{{ template "clickhouseMaxMemory" $ }}</max_memory_usage_for_all_queries>
+                <max_memory_usage>{{ include "toBytes" .Values.clickhouse.resources.limits.memory }}</max_memory_usage>
+                <max_memory_usage_for_user>{{ include "toBytes" .Values.clickhouse.resources.limits.memory }}</max_memory_usage_for_user>
+                <max_memory_usage_for_all_queries>{{ include "toBytes" .Values.clickhouse.resources.limits.memory }}</max_memory_usage_for_all_queries>
                 <use_uncompressed_cache>0</use_uncompressed_cache>
                 <load_balancing>random</load_balancing>
             </default>

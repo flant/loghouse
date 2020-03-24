@@ -17,8 +17,10 @@ metadata:
 {{- end }}
 {{- end }}
 spec:
+{{- if not .Values.clickhouse.external }}
   selector:
     component: clickhouse
+{{- end }}
   ports:
   - name: http
     port: {{ .Values.clickhouse.httpPort }}
@@ -49,10 +51,13 @@ subsets:
   ports:
   - name: http
     port: {{ .Values.clickhouse.httpPort }}
-    targetPort: {{ .Values.clickhouse.httpPort }}
     protocol: TCP
   - name: native
     port: {{ .Values.clickhouse.port }}
-    targetPort: {{ .Values.clickhouse.port }}
     protocol: TCP
+{{- if .Values.clickhouse.prometheusEnabled }}
+  - name: http-metrics
+    port: {{ .Values.clickhouse.exporterPort }}
+    protocol: TCP
+{{- end }}
 {{- end }}
