@@ -14,6 +14,7 @@ require 'kubernetes'
 require 'user'
 
 require 'parslet_extensions'
+require 'log'
 require 'logs_tables'
 require 'loghouse_query'
 

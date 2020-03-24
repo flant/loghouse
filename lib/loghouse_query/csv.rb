@@ -2,7 +2,7 @@ class LoghouseQuery
   module CSV
     def csv_result(shown_keys = nil)
       sql = to_clickhouse(LogsTables::TABLE_NAME, parsed_time_from, parsed_time_to)
-      Log::log "Got data from clickhouse", 6
+      Log.log "Got data from clickhouse", 6
       res = LogEntry.from_result_set ::Clickhouse.connection.query(sql)
 
       return "" if res.blank?
