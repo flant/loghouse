@@ -9,7 +9,7 @@ class LoghouseQuery
 
       return "" if res.blank?
 
-      Log.log "Star data convertion", 6
+      Log.log "Start data conversion", 6
       res = res.map do |r|
         x = { 'timestamp' => r.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") }
         LogsTables::KUBERNETES_ATTRIBUTES.keys.each { |k| x[k.to_s] = r.send(k) }
