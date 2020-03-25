@@ -83,7 +83,7 @@ Convert pod limits to config bytes
 {{- $units := dict "" 1 "K" 1000 "Ki" 1024 "M" 1000000 "Mi" 1048576 "G" 1000000000 "Gi" 1073741824 "T" 1000000000000 "Ti" 1099511627776 "P" 1000000000000000 "Pi" 1125899906842624 "E" 1125899906842624 "Ei" 1152921504606846976 -}}
 {{- if ne (printf "%T" .) "string" }}
 {{- int64 . -}}
-{{- else if regexMatch "[e][+-]" . }}
+{{- else if regexMatch "[Ee][+-]?[0-9]" . }}
 {{- int64 (float64 .) -}}
 {{- else }}
 {{- $memBase := regexFind "[0-9]+" . -}}
