@@ -113,8 +113,8 @@ clickhouse:
 # Note that "max memory limit" is calculated as "limits.memory" - 128Mi,
 # because clickhouse process needs 128Mi to run.
 # So specify at least 2Gi for "limits.memory".
+  reserveMemory: 128Mi
   resources:
-    reserveMemory: 128Mi
     limits:
       cpu: 4
       memory: 8Gi
