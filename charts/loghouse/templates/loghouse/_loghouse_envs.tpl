@@ -3,7 +3,7 @@ env:
 - name: KUBERNETES_DEPLOYED
   value: {{ now | quote }}
 - name: DO_DB_DEPLOY
-  value: {{ .Values.do_db_deploy | quote }}
+  value: {{ .Values.doDbDeploy | quote }}
 - name: CLICKHOUSE_URL
   value: {{ template "clickhouseHttpService" $ }}
 - name: CLICKHOUSE_SERVER

@@ -94,7 +94,7 @@ spec:
           mountPath: /var/lib/clickhouse/
         - name: config-volume
           mountPath: /etc/clickhouse-server/
-{{- if .Values.do_db_deploy }}
+{{- if .Values.doDbDeploy }}
         - name: initdb
           mountPath: /docker-entrypoint-initdb.d/
 {{- end }}
@@ -128,7 +128,7 @@ spec:
       - name: config-volume
         configMap:
           name: clickhouse-config
-{{- if .Values.do_db_deploy }}
+{{- if .Values.doDbDeploy }}
       - name: initdb
         configMap:
           name: clickhouse-initdb
