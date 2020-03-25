@@ -109,7 +109,7 @@ clickhouse:
 # You should create registry secret
 # if you install images from private registry
   imagePullSecrets:
-# Our chart convert memory limit to clickhouse max memory limit
+# The memory limit is also used to specify max memory limit bytes for clickhouse.
 # Note that "max memory limit" is calculated as "limits.memory" - 128Mi,
 # because clickhouse process needs 128Mi to run.
 # So specify at least 2Gi for "limits.memory".
