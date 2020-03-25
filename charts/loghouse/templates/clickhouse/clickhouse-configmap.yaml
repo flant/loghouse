@@ -48,9 +48,9 @@ data:
     <yandex>
         <profiles>
             <default>
-                <max_memory_usage>{{ include "toBytesNotBelow" (dict "limit" .Values.clickhouse.resources.limits.memory "reserve" .Values.clickhouse.resources.reserveMemory) }}</max_memory_usage>
-                <max_memory_usage_for_user>{{ include "toBytesNotBelow" (dict "limit" .Values.clickhouse.resources.limits.memory "reserve" .Values.clickhouse.resources.reserveMemory) }}</max_memory_usage_for_user>
-                <max_memory_usage_for_all_queries>{{ include "toBytesNotBelow" (dict "limit" .Values.clickhouse.resources.limits.memory "reserve" .Values.clickhouse.resources.reserveMemory) }}</max_memory_usage_for_all_queries>
+                <max_memory_usage>{{ include "toBytesWithoutReserved" (list .Values.clickhouse.resources.limits.memory  .Values.clickhouse.resources.reserveMemory) }}</max_memory_usage>
+                <max_memory_usage_for_user>{{ include "toBytesWithoutReserved" (list .Values.clickhouse.resources.limits.memory .Values.clickhouse.resources.reserveMemory) }}</max_memory_usage_for_user>
+                <max_memory_usage_for_all_queries>{{ include "toBytesWithoutReserved" (list  .Values.clickhouse.resources.limits.memory .Values.clickhouse.resources.reserveMemory) }}</max_memory_usage_for_all_queries>
                 <use_uncompressed_cache>0</use_uncompressed_cache>
                 <load_balancing>random</load_balancing>
             </default>

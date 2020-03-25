@@ -93,13 +93,14 @@ Convert pod limits to config bytes
 {{- end -}}
 
 {{/*
-Calculate result for app limits
+Calculate max memory usage as input memory specification
+without reserved memory. Result is 0 if input bytes is lower than reserved bytes.
 */}}
-{{- define "toBytesNotBelow" -}}
-{{- $memLimit := (include "toBytes" (pluck "limit" . | first | default 0)) -}}
-{{- $memReserve := (include "toBytes" (pluck "reserve" . | first | default 0)) -}}
-{{- $memVal := (sub $memLimit $memReserve) }}
-{{- if not (regexFind "-" (toString $memVal)) -}}
+{{- define "toBytesWithoutReserved" -}}
+{{- $input := include "toBytes" (first .) -}}
+{{- $reserved := include "toBytes" (last .) -}}
+{{- $memVal := (sub $input $reserved ) }}
+{{- if ge $memVal 0 -}}
 {{- $memVal -}}
 {{- else -}}
 0
