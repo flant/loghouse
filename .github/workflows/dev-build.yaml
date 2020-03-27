@@ -16,10 +16,10 @@ jobs:
     steps:
       - name: stub action
         run: ": This job is used to prevent the workflow to fail when all other jobs are skipped."
-        - name: dump label event
-          run: cat $GITHUB_EVENT_PATH
-        - name: dump envs
-          run: export
+      - name: dump label event
+        run: cat $GITHUB_EVENT_PATH
+      - name: dump envs
+        run: export
 
   unlabel:
     name: Unlabel
