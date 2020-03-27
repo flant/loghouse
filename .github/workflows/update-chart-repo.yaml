@@ -1,0 +1,58 @@
+name: Update chart repo
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  update_chart_repo:
+    name: Update chart repo
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install helm
+        run: |
+          set -eo pipefail
+          curl -Ls https://get.helm.sh/helm-v2.16.5-linux-amd64.tar.gz -o helm.tar.gz
+          tar zxf helm.tar.gz linux-amd64/helm -O | sudo tee /usr/local/bin/helm > /dev/null
+          sudo chmod +x /usr/local/bin/helm
+          helm init --client-only
+
+      - name: Create helm package
+        run: |
+          chartVersion=${GITHUB_REF#refs/tags/v}
+
+          ok=$(echo "${chartVersion}" | sed 's/^[0-9]\+.[0-9]\+.[0-9]\+$/OK/')
+          if [[ $ok != "OK" ]] ; then
+            echo "Version ${chartVersion} must be of digits and dots: '[0-9]+.[0-9]+.[0-9]+'"
+            exit 1
+          fi
+
+          echo Use version ${chartVersion}
+          echo ::set-env name=chartVersion::${chartVersion}
+
+          mkdir new_charts/
+          helm package -d new_charts/ --version $chartVersion charts/loghouse
+
+      - name: Setup git settings
+        run: |
+          git config --global user.email "no-reply@flant.com"
+          git config --global user.name "Loghouse release bot"
+          git remote set-branches --add origin gh-pages
+          git fetch origin gh-pages
+          git remote add origin-pages https://${{secrets.GITHUB_PUSH_TOKEN}}@github.com/${GITHUB_REPOSITORY}.git
+
+      - name: Update gh-pages branch
+        run: |
+          : Checkout gh-pages
+          git checkout gh-pages
+          export CHART=$(ls -1 new_charts/)
+          mv new_charts/${CHART} charts/${CHART}
+          rm -rf new_charts/
+          helm repo index charts/
+          : Make commit to gh-pages branch
+          git add charts/
+          git commit --message "Add new version ${chartVersion}"
+          : Push gh-pages branch
+          git push --quiet --set-upstream origin-pages gh-pages
