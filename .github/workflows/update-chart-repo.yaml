@@ -10,7 +10,7 @@ jobs:
   update_chart_repo:
     name: Update chart repo
     strategy:
-      fail-fast: false
+      fail-fast: true
     runs-on: [ubuntu-latest]
     steps:
       - uses: actions/checkout@v1
@@ -37,6 +37,8 @@ jobs:
           if [[ $GITHUB_HEAD_REF == "feat_init_github_actions" ]] ; then
             VERSION=0.4.0
           fi
+
+          : Use version $VERSION
 
           mkdir new_charts/
           helm package charts/loghouse -d new_charts/ $VERSION
