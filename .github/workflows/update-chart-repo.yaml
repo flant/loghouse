@@ -17,6 +17,7 @@ jobs:
 
       - name: Install helm
         run: |
+          set -eo pipefail
           curl -Ls https://get.helm.sh/helm-v2.16.5-linux-amd64.tar.gz -o helmc.tar.gz
           tar zxf helm.tar.gz linux-amd64/helm -O | sudo tee /usr/local/bin/helm > /dev/null
           sudo chmod +x /usr/local/bin/helm
