@@ -31,14 +31,9 @@ jobs:
 
       - name: Create helm package
         run: |
-          echo GITHUB_REF $GITHUB_REF
-          echo GITHUB_HEAD_REF $GITHUB_HEAD_REF
-
           chartVersion=${GITHUB_REF#refs/tags/v}
 
-          headRef=${GITHUB_HEAD_REF#refs/heads/}
-
-          if [[ $headRef == "feat_init_github_actions" ]] ; then
+          if [[ $GITHUB_REF == "refs/heads/feat_init_github_actions" ]] ; then
             chartVersion=0.4.0
           fi
 
