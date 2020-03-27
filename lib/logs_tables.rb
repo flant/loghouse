@@ -59,21 +59,21 @@ module LogsTables
   module_function
 
   def create_table(table_name, sql_code, force: false)
-    log "Creating table #{table_name}"
+    Log.log "Creating table #{table_name}"
 
     if ::Clickhouse.connection.exists_table(table_name)
-      log "Table #{table_name} exists", 6
+      Log.log "Table #{table_name} exists", 6
 
       return unless force
 
-      log "Force is true, so dropping table #{table_name}", 6
+      Log.log "Force is true, so dropping table #{table_name}", 6
 
       ::Clickhouse.connection.drop_table(table_name)
     end
 
     ::Clickhouse.connection.execute sql_code
 
-    log "Table #{table_name} created"
+    Log.log "Table #{table_name} created"
   end
 
   def create_table_sql(table_name, engine)
@@ -91,9 +91,5 @@ module LogsTables
         `null_fields.names` Array(String)
       ) ENGINE = #{engine}
     EOS
-  end
-
-  def log(msg, indent = 3)
-    puts "#{'-' * indent}> #{msg}"
   end
 end

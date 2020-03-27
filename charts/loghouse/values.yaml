@@ -67,6 +67,9 @@ retention_period: 7
 # Create db and default table structure in clickhouse
 doDbDeploy: true
 
+# Migrate data from old table format to new one
+doDbMigrate: true
+
 # If you not want install fluentd on master node
 install_master: true
 
@@ -106,9 +109,11 @@ clickhouse:
 # You should create registry secret
 # if you install images from private registry
   imagePullSecrets:
-# Our chart convert memory limit to clickhouse max memory limit
-# It wants 256Mi for system use. So, specify 512Mi limit or more
-# Memory limit in "129e6" format does no supperted, sorry 
+# The memory limit is also used to specify max memory limit bytes for clickhouse.
+# Note that "max memory limit" is calculated as "limits.memory" - 128Mi,
+# because clickhouse process needs 128Mi to run.
+# So specify at least 2Gi for "limits.memory".
+  reserveMemory: 128Mi
   resources:
     limits:
       cpu: 4

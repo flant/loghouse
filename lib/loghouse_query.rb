@@ -5,6 +5,7 @@ require 'loghouse_query/clickhouse'
 require 'loghouse_query/permissions'
 require 'loghouse_query/csv'
 require 'log_entry'
+require 'log'
 
 class LoghouseQuery
   include Parsers
