@@ -1,0 +1,49 @@
+name: Update chart repo
+on:
+  push:
+    branches:
+      - feat_init_github_actions
+    tags:
+      - 'v*'
+
+jobs:
+  update_chart_repo:
+    name: Update chart repo
+    strategy:
+      fail-fast: false
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install helm
+        run: |
+          curl -Ls https://get.helm.sh/helm-v2.16.5-linux-amd64.tar.gz -o helmc.tar.gz
+          tar zxf helm.tar.gz linux-amd64/helm -O | sudo tee /usr/local/bin/helm > /dev/null
+          sudo chmod +x /usr/local/bin/helm
+          helm init --client-only
+
+      - name: Create helm package
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+
+          if [[ $GITHUB_HEAD_REF == "feat_init_github_actions" ]] ; then
+            VERSION=0.4.0
+          fi
+
+          mkdir new_charts/
+          helm package charts/loghouse -d new_charts/ $VERSION
+
+          : Checkout gh-pages
+          git remote set-branches --add origin gh-pages-test
+          git fetch origin gh-pages-test
+          git checkout gh-pages-test
+          export CHART=$(ls -1 new_charts/)
+          mv new_charts/${CHART} charts/${CHART}
+          rm -rf new_charts/
+          helm repo index charts/
+          : Make commit to gh-pages branch
+          git add charts/
+          git commit --message "Add new version ${VERSION}"
+          : Push gh-pages branch
+          git remote add origin-pages https://${GITHUB_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          git push --quiet --set-upstream origin-pages gh-pages-test
