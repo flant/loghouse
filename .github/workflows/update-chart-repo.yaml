@@ -27,6 +27,7 @@ jobs:
           git config --global user.name "Loghouse release bot"
           git remote set-branches --add origin gh-pages-test
           git fetch origin gh-pages-test
+          git remote add origin-pages https://${{secrets.GITHUB_PUSH_TOKEN}}@github.com/${GITHUB_REPOSITORY}.git
 
       - name: Create helm package
         run: |
@@ -54,5 +55,4 @@ jobs:
           git add charts/
           git commit --message "Add new version ${chartVersion}"
           : Push gh-pages branch
-          git remote add origin-pages https://${GITHUB_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           git push --quiet --set-upstream origin-pages gh-pages-test
