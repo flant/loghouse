@@ -40,7 +40,7 @@ jobs:
           : Use version $VERSION
 
           mkdir new_charts/
-          helm package charts/loghouse -d new_charts/ $VERSION
+          helm package -d new_charts/ --app-version $VERSION charts/loghouse
 
       - name: Update gh-pages branch
         run: |
