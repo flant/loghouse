@@ -22,6 +22,14 @@ jobs:
           sudo chmod +x /usr/local/bin/helm
           helm init --client-only
 
+      - name: Setup git settings
+        run: |
+          git config --global user.email "no-reply@flant.com"
+          git config --global user.name "Loghouse release bot"
+          git remote set-branches --add origin gh-pages-test
+          git fetch origin gh-pages-test
+          git remote add origin-pages https://${GITHUB_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+
       - name: Create helm package
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
@@ -33,9 +41,9 @@ jobs:
           mkdir new_charts/
           helm package charts/loghouse -d new_charts/ $VERSION
 
+      - name: Update gh-pages branch
+        run: |
           : Checkout gh-pages
-          git remote set-branches --add origin gh-pages-test
-          git fetch origin gh-pages-test
           git checkout gh-pages-test
           export CHART=$(ls -1 new_charts/)
           mv new_charts/${CHART} charts/${CHART}
@@ -45,5 +53,4 @@ jobs:
           git add charts/
           git commit --message "Add new version ${VERSION}"
           : Push gh-pages branch
-          git remote add origin-pages https://${GITHUB_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           git push --quiet --set-upstream origin-pages gh-pages-test
