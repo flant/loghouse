@@ -1,8 +1,6 @@
 name: Update chart repo
 on:
   push:
-    branches:
-      - feat_init_github_actions
     tags:
       - 'v*'
 
@@ -21,20 +19,14 @@ jobs:
           sudo chmod +x /usr/local/bin/helm
           helm init --client-only
 
-      - name: Setup git settings
-        run: |
-          git config --global user.email "no-reply@flant.com"
-          git config --global user.name "Loghouse release bot"
-          git remote set-branches --add origin gh-pages-test
-          git fetch origin gh-pages-test
-          git remote add origin-pages https://${{secrets.GITHUB_PUSH_TOKEN}}@github.com/${GITHUB_REPOSITORY}.git
-
       - name: Create helm package
         run: |
           chartVersion=${GITHUB_REF#refs/tags/v}
 
-          if [[ $GITHUB_REF == "refs/heads/feat_init_github_actions" ]] ; then
-            chartVersion=0.4.0
+          ok=$(echo "${chartVersion}" | sed 's/^[0-9]\+.[0-9]\+.[0-9]\+$/OK/')
+          if [[ $ok != "OK" ]] ; then
+            echo "Version ${chartVersion} must be of digits and dots: '[0-9]+.[0-9]+.[0-9]+'"
+            exit 1
           fi
 
           echo Use version ${chartVersion}
@@ -43,10 +35,18 @@ jobs:
           mkdir new_charts/
           helm package -d new_charts/ --version $chartVersion charts/loghouse
 
+      - name: Setup git settings
+        run: |
+          git config --global user.email "no-reply@flant.com"
+          git config --global user.name "Loghouse release bot"
+          git remote set-branches --add origin gh-pages
+          git fetch origin gh-pages
+          git remote add origin-pages https://${{secrets.GITHUB_PUSH_TOKEN}}@github.com/${GITHUB_REPOSITORY}.git
+
       - name: Update gh-pages branch
         run: |
           : Checkout gh-pages
-          git checkout gh-pages-test
+          git checkout gh-pages
           export CHART=$(ls -1 new_charts/)
           mv new_charts/${CHART} charts/${CHART}
           rm -rf new_charts/
@@ -55,4 +55,4 @@ jobs:
           git add charts/
           git commit --message "Add new version ${chartVersion}"
           : Push gh-pages branch
-          git push --quiet --set-upstream origin-pages gh-pages-test
+          git push --quiet --set-upstream origin-pages gh-pages
