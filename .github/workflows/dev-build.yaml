@@ -76,7 +76,7 @@ jobs:
         run: |
           echo Build $imageTag using $buildDir/Dockerfile
           cd $buildDir
-          docker build -t $imageTag -f $dockerFile .
+          docker build -t $imageTag -f Dockerfile .
 
       - name: Push '${{ matrix.component }}' image
         run: |
