@@ -27,20 +27,20 @@ jobs:
           git config --global user.name "Loghouse release bot"
           git remote set-branches --add origin gh-pages-test
           git fetch origin gh-pages-test
-          git remote add origin-pages https://${GITHUB_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
 
       - name: Create helm package
         run: |
-          VERSION=${GITHUB_REF#refs/tags/v}
+          chartVersion=${GITHUB_REF#refs/tags/v}
 
           if [[ $GITHUB_HEAD_REF == "feat_init_github_actions" ]] ; then
-            VERSION=0.4.0
+            chartVersion=0.4.0
           fi
 
-          : Use version $VERSION
+          echo Use version chartVersion
+          echo ::set-env name=chartVersion::${chartVersion}
 
           mkdir new_charts/
-          helm package -d new_charts/ --app-version $VERSION charts/loghouse
+          helm package -d new_charts/ --app-version $chartVersion charts/loghouse
 
       - name: Update gh-pages branch
         run: |
@@ -52,6 +52,7 @@ jobs:
           helm repo index charts/
           : Make commit to gh-pages branch
           git add charts/
-          git commit --message "Add new version ${VERSION}"
+          git commit --message "Add new version ${chartVersion}"
           : Push gh-pages branch
+          git remote add origin-pages https://${GITHUB_PUSH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           git push --quiet --set-upstream origin-pages gh-pages-test
