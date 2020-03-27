@@ -1,6 +1,6 @@
 # Build flant/loghouse-[dashboard,fluentd,tabix]-dev images and push
 # to hub.docker.com when PR is labeled
-# with label ":robot: build dev images" (id=)
+# with label ":robot: build dev images" (id=1939241618)
 name: Publish dev images
 on:
   pull_request:
@@ -12,19 +12,19 @@ jobs:
   stub:
     name: Empty job to prevent workflow fail
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' #&& github.event.label.id != 1860106347 # not ':robot: build dev images' label
+    if: github.event_name == 'pull_request' && github.event.label.id != 1939241618 # not ':robot: build dev images' label
     steps:
       - name: stub action
         run: ": This job is used to prevent the workflow to fail when all other jobs are skipped."
-      - name: dump label event
-        run: cat $GITHUB_EVENT_PATH
-      - name: dump envs
-        run: export
+      #- name: dump label event
+      #  run: cat $GITHUB_EVENT_PATH
+      #- name: dump envs
+      #  run: export
 
   unlabel:
     name: Unlabel
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.label.id == 1860106347 # ':robot: build dev images' label
+    if: github.event_name == 'pull_request' && github.event.label.id == 1939241618 # ':robot: build dev images' label
     steps:
       - uses: actions/github-script@0.3.0
         with:
@@ -44,45 +44,41 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flavour:
-          - ubuntu
-          - alpine3.9
-          - alpine3.10
+        component:
+          - dashboard
+          - tabix
+          - fluentd
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.event.label.id == 1860106347 # ':robot: build dev images' label
+    if: github.event_name == 'pull_request' && github.event.label.id == 1939241618 # ':robot: build dev images' label
     steps:
       - uses: actions/checkout@v1
 
       - name: Prepare environment
         env:
-          FLAVOUR: ${{ matrix.flavour }}
-          IMAGE_NAME: flant/addon-operator-dev
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          COMPONENT: ${{ matrix.component }}
+          IMAGE_NAME: flant/loghouse-${{ matrix.component }}-dev
         run: |
-          imageTag=${IMAGE_NAME}:${FLAVOUR}
-          # master-371e2d3b9467fb9b72b515fb5e30d39964519601-2020.02.06_18:37:42
-          appVersion=dev-$FLAVOUR-$GITHUB_HEAD_REF-${HEAD_SHA::8}-$(date +'%Y.%m.%d_%H:%M:%S')
-          dockerFile=Dockerfile
+          imageTag=${IMAGE_NAME}:${GITHUB_HEAD_REF}
+          echo ::set-env name=imageTag::${imageTag}
 
-          case $FLAVOUR in
-            alpine3.9)
-              dockerFile="Dockerfile-alpine3.9"
+          buildDir=.
+          case $COMPONENT in
+            tabix)
+              buildDir="images/tabix.ui"
               ;;
-            alpine3.10)
-              dockerFile="Dockerfile-alpine3.10"
+            fluentd)
+              buildDir="images/fluentd"
               ;;
           esac
+          echo ::set-env name=buildDir::${buildDir}
 
-          echo ::set-env name=imageTag::${imageTag}
-          echo ::set-env name=dockerFile::${dockerFile}
-          echo ::set-env name=appVersion::${appVersion}
-
-      - name: Build '${{ matrix.flavour }}' image
+      - name: Build '${{ matrix.component }}' image
         run: |
-          echo Build $imageTag with version $appVersion using ./$dockerFile
-          docker build --build-arg appVersion=$appVersion -t $imageTag -f $dockerFile .
+          echo Build $imageTag using $buildDir/Dockerfile
+          cd $buildDir
+          docker build -t $imageTag -f $dockerFile .
 
-      - name: Push '${{ matrix.flavour }}' image
+      - name: Push '${{ matrix.component }}' image
         run: |
           docker login -u ${{ secrets.DOCKER_USER }} -p ${{ secrets.DOCKER_PASS }}
           docker push $imageTag
