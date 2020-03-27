@@ -31,17 +31,22 @@ jobs:
 
       - name: Create helm package
         run: |
+          echo GITHUB_REF $GITHUB_REF
+          echo GITHUB_HEAD_REF $GITHUB_HEAD_REF
+
           chartVersion=${GITHUB_REF#refs/tags/v}
 
-          if [[ $GITHUB_HEAD_REF == "feat_init_github_actions" ]] ; then
+          headRef=${GITHUB_HEAD_REF#refs/heads/}
+
+          if [[ $headRef == "feat_init_github_actions" ]] ; then
             chartVersion=0.4.0
           fi
 
-          echo Use version chartVersion
+          echo Use version ${chartVersion}
           echo ::set-env name=chartVersion::${chartVersion}
 
           mkdir new_charts/
-          helm package -d new_charts/ --app-version $chartVersion charts/loghouse
+          helm package -d new_charts/ --version $chartVersion charts/loghouse
 
       - name: Update gh-pages branch
         run: |
