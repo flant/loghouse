@@ -6,16 +6,16 @@ module LogsTables
   RETENTION_PERIOD    = ENV.fetch('LOGS_TABLES_RETENTION_PERIOD')   { '14' }.to_i
   HAS_BUFFER          = ENV.fetch('LOGS_TABLES_HAS_BUFFER')         { 'true' }
   PARTITION_PERIOD    = 1
-  DB_VERSION          = 3
+  DB_VERSION          = 4
   DB_VERSION_TABLE    = "migrations"          
 
   KUBERNETES_ATTRIBUTES = {
-    source: 'String',
-    namespace: 'String',
-    host: 'String',
+    source: 'LowCardinality(String)',
+    namespace: 'LowCardinality(String)',
+    host: 'LowCardinality(String)',
     pod_name: 'String',
-    container_name: 'String',
-    stream: 'String'
+    container_name: 'LowCardinality(String)',
+    stream: 'LowCardinality(String)'
   }.freeze
 
   module_function
@@ -28,7 +28,7 @@ module LogsTables
   end
 
   def create_storage_table(force: false)
-    engine = "MergeTree() PARTITION BY (date) ORDER BY (#{TIMESTAMP_ATTRIBUTE}, #{NSEC_ATTRIBUTE}, namespace, container_name) TTL date + INTERVAL #{RETENTION_PERIOD} DAY DELETE SETTINGS index_granularity=32768"
+    engine = "MergeTree() PARTITION BY (date) ORDER BY (namespace, container_name, #{TIMESTAMP_ATTRIBUTE}, #{NSEC_ATTRIBUTE}) TTL date + INTERVAL #{RETENTION_PERIOD} DAY DELETE SETTINGS index_granularity=32768, ttl_only_drop_parts=1"
     table_name = TABLE_NAME
 
     create_table table_name, create_table_sql(table_name, engine), force: force

@@ -1,6 +1,6 @@
 GIT
-  remote: https://github.com/archan937/clickhouse
-  revision: 6b00d0459d0633e0c7b755166b0e4e0dab044076
+  remote: https://github.com/flant/clickhouse
+  revision: 574aa3160971e094c1df07d8cc87d3e84602feed
   specs:
     clickhouse (0.1.10)
       activesupport (>= 4.1.8)
@@ -15,7 +15,7 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (6.0.2.1)
+    activesupport (6.0.2.2)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
@@ -23,7 +23,7 @@ GEM
       zeitwerk (~> 2.2)
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
-    backports (3.16.1)
+    backports (3.17.0)
     chronic (0.10.2)
     coderay (1.1.2)
     concurrent-ruby (1.1.6)
@@ -31,13 +31,13 @@ GEM
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.7.5)
     erubis (2.7.0)
-    faraday (1.0.0)
+    faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
     ffi (1.12.2)
     ffi-compiler (1.0.1)
       ffi (>= 1.0.0)
       rake
-    http (4.3.0)
+    http (4.4.1)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
       http-form_data (~> 2.2)
@@ -45,7 +45,7 @@ GEM
     http-accept (1.7.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    http-form_data (2.2.0)
+    http-form_data (2.3.0)
     http-parser (1.2.1)
       ffi-compiler (>= 1.0, < 2.0)
     i18n (1.8.2)
@@ -57,7 +57,7 @@ GEM
       rest-client (~> 2.0)
     launchy (2.5.0)
       addressable (~> 2.7)
-    method_source (0.9.2)
+    method_source (1.0.0)
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2019.1009)
@@ -70,9 +70,9 @@ GEM
     nio4r (2.5.2)
     parslet (2.0.0)
     pond (0.4.0)
-    pry (0.12.2)
-      coderay (~> 1.1.0)
-      method_source (~> 0.9.0)
+    pry (0.13.0)
+      coderay (~> 1.1)
+      method_source (~> 1.0)
     public_suffix (4.0.3)
     puma (4.3.3)
       nio4r (~> 2.0)
@@ -80,7 +80,7 @@ GEM
     rack-protection (2.0.8.1)
       rack
     rake (13.0.1)
-    recursive-open-struct (1.1.0)
+    recursive-open-struct (1.1.1)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
@@ -106,8 +106,8 @@ GEM
       thread_safe (~> 0.1)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.7.6)
-    zeitwerk (2.2.2)
+    unf_ext (0.0.7.7)
+    zeitwerk (2.3.0)
 
 PLATFORMS
   ruby
@@ -129,4 +129,4 @@ RUBY VERSION
    ruby 2.6.5p114
 
 BUNDLED WITH
-   1.17.2
+   1.17.3
