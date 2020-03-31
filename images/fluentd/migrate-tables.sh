@@ -7,14 +7,16 @@ CLICKHOUSE_CLIENT="clickhouse-client --host=${CLICKHOUSE_SERVER} --port=${CLICKH
 DB_VERSION=`$CLICKHOUSE_CLIENT "SELECT MAX(version) FROM migrations"`
 
 function migrate_v3 {
-    for table_name in `$CLICKHOUSE_CLIENT "SHOW TABLES" | grep -P "^${CLICKHOUSE_LOGS_TABLE}\d+"`; do
-      echo "Processing ${table_name}..."
-      $CLICKHOUSE_CLIENT "INSERT INTO ${CLICKHOUSE_LOGS_TABLE} SELECT * FROM ${table_name}"
-      $CLICKHOUSE_CLIENT "DROP TABLE IF EXISTS ${table_name}"
-    done
+  echo "Start migration for v3"
+  for table_name in `$CLICKHOUSE_CLIENT "SHOW TABLES" | grep -P "^${CLICKHOUSE_LOGS_TABLE}\d+"`; do
+    echo "Processing ${table_name}..."
+    $CLICKHOUSE_CLIENT "INSERT INTO ${CLICKHOUSE_LOGS_TABLE} SELECT * FROM ${table_name}"
+    $CLICKHOUSE_CLIENT "DROP TABLE IF EXISTS ${table_name}"
+  done
 }
 
 function migrate_v4 {
+  echo "Start migration for v4"
   if [[ ! -z `$CLICKHOUSE_CLIENT "SHOW CREATE TABLE ${CLICKHOUSE_LOGS_TABLE}_old" 2>/dev/null` ]]; then
     for PART_NAME in `$CLICKHOUSE_CLIENT "SELECT DISTINCT(date) FROM ${CLICKHOUSE_LOGS_TABLE}_old"`; do
       echo "Processing ${PART_NAME}..."
