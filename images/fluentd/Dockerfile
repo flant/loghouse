@@ -42,9 +42,6 @@ RUN BUILD_DEPS="make gcc g++ libc6-dev ruby-dev" \
     # && patch /var/lib/gems/2.3.0/gems/fluent-plugin-systemd-0.0.8/lib/fluent/plugin/in_systemd.rb /opt/fluentd-systemd-plugin.patch
     && chmod +x /usr/local/bin/insert_ch.sh /usr/local/bin/migrate-tables.sh /run.sh
 
-# Expose prometheus metrics.
-EXPOSE 80
-
 ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.1
 
 # Start Fluentd to pick up our config that watches Docker container logs.
