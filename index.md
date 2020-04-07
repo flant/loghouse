@@ -5,7 +5,7 @@
 ___
 
 
-Ready to use log management solution for Kubernetes. Efficiently store big amounts of your logs (in [ClickHouse](https://github.com/yandex/ClickHouse) database), process them using a simple query language and monitor them online through web UI. Easy and quick to deploy in an already functioning Kubernetes cluster.
+[Loghouse](https://github.com/flant/loghouse) is a ready to use log management solution for Kubernetes. Efficiently store big amounts of your logs (in [ClickHouse](https://github.com/yandex/ClickHouse) database), process them using a simple [query language](https://github.com/flant/loghouse/blob/master/docs/en/query-language.md) and monitor them online through web UI. Easy and quick to deploy in an already functioning Kubernetes cluster.
 
 # Installation
 
