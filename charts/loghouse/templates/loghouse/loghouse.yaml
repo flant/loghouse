@@ -17,7 +17,7 @@ spec:
       labels:
         component: loghouse
     spec:
-      serviceAccountName: loghouse
+      serviceAccountName: {{ .Release.Name | quote }}
       initContainers:
       - name: wait-clickhouse
         image: alpine:3.6

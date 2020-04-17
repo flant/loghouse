@@ -27,7 +27,7 @@ spec:
 {{- end }}
 {{- end }}
     spec:
-      serviceAccountName: fluentd
+      serviceAccountName: {{ printf "fluentd-%s" .Release.Name | quote }}
       containers:
       - name: fluentd
         image: {{ .Values.fluentd.image }}:{{ template "app.version" $ }}

@@ -38,8 +38,7 @@ Fix clickhouse exporterPort
 */}}
 {{- define "clickhouseExporterBind" -}}
 {{- $exporterPort := .Values.clickhouse.exporterPort }}
-{{- $type := printf "%T" $exporterPort }}
-{{- if eq $type "float64" -}}
+{{- if eq (printf "%T" $exporterPort) "float64" -}}
 {{ printf ":%.0f" $exporterPort | quote }}
 {{- else -}}
 {{- printf ":%d" $exporterPort | quote }}
@@ -104,5 +103,24 @@ without reserved memory. Result is 0 if input bytes is lower than reserved bytes
 {{- $memVal -}}
 {{- else -}}
 0
+{{- end -}}
+{{- end -}}
+
+{{/*
+Fix string for percentage
+*/}}
+{{- define "clickhouseMaxDiskUsagePercentage" -}}
+{{- $MaxDiskUsagePercentage := .Values.diskMaxUsagePersentage -}}
+{{- if eq (printf "%T" $MaxDiskUsagePercentage) "float64" -}}
+{{- $MaxDiskUsagePercentage := int64 $MaxDiskUsagePercentage -}}
+{{- else if eq (printf "%T" $MaxDiskUsagePercentage) "string" }}
+{{- $MaxDiskUsagePercentage := int64 (regexFind "[0-9]+" $MaxDiskUsagePercentage) -}}
+{{- else -}}
+{{- $MaxDiskUsagePercentage := int64 $MaxDiskUsagePercentage -}}
+{{- end -}}
+{{- if gt $MaxDiskUsagePercentage 100 -}}
+80
+{{- else -}}
+{{- $MaxDiskUsagePercentage -}}
 {{- end -}}
 {{- end -}}

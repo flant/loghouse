@@ -13,7 +13,7 @@ module LogsTables
     source: 'LowCardinality(String)',
     namespace: 'LowCardinality(String)',
     host: 'LowCardinality(String)',
-    pod_name: 'String',
+    pod_name: 'LowCardinality(String)',
     container_name: 'LowCardinality(String)',
     stream: 'LowCardinality(String)'
   }.freeze
@@ -28,7 +28,7 @@ module LogsTables
   end
 
   def create_storage_table(force: false)
-    engine = "MergeTree() PARTITION BY (date) ORDER BY (namespace, container_name, #{TIMESTAMP_ATTRIBUTE}, #{NSEC_ATTRIBUTE}) TTL date + INTERVAL #{RETENTION_PERIOD} DAY DELETE SETTINGS index_granularity=32768, ttl_only_drop_parts=1"
+    engine = "MergeTree() PARTITION BY (date) ORDER BY (date, namespace, pod_name, container_name, #{TIMESTAMP_ATTRIBUTE}, #{NSEC_ATTRIBUTE}) TTL date + INTERVAL #{RETENTION_PERIOD} DAY DELETE SETTINGS index_granularity=32768, ttl_only_drop_parts=1"
     table_name = TABLE_NAME
 
     create_table table_name, create_table_sql(table_name, engine), force: force
@@ -40,18 +40,6 @@ module LogsTables
     sql = "CREATE TABLE IF NOT EXISTS migrations (timestamp DateTime, version UInt32) ENGINE = #{engine}"
 
     create_table table_name, sql, force: force
-  end
-
-  def round_time_to_partition(time)
-    Time.at(time.to_i / PARTITION_PERIOD.hours * PARTITION_PERIOD.hours).utc
-  end
-
-  def next_time_partition(time)
-    round_time_to_partition(time) + PARTITION_PERIOD.hours
-  end
-
-  def prev_time_partition(time)
-    round_time_to_partition(time) - PARTITION_PERIOD.hours
   end
 
   private

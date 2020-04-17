@@ -73,6 +73,13 @@ doDbMigrate: true
 # If you not want install fluentd on master node
 install_master: true
 
+# If you want to use disk space based retention 
+# enable prometry
+doDiskRetention: false
+
+# If you use disk space based retention tune this
+diskMaxUsagePersentage: 80
+
 # Default imagePullPolicy
 imagePullPolicy: Always
 
@@ -131,7 +138,15 @@ clickhouse:
       requests:
         cpu: 100m
         memory: 32Mi
-
+  sidecar:
+    image: "flant/loghouse-clickhouse-sidecar"
+    resources:
+      limits:
+        cpu: 100m
+        memory: 32Mi
+      requests:
+        cpu: 100m
+        memory: 32Mi
 fluentd:
   image: "flant/loghouse-fluentd"
 #  tolerations:

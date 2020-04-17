@@ -57,6 +57,30 @@ spec:
             name: clickhouse-credentilas
         {{ include "includeByName" (dict "root" .Values.clickhouse.exporter "name" "resources") | indent 8 | trim }}
 {{- end }}
+{{- if .Values.doDiskRetention }}
+      - name: loghouse-clickhouse-sidecar
+        image: {{ .Values.clickhouse.sidecar.image }}:{{ template "app.version" $ }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        env:
+        - name: CLICKHOUSE_SERVER
+          value: {{ .Values.clickhouse.server | quote }}
+        - name: CLICKHOUSE_PORT
+          value: {{ .Values.clickhouse.port | quote }}
+        - name: CLICKHOUSE_DATABASE
+          value: {{ .Values.clickhouse.db | quote }}
+        - name: K8S_LOGS_TABLE
+          value: {{ .Values.clickhouse.table | quote }}
+        - name: CLICLHOUSE_MAX_USE_PERCENT
+          value: {{ template "clickhouseMaxDiskUsagePercentage" $ }}
+        - name: SUPERCRONIC_ARGS
+          value: "-json /app/schedule"
+        envFrom:
+        - secretRef:
+            name: clickhouse-credentilas
+        volumeMounts:
+        - name: clickhouse-supercronic-config
+          mountPath: /app
+{{- end }}
       - name: clickhouse
         image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.version }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
@@ -108,6 +132,11 @@ spec:
 {{ toYaml .Values.clickhouse.imagePullSecrets | indent 6 }}
 {{- end }}
       volumes:
+{{- if .Values.doDiskRetention -}}
+      - name: crotab-volume
+        configMap:
+          name: clickhouse-supercronic-config
+{{- end -}}
 {{- if not .Values.storage.pvc }}
 {{- if .Values.storage.hostpath }}
       - name: data

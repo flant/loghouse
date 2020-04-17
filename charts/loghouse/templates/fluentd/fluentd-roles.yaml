@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: fluentd
+  name: {{ printf "fluentd-%s" .Release.Name | quote }}
   namespace: {{ .Release.Namespace }}
   labels:
     k8s-app: fluentd
@@ -12,7 +12,7 @@ metadata:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: fluentd
+  name: {{ printf "fluentd-%s" .Release.Name | quote }}
   labels:
     k8s-app: fluentd
     kubernetes.io/cluster-service: "true"
@@ -31,14 +31,14 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: fluentd
+  name: {{ printf "fluentd-%s" .Release.Name | quote }}
   labels:
     k8s-app: fluentd
     kubernetes.io/cluster-service: "true"
     addonmanager.kubernetes.io/mode: Reconcile 
 subjects:
 - kind: ServiceAccount
-  name: fluentd
+  name: {{ printf "fluentd-%s" .Release.Name | quote }}
   namespace: {{ .Release.Namespace }}
   apiGroup: ""
 roleRef:
