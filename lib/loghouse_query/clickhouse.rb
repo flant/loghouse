@@ -40,7 +40,7 @@ class LoghouseQuery
       time = start_time
       stop_at ||= start_time - LogsTables::RETENTION_PERIOD.hours * MAX_GREEDY_SEARCH_PERIODS
 
-      while lim.positive? && (time >= stop_at)
+      if lim.positive? && (time >= stop_at)
         table = LogsTables::TABLE_NAME
 
         sql = to_clickhouse(table, nil, start_time, lim)
@@ -48,8 +48,6 @@ class LoghouseQuery
         res = LogEntry.from_result_set ::Clickhouse.connection.query(sql)
 
         result += res
-        lim -= res.count
-        time = LogsTables.prev_time_partition(time)
       end
       result
     end
@@ -60,7 +58,7 @@ class LoghouseQuery
       stop_at ||= start_time + LogsTables::RETENTION_PERIOD.hours * MAX_GREEDY_SEARCH_PERIODS
       stop_at = Time.zone.now if stop_at > Time.zone.now
 
-      while lim.positive? && (time <= stop_at)
+      if lim.positive? && (time <= stop_at)
         table = LogsTables::TABLE_NAME
 
         sql = to_clickhouse(table, start_time, nil, lim)
@@ -68,8 +66,6 @@ class LoghouseQuery
         res = LogEntry.from_result_set ::Clickhouse.connection.query(sql)
 
         result += res.reverse
-        lim -= res.count
-        time = LogsTables.next_time_partition(time)
       end
       result.reverse
     end
