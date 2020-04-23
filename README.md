@@ -18,7 +18,7 @@ Loghouse-dashboard UI demo in action (~3 Mb):
 * Collecting and storing logs from all Kubernetes pods efficiently:
   * [Fluentd](https://www.fluentd.org/) processes upto 10,000 log entries per second consuming 300 MB of RAM (installed at each K8s node).
   * ClickHouse makes disk space usage minimal. Examples of logs stored in our production deployments: 3.7 million entries require 1.2 GB, 300m — 13 GB, 5,35 billion — 54 GB.
-* [Simple query language](docs/en/query-language.md): Easy to select entries by exact keys values or regular expressions, multiple conditions are supported with AND/OR. *Learn more in [query language docs](docs/en/query-language.md).
+* [Simple query language](docs/en/query-language.md): Easy to select entries by exact keys values or regular expressions, multiple conditions are supported with AND/OR. *Learn more in [query language docs](docs/en/query-language.md)*.
 * Selecting entries based on additional containers' data available in Kubernetes API (pod's and container's names, host, namespace, labels, etc).
 * Quickly & straightforward deployable to Kubernetes via Dockerfiles and Helm chart.
 * Web UI made cosy and powerful:
