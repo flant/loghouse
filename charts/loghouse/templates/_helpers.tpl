@@ -119,8 +119,8 @@ Fix string for percentage
 {{- $MaxDiskUsagePercentage := int64 $MaxDiskUsagePercentage -}}
 {{- end -}}
 {{- if gt $MaxDiskUsagePercentage 99.0 -}}
-80
+"80"
 {{- else -}}
-{{- $MaxDiskUsagePercentage -}}
+{{- $MaxDiskUsagePercentage | quote -}}
 {{- end -}}
 {{- end -}}
