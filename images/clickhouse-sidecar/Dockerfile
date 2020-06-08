@@ -18,4 +18,5 @@ RUN apt update && apt install -y curl \
 
 WORKDIR /app
 USER app
-CMD /usr/local/bin/supercronic ${SUPERCRONIC_ARGS}
+ENTRYPOINT [ "/usr/local/bin/supercronic" ]
+CMD ${SUPERCRONIC_ARGS}
