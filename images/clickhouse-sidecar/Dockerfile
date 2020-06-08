@@ -6,7 +6,8 @@ ENV SUPERCRONIC_URL=https://github.com/aptible/supercronic/releases/download/v0.
 
 COPY cleanup-clickhouse-partitions.sh /usr/local/bin/cleanup-clickhouse-partitions.sh
 
-RUN curl -fsSLO "$SUPERCRONIC_URL" \
+RUN apt update && apt install -y curl \
+    && curl -fsSLO "$SUPERCRONIC_URL" \
     && echo "${SUPERCRONIC_SHA1SUM}  ${SUPERCRONIC}" | sha1sum -c - \
     && chmod +x "$SUPERCRONIC" \
     && mv "$SUPERCRONIC" "/usr/local/bin/${SUPERCRONIC}" \
