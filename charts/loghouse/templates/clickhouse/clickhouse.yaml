@@ -132,7 +132,7 @@ spec:
 {{ toYaml .Values.clickhouse.imagePullSecrets | indent 6 }}
 {{- end }}
       volumes:
-{{- if .Values.doDiskRetention -}}
+{{- if .Values.doDiskRetention }}
       - name: crotab-volume
         configMap:
           name: clickhouse-supercronic-config
