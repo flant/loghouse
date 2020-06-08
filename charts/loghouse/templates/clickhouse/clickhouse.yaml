@@ -78,7 +78,7 @@ spec:
         - secretRef:
             name: clickhouse-credentilas
         volumeMounts:
-        - name: clickhouse-supercronic-config
+        - name: crotab-volume
           mountPath: /app
 {{- end }}
       - name: clickhouse
