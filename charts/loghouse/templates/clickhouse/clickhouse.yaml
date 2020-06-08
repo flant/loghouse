@@ -61,6 +61,8 @@ spec:
       - name: loghouse-clickhouse-sidecar
         image: {{ .Values.clickhouse.sidecar.image }}:{{ template "app.version" $ }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
+        command: ["/usr/local/bin/supercronic" ]
+        args: ["-json", "/app/schedule"]
         env:
         - name: CLICKHOUSE_SERVER
           value: {{ .Values.clickhouse.server | quote }}
@@ -72,8 +74,6 @@ spec:
           value: {{ .Values.clickhouse.table | quote }}
         - name: CLICLHOUSE_MAX_USE_PERCENT
           value: {{ template "clickhouseMaxDiskUsagePercentage" $ }}
-        - name: SUPERCRONIC_ARGS
-          value: "-json /app/schedule"
         envFrom:
         - secretRef:
             name: clickhouse-credentilas
