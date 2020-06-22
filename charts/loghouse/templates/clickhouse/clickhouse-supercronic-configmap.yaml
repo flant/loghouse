@@ -1,0 +1,14 @@
+{{- if not .Values.clickhouse.external }}
+{{- if .Values.doDiskRetention -}}
+kind: ConfigMap
+apiVersion: v1
+data:
+  schedule: |-
+    0 * * * * /usr/local/bin/cleanup-clickhouse-partitions.sh
+metadata:
+  name: clickhouse-supercronic-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
+{{- end -}}
+{{- end -}}

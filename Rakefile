@@ -29,6 +29,14 @@ task :create_logs_tables do
     Log.log "Migration done"
   when 3
     Log.log "Run migration for version #{LogsTables::DB_VERSION}"
+    ::Clickhouse.connection.execute "RENAME TABLE #{LogsTables::TABLE_NAME} TO #{LogsTables::TABLE_NAME}_old"
+    LogsTables.create_storage_table(force: true)
+    LogsTables.create_buffer_table(force: force)
+    LogsTables.create_migration_table(force: force)
+    ::Clickhouse.connection.execute "INSERT INTO #{LogsTables::DB_VERSION_TABLE} VALUES (NOW(), #{LogsTables::DB_VERSION})"
+    Log.log "Migration done"
+  when 4
+    Log.log "Run migration for version #{LogsTables::DB_VERSION}"
     ::Clickhouse.connection.execute "ALTER TABLE #{LogsTables::TABLE_NAME} MODIFY TTL date + INTERVAL #{LogsTables::RETENTION_PERIOD} DAY DELETE"
     Log.log "Migration done"
   else
