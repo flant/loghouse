@@ -2,7 +2,9 @@
 Ingress api version
 */}}
 {{- define "Ingress.apiVersion" -}}
-{{- if semverCompare ">=1.14" .Capabilities.KubeVersion.GitVersion -}}
+{{- if semverCompare ">=1.19" .Capabilities.KubeVersion.GitVersion -}}
+"networking.k8s.io/v1"
+{{- else if semverCompare ">=1.14" .Capabilities.KubeVersion.GitVersion -}}
 "networking.k8s.io/v1beta1"
 {{- else -}}
 "extensions/v1beta1"
