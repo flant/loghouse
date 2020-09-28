@@ -50,6 +50,7 @@ spec:
         envFrom:
         - secretRef:
             name: clickhouse-credentilas
+{{- if .Values.fluentd.resources }}
         resources:
           limits:
             memory: {{ .Values.fluentd.resources.limits.memory }}
@@ -57,6 +58,7 @@ spec:
           requests:
             memory: {{ .Values.fluentd.resources.requests.memory }}
             cpu: {{ .Values.fluentd.resources.requests.cpu }}
+{{- end }}
         ports:
 {{- if .Values.fluentd.prometheusEnabled }}
         - name: http-metrics
