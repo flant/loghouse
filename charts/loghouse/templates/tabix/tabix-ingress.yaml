@@ -29,9 +29,19 @@ spec:
     http:
       paths:
       - path: {{ .Values.ingress.tabix.path }}
+{{- if semverCompare ">=1.19" .Capabilities.KubeVersion.GitVersion }}
+        pathType: ImplementationSpecific
+{{- end }}
         backend:
+{{- if semverCompare ">=1.19" .Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: tabix
+            port:
+              name: http
+{{- else }}
           serviceName: tabix
           servicePort: http
+{{- end }}
 {{- if .Values.ingress.enable_https }}
   tls:
   - hosts:

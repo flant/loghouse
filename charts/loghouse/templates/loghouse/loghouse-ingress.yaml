@@ -29,9 +29,19 @@ spec:
     http:
       paths:
       - path: {{ .Values.ingress.loghouse.path }}
+{{- if semverCompare ">=1.19" .Capabilities.KubeVersion.GitVersion }}
+        pathType: ImplementationSpecific
+{{- end }}
         backend:
+{{- if semverCompare ">=1.19" .Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: loghouse
+            port:
+              name: http
+{{- else }}
           serviceName: loghouse
           servicePort: http
+{{- end }}
 {{- if .Values.ingress.enable_https }}
   tls:
   - hosts:
