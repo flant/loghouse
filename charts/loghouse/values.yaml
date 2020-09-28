@@ -165,6 +165,9 @@ loghouse:
 #    effect: NoExecute
 #  nodeSelector:
 #    node-role.flant.com/logging: ""
+  users:
+    admin:
+      - ".*"
   imagePullSecrets:
   resources:
     limits:

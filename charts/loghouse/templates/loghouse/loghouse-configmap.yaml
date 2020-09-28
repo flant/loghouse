@@ -8,5 +8,9 @@ metadata:
     addonmanager.kubernetes.io/mode: Reconcile
 data:
   user.conf: |-
-    admin:
-      - ".*"
+  {{- range $index, $element := .Values.loghouse.users }}
+    {{ $index }}:
+    {{- range $element }}
+      - {{ . | quote }}
+    {{- end }}
+  {{- end }}
