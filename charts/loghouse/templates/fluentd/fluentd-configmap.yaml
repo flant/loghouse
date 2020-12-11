@@ -120,6 +120,9 @@ data:
       @type record_modifier
       <record>
         _json_log_             ${ log = record["log"].strip; if log[0].eql?('{') && log[-1].eql?('}'); begin; JSON.parse(log); rescue JSON::ParserError; end; end }
+        _json_fields_select_   ${ record["_json_log_"] ? record["_json_log_"].select{|_, v| v.is_a?(Hash) && !v.nil? } : nil }
+        _json_fields_keys_     ${ !record["_json_fields_select_"].nil? ? record["_json_fields_select_"].map{|topKey, innerRecord| innerRecord.keys.map{ |key| topKey + '.' + key } }.flatten(1)  : []}
+        _json_fields_values_   ${ !record["_json_fields_select_"].nil? ? record["_json_fields_select_"].map{|topKey, innerRecord| innerRecord.values.map(&:to_s) }.flatten(1) : []}
         timestamp              ${time}
         nsec                   ${record["time"].split('.').last.to_i}
         # static fields
@@ -132,8 +135,8 @@ data:
         # dynamic fields
         labels.names           ${record["kubernetes"].key?("labels") ? record["kubernetes"]["labels"].keys : []}
         labels.values          ${record["kubernetes"].key?("labels") ? record["kubernetes"]["labels"].values : []}
-        string_fields.names    ${record["_json_log_"] ? record["_json_log_"].select{|_, v| !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.keys : ["log"]}
-        string_fields.values   ${record["_json_log_"] ? record["_json_log_"].select{|_, v| !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.values.map(&:to_s) : [record["log"]]}
+        string_fields.names    ${record["_json_log_"] ? record["_json_log_"].select{|_, v| !v.is_a?(Hash) && !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.keys + record["_json_fields_keys_"] : ["log"]}
+        string_fields.values   ${record["_json_log_"] ? record["_json_log_"].select{|_, v| !v.is_a?(Hash) && !v.nil? && !v.is_a?(Numeric) && !v.is_a?(TrueClass) && !v.is_a?(FalseClass)}.values.map(&:to_s) + record["_json_fields_values_"] : [record["log"]]}
 
         number_fields.names    ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.is_a?(Numeric)}.keys : []}
         number_fields.values   ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.is_a?(Numeric)}.values : []}
@@ -143,7 +146,7 @@ data:
 
         null_fields.names      ${record["_json_log_"] ? record["_json_log_"].select{|_, v| v.nil?}.keys : []}
       </record>
-      remove_keys kubernetes, docker, master_url, time, log, _json_log_
+      remove_keys kubernetes, docker, master_url, time, log, _json_log_, _json_fields_select_, _json_fields_keys_, _json_fields_values_
     </filter>
 
     <filter net.**>
