@@ -4,6 +4,13 @@
 
 ___
 
+**UPDATE (December'20): Please note loghouse is no longer being actively developed.**
+
+Back in 2017 (when we created this project), there was no other solution to get what we (in [Flant](https://flant.com/)) desperately needed. However creating such tools is out of our primary focus, hence — while maintaining loghouse — we've been also waiting for other projects to emerge. Luckily, the Kubernetes ecosystem grows and evolves at an amazing pace. Today, we are happy to admit the existence of other solid log management solutions we can rely on. For most cases, we use [Loki](https://github.com/grafana/loki). *([Graylog](https://github.com/Graylog2/graylog2-server) and [Elasticsearch](https://github.com/elastic/elasticsearch)-based solutions — i.e. ELK, EFK — might be other options to consider.)*
+
+It means we don't need to improve loghouse anymore. Since it's still Open Source, you are very welcome to contribute (or even [contact us](https://twitter.com/flant_com) to become a maintainer).
+
+___
 
 Ready to use log management solution for Kubernetes. Efficiently store big amounts of your logs (in [ClickHouse](https://github.com/yandex/ClickHouse) database), process them using a simple query language and monitor them online through web UI. Easy and quick to deploy in an already functioning Kubernetes cluster.
 
