@@ -1,4 +1,4 @@
-FROM ruby:2.6.5
+FROM ruby:2.7.8@sha256:2347de892e419c7160fc21dec721d5952736909f8c3fbb7f84cb4a07aaf9ce7d
 RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs \
     && mkdir /app \
     && adduser --disabled-password --system --home /app --shell /bin/bash --no-create-home --uid 7000 app
