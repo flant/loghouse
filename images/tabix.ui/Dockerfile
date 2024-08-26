@@ -1,4 +1,4 @@
-FROM nginx:stable-alpine
+FROM nginx:stable-alpine@sha256:d4d72ee8e6d028c5ad939454164d3645be2d38afb5c352277926a48e24abf4fa
 
 ENV APP_HOME /usr/share/nginx/html
 ENV TMP_DIR /tmp/tabix
